@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
 
 class SneakernessSeeder extends Seeder
@@ -13,8 +14,7 @@ class SneakernessSeeder extends Seeder
      */
     public function run(): void
     {
-        // Disable foreign key checks for clean truncation/refresh
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::disableForeignKeyConstraints();
 
         DB::table('ContactPerVerkoper')->truncate();
         DB::table('Contactpersoon')->truncate();
@@ -26,7 +26,7 @@ class SneakernessSeeder extends Seeder
         DB::table('Verkoper')->truncate();
         DB::table('Organisator')->truncate();
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Schema::enableForeignKeyConstraints();
 
         // 1. Organisatoren
         DB::table('Organisator')->insert([
@@ -166,13 +166,12 @@ class SneakernessSeeder extends Seeder
 
         // 7. Contactpersonen (54 stuks, 48 gekoppeld, 6 ongekoppeld)
         $contactenData = [
-            // Top 6 uit Figma design
-            [1, 'Mark de Vries', '06-12345678', 'mark@kicksrdam.nl', 1],
-            [2, 'Sophie Jansen', '06-87654321', 'contact@solemate.nl', 2],
-            [3, 'Bilal El Amrani', '06-22446688', 'info@streetwear-rtm.nl', 3],
-            [4, 'Emma Bakker', '06-99887766', 'art@sneakerstudio.nl', 4],
-            [5, 'Jesse van Dijk', '06-11223344', 'jesse@barberandcuts.nl', 6],
-            [6, 'Daan van Leeuwen', '06-33557799', 'info@vintagekicks.nl', 5], // Gekoppeld aan verkoper 5 (Vintage Kicks)
+            [1, 'Mark de Vries', '06-12345678', 'mark@kicksrdam.nl', 1, 'Hoofdcontactpersoon'],
+            [2, 'Sophie Jansen', '06-87654321', 'contact@solemate.nl', 2, 'Eigenaar'],
+            [3, 'Bilal El Amrani', '06-22446688', 'info@streetwear-rtm.nl', 3, 'Standhouder'],
+            [4, 'Emma Bakker', '06-99887766', 'art@sneakerstudio.nl', 4, 'Eigenaar & Artiest'],
+            [5, 'Jesse van Dijk', '06-11223344', 'jesse@barberandcuts.nl', 6, 'Teamleider'],
+            [6, 'Daan van Leeuwen', '06-33557799', 'daan@kicks.nl', null, 'Assistent'],
 
             // Gekoppelde contactpersonen voor verkopers 5, 7 t/m 48 (totaal 48 gekoppeld)
             [7, 'Hikmet Sugoer', '06-11223301', 'contact@solebox.com', 7],
@@ -217,7 +216,7 @@ class SneakernessSeeder extends Seeder
             [46, 'Floris Zeeman', '06-89900232', 'floris@solerevival.nl', 46],
             [47, 'Tyrell Jones', '06-90011344', 'tyrell@graffiti.nl', 47],
             [48, 'Organisatie Sneakerness', '06-01122456', 'merch@sneakerness.com', 48],
-            [49, 'Kasper van Leeuwen', '06-33557788', 'kasper@vintagekicks.nl', null], // Ongekoppeld
+            [49, 'Kasper van Leeuwen', '06-33557788', 'kasper@vintagekicks.nl', 5],
 
             // Overige 5 ongekoppelde contactpersonen (totaal 6 ongekoppeld)
             [50, 'Anouk Jansen', '06-11224455', 'anouk@freelance.nl', null],
@@ -237,7 +236,7 @@ class SneakernessSeeder extends Seeder
                 'Telefoonnummer' => $c[2],
                 'Email' => $c[3],
                 'IsActief' => 1,
-                'Opmerking' => $c[4] ? 'Hoofdcontactpersoon' : 'Assistent',
+                'Opmerking' => $c[5] ?? ($c[4] ? 'Hoofdcontactpersoon' : 'Assistent'),
                 'DatumAangemaakt' => now(),
                 'DatumGewijzigd' => now(),
             ];
