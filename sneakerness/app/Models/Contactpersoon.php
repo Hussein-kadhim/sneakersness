@@ -47,30 +47,34 @@ class Contactpersoon extends Model
         return $this->verkopers->first();
     }
 
+    public function getVoornaamAttribute(): string
+    {
+        $delen = explode(' ', trim($this->Naam), 2);
+        return $delen[0] ?? '';
+    }
+
+    public function getAchternaamAttribute(): string
+    {
+        $delen = explode(' ', trim($this->Naam), 2);
+        return $delen[1] ?? '';
+    }
+
     public function getSubtitleTagAttribute(): ?string
     {
-        return match ($this->Id) {
+        $tags = [
             1 => '(Standmanager)',
             2 => '(Eigenaar)',
             3 => '(Sales)',
             4 => '(Customizer)',
-            5 => '',
-            6 => '(Barbier)',
-            default => '',
-        };
+            5 => '(Barbier)',
+        ];
+
+        return $tags[$this->Id] ?? '';
     }
 
     public function getRoleDisplayAttribute(): string
     {
-        return match ($this->Id) {
-            1 => 'Hoofdcontactpersoon',
-            2 => 'Eigenaar',
-            3 => 'Standhouder',
-            4 => 'Eigenaar & Artiest',
-            5 => 'Teamleider',
-            6 => 'Assistent',
-            default => $this->Opmerking ?: 'Vertegenwoordiger',
-        };
+        return $this->Opmerking ?: 'Vertegenwoordiger';
     }
 
     public function getStatusLabelAttribute(): string
@@ -78,12 +82,11 @@ class Contactpersoon extends Model
         if ($this->Id === 2) {
             return 'Bevestigd';
         }
-        if ($this->Id === 3 || $this->Id === 6) {
+
+        if ($this->Id === 3 || $this->Id === 6 || !$this->IsActief) {
             return 'In behandeling';
         }
-        if (!$this->IsActief) {
-            return 'Inactief';
-        }
+
         return 'Actief';
     }
 

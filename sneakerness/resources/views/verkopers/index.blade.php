@@ -43,6 +43,9 @@
                     <a href="{{ route('verkopers.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-orange-600 bg-orange-50 font-semibold rounded-lg">
                         Verkopers
                     </a>
+                    <a href="{{ route('contactpersonen.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
+                        Contactpersonen
+                    </a>
                     <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                         Stand huren
                     </a>
