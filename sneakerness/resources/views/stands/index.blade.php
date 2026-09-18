@@ -198,6 +198,73 @@
                 <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
                     Geen stands gevonden.
                 </div>
+            @else
+                <div class="block md:hidden space-y-3 mb-4">
+                    @foreach($stands as $stand)
+                        <div class="bg-white rounded-xl border border-slate-200 p-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ $stand->type_badge_class }}">
+                                            Stand {{ $stand->StandType }}
+                                        </span>
+                                        <h3 class="font-bold text-slate-900 text-base">
+                                            #{{ str_pad($stand->Id, 3, '0', STR_PAD_LEFT) }}
+                                        </h3>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        {{ $stand->location_display }}
+                                    </p>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-semibold {{ $stand->status_color_class }}">
+                                    {{ $stand->status_label }}
+                                </span>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-lg p-3 my-3">
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                                            VERKOPER
+                                        </span>
+                                        @if($stand->verkoper)
+                                            <span class="font-bold text-slate-900 text-xs block">
+                                                {{ $stand->verkoper->Naam }}
+                                            </span>
+                                            <span class="text-slate-500 text-[11px] block mt-0.5">
+                                                {{ $stand->verkoper->VerkooptSoort }}
+                                            </span>
+                                        @else
+                                            <span class="text-slate-400 text-xs italic">
+                                                Niet toegewezen
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+                                            PRIJS &amp; DAGEN
+                                        </span>
+                                        <span class="font-bold text-slate-900 text-xs block">
+                                            {{ $stand->formatted_price }}
+                                        </span>
+                                        <span class="text-slate-500 text-[11px] block mt-0.5">
+                                            {{ $stand->days_text }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                    Wijzigen
+                                </a>
+                                <a href="#" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
+                                    Verwijderen
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @endif
 
         </div>
