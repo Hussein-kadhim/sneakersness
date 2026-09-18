@@ -265,6 +265,104 @@
                         </div>
                     @endforeach
                 </div>
+
+                <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left border-collapse table-fixed">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                <th class="py-4 px-4 w-[22%]">STAND</th>
+                                <th class="py-4 px-4 w-[24%]">GEKOPPELDE VERKOPER</th>
+                                <th class="py-4 px-4 w-[16%]">DAGEN</th>
+                                <th class="py-4 px-4 w-[14%]">PRIJS</th>
+                                <th class="py-4 px-3 w-[12%]">STATUS</th>
+                                <th class="py-4 px-4 w-[12%] text-right">ACTIES</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            @foreach($stands as $stand)
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-4 px-4">
+                                        <div class="flex items-center gap-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ $stand->type_badge_class }}">
+                                                Stand {{ $stand->StandType }}
+                                            </span>
+                                            <span class="font-bold text-slate-900 text-sm sm:text-base">
+                                                #{{ str_pad($stand->Id, 3, '0', STR_PAD_LEFT) }}
+                                            </span>
+                                        </div>
+                                        <div class="text-xs text-slate-500 mt-1 truncate">
+                                            {{ $stand->location_display }}
+                                        </div>
+                                    </td>
+
+                                    <td class="py-4 px-4">
+                                        @if($stand->verkoper)
+                                            <div class="font-bold text-slate-900 text-sm sm:text-base truncate">
+                                                {{ $stand->verkoper->Naam }}
+                                            </div>
+                                            <div class="text-xs text-slate-500 mt-0.5 truncate">
+                                                {{ $stand->verkoper->VerkooptSoort }}
+                                            </div>
+                                        @else
+                                            <div class="font-bold text-slate-400 text-sm sm:text-base italic">
+                                                Geen verkoper gekoppeld
+                                            </div>
+                                            <div class="text-xs text-slate-400 mt-0.5">
+                                                (Nog beschikbaar)
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    <td class="py-4 px-4">
+                                        <div class="font-medium text-slate-900 text-sm">
+                                            {{ $stand->days_text }}
+                                        </div>
+                                        <div class="text-xs text-slate-400 mt-0.5">
+                                            {{ $stand->AantalDagen }} {{ $stand->AantalDagen == 1 ? 'dag' : 'dagen' }}
+                                        </div>
+                                    </td>
+
+                                    <td class="py-4 px-4">
+                                        <div class="font-bold text-slate-900 text-sm sm:text-base">
+                                            {{ $stand->formatted_price }}
+                                        </div>
+                                        <div class="text-xs text-slate-400 mt-0.5">
+                                            excl. BTW
+                                        </div>
+                                    </td>
+
+                                    <td class="py-4 px-3 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold {{ $stand->status_color_class }}">
+                                            {{ $stand->status_label }}
+                                        </span>
+                                    </td>
+
+                                    <td class="py-4 px-4 whitespace-nowrap text-right">
+                                        <div class="flex items-center justify-end gap-2.5 text-xs sm:text-[13px]">
+                                            <a href="#" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                Wijzigen
+                                            </a>
+                                            <span class="text-slate-300">|</span>
+                                            <a href="#" class="text-slate-500 hover:text-slate-900">
+                                                Verwijderen
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between text-xs sm:text-sm text-slate-600">
+                    <div>
+                        <span class="sm:hidden font-bold text-slate-900">{{ $stands->firstItem() }}-{{ $stands->lastItem() }}</span>
+                        <span class="hidden sm:inline">{{ $stands->firstItem() }} tot {{ $stands->lastItem() }}</span> van {{ $stands->total() }} <span class="hidden sm:inline">stands</span>
+                    </div>
+                    <div>
+                        {{ $stands->links('stands.partials.pagination') }}
+                    </div>
+                </div>
             @endif
 
         </div>
