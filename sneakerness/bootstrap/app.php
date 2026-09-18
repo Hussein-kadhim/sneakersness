@@ -21,4 +21,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
+            if ($request->is('tickets*')) {
+                return response()->view('tickets.index', [
+                    'tickets' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6),
+                    'search' => '',
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de tickets konden niet worden geladen. Probeer het later opnieuw.',
+                    'totalTicketsCount' => '0',
+                    'validTicketsCount' => '0',
+                    'attentionTicketsCount' => '0',
+                    'scannedTicketsCount' => '0',
+                    'capacityPercentage' => '0%',
+                ], 200);
+            }
+        });
     })->create();
