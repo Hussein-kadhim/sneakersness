@@ -51,15 +51,16 @@
                         <span class="text-3xl font-bold text-slate-900">{{ $totalContactpersonen }}</span>
                         <span class="text-xs text-slate-400">personen</span>
                     </div>
+                </div>
 
-                    <div class="bg-white rounded-xl p-4 border border-slate-200">
-                        <span class="text-xs text-slate-400 font-medium block">GEKOPPELD</span>
-                        <div class="mt-1.5 flex items-baseline gap-1.5">
-                            <span class="text-3xl font-bold text-slate-900">{{ $linkedCount }}</span>
-                            <span class="text-xs text-slate-400">/ {{ $totalContactpersonen }}</span>
-                        </div>
+                <div class="bg-white rounded-xl p-4 border border-slate-200">
+                    <span class="text-xs text-slate-400 font-medium block">GEKOPPELD</span>
+                    <div class="mt-1.5 flex items-baseline gap-1.5">
+                        <span class="text-3xl font-bold text-slate-900">{{ $linkedCount }}</span>
+                        <span class="text-xs text-slate-400">/ {{ $totalContactpersonen }}</span>
                     </div>
                 </div>
+            </div>
 
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-8">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">

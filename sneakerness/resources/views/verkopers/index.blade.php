@@ -51,15 +51,16 @@
                         <span class="text-2xl font-bold text-slate-900">{{ $totalVerkopers }}</span>
                         <span class="text-xs text-slate-400">/ 52</span>
                     </div>
+                </div>
 
-                    <div class="bg-white rounded-xl p-3.5 border border-slate-200">
-                        <span class="text-xs text-slate-400 font-medium block">Partners &amp; AA+</span>
-                        <div class="mt-1 flex items-baseline gap-1">
-                            <span class="text-2xl font-bold text-slate-900">{{ $countAAPlus }}</span>
-                            <span class="text-xs text-slate-400">AA+ stands</span>
-                        </div>
+                <div class="bg-white rounded-xl p-3.5 border border-slate-200">
+                    <span class="text-xs text-slate-400 font-medium block">Partners &amp; AA+</span>
+                    <div class="mt-1 flex items-baseline gap-1">
+                        <span class="text-2xl font-bold text-slate-900">{{ $countAAPlus }}</span>
+                        <span class="text-xs text-slate-400">AA+ stands</span>
                     </div>
                 </div>
+            </div>
 
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
