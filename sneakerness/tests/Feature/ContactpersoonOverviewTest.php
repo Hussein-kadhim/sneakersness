@@ -97,4 +97,10 @@ class ContactpersoonOverviewTest extends TestCase
         $response->assertSee('de contactpersonen konden niet worden geladen');
         $response->assertSee('sn-db-alert');
     }
+
+    public function test_guests_cannot_access_contactpersonen_and_are_redirected_to_login(): void
+    {
+        $response = $this->get('/contactpersonen');
+        $response->assertRedirect('/login');
+    }
 }

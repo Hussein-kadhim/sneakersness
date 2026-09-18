@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/css/verkopers/verkopersoverzicht.css',
                 'resources/css/tickets/ticketsoverzicht.css',
                 'resources/css/contactpersonen/contactpersonenoverzicht.css',
+                'resources/css/home/home.css',
                 'resources/js/app.js',
             ],
             refresh: true,

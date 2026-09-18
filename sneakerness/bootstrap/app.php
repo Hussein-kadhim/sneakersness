@@ -63,7 +63,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 ), 500);
             }
 
-            if ($request->is('verkopers*') || $request->is('/')) {
+            if ($request->is('/')) {
+                return response()->view('home.index', [
+                    'verkopers' => collect(),
+                    'totalVerkopers' => 0,
+                    'partnerCount' => 0,
+                    'rentedStandsCount' => 0,
+                    'totalStands' => 55,
+                    'categories' => collect(),
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar.',
+                ], 200);
+            }
+
+            if ($request->is('verkopers*')) {
                 $search = trim($request->input('q', ''));
                 $selectedCategory = trim($request->input('category', ''));
                 $verkopers = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
