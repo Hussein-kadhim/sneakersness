@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\ContactpersoonController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerkoperController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [VerkoperController::class, 'index'])->name('home');
+Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
 Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
 Route::resource('verkopers', VerkoperController::class)->except(['index']);
 Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
