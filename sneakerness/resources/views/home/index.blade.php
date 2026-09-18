@@ -15,6 +15,19 @@
     @include('partials.header')
 
     <main>
+        @if(!empty($errorMessage))
+            <div style="max-width: 1200px; margin: 1.5rem auto 0; padding: 0 1.5rem;">
+                <div style="background: #fff1f2; border: 1px solid #fecdd3; border-left: 4px solid #e11d48; border-radius: 0.75rem; padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 0.875rem;">
+                    <div style="width: 2rem; height: 2rem; border-radius: 0.5rem; background: #ffe4e6; color: #e11d48; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <strong style="display: block; color: #881337; font-size: 0.95rem; font-weight: 700;">Verbindingsfout</strong>
+                        <p style="margin: 0.25rem 0 0; color: #9f1239; font-size: 0.875rem; line-height: 1.4;">{{ $errorMessage }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
         <section class="hero-shell">
             <div class="hero-copy">
                 <p class="eyebrow">ROTTERDAM / 2026 / COMMUNITY</p>

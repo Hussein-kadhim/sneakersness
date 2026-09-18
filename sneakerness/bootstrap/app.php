@@ -60,7 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'primaryCount',
                     'dbError',
                     'errorMessage'
-                ), 500);
+                ), 200);
             }
 
             if ($request->is('/')) {
@@ -104,7 +104,48 @@ return Application::configure(basePath: dirname(__DIR__))
                     'totalStandsCount',
                     'dbError',
                     'errorMessage'
-                ), 500);
+                ), 200);
             }
+
+            if ($request->is('stands*')) {
+                $search = trim($request->input('q', ''));
+                $selectedCategory = trim($request->input('category', ''));
+                $stands = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
+                    'path' => $request->url(),
+                    'query' => $request->query(),
+                ]);
+                $totalStands = 0;
+                $countAAPlus = 0;
+                $countAA = 0;
+                $countA = 0;
+                $rentedStandsCount = 0;
+                $availableStandsCount = 0;
+
+                return response()->view('stands.index', compact(
+                    'stands',
+                    'search',
+                    'selectedCategory',
+                    'totalStands',
+                    'countAAPlus',
+                    'countAA',
+                    'countA',
+                    'rentedStandsCount',
+                    'availableStandsCount',
+                    'dbError',
+                    'errorMessage'
+                ), 200);
+            }
+
+            // Fallback voor elke andere pagina (bv. /login, /register, etc.)
+            return response()->view('home.index', [
+                'verkopers' => collect(),
+                'totalVerkopers' => 0,
+                'partnerCount' => 0,
+                'rentedStandsCount' => 0,
+                'totalStands' => 55,
+                'categories' => collect(),
+                'dbError' => true,
+                'errorMessage' => $errorMessage,
+            ], 200);
         });
     })->create();
