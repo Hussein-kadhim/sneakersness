@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contactpersoon;
 use App\Models\ContactPerVerkoper;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
 class ContactpersoonController extends Controller
@@ -12,12 +13,22 @@ class ContactpersoonController extends Controller
     public function index(Request $request): View
     {
         $search = trim($request->input('q', ''));
+        $errorMessage = null;
+
+        if ($request->has('error') || $request->has('unhappy')) {
+            $errorMessage = 'Database is momenteel niet beschikbaar, de contactpersonen konden niet worden geladen. Probeer het later opnieuw.';
+            return view('contactpersonen.index', [
+                'contactpersonen' => new LengthAwarePaginator([], 0, 6),
+                'search' => $search,
+                'totalContactpersonen' => 0,
+                'linkedCount' => 0,
+                'unlinkedCount' => 0,
+                'primaryCount' => 0,
+                'errorMessage' => $errorMessage,
+            ]);
+        }
 
         try {
-            if ($request->has('db_error') || $request->has('database_error')) {
-                throw new \PDOException('Simulated database connection error');
-            }
-
             $totalContactpersonen = Contactpersoon::count();
             $linkedCount = Contactpersoon::has('verkopers')->count();
             $unlinkedCount = Contactpersoon::doesntHave('verkopers')->count();
@@ -43,8 +54,6 @@ class ContactpersoonController extends Controller
             }
 
             $contactpersonen = $query->orderBy('Id', 'asc')->paginate(6)->onEachSide(1)->withQueryString();
-            $dbError = false;
-            $errorMessage = null;
 
             return view('contactpersonen.index', compact(
                 'contactpersonen',
@@ -53,31 +62,21 @@ class ContactpersoonController extends Controller
                 'linkedCount',
                 'unlinkedCount',
                 'primaryCount',
-                'dbError',
                 'errorMessage'
             ));
         } catch (\Throwable $e) {
-            $contactpersonen = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ]);
-            $totalContactpersonen = 0;
-            $linkedCount = 0;
-            $unlinkedCount = 0;
-            $primaryCount = 0;
-            $dbError = true;
-            $errorMessage = 'Er kan momenteel geen verbinding worden gemaakt met de database. Controleer of de database server is ingeschakeld.';
+            $errorMessage = 'Database is momenteel niet beschikbaar, de contactpersonen konden niet worden geladen. Probeer het later opnieuw.';
 
-            return view('contactpersonen.index', compact(
-                'contactpersonen',
-                'search',
-                'totalContactpersonen',
-                'linkedCount',
-                'unlinkedCount',
-                'primaryCount',
-                'dbError',
-                'errorMessage'
-            ));
+            return view('contactpersonen.index', [
+                'contactpersonen' => new LengthAwarePaginator([], 0, 6),
+                'search' => $search,
+                'totalContactpersonen' => 0,
+                'linkedCount' => 0,
+                'unlinkedCount' => 0,
+                'primaryCount' => 0,
+                'errorMessage' => $errorMessage,
+            ]);
         }
     }
 }
+

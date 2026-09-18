@@ -6,6 +6,7 @@ use App\Models\Contactpersoon;
 use App\Models\Stand;
 use App\Models\Verkoper;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
 class VerkoperController extends Controller
@@ -14,12 +15,26 @@ class VerkoperController extends Controller
     {
         $search = trim($request->input('q', ''));
         $selectedCategory = trim($request->input('category', ''));
+        $errorMessage = null;
+
+        if ($request->has('error') || $request->has('unhappy')) {
+            $errorMessage = 'Database is momenteel niet beschikbaar, de verkopers konden niet worden geladen. Probeer het later opnieuw.';
+            return view('verkopers.index', [
+                'verkopers' => new LengthAwarePaginator([], 0, 6),
+                'search' => $search,
+                'selectedCategory' => $selectedCategory,
+                'totalVerkopers' => 0,
+                'countAAPlus' => 0,
+                'countAA' => 0,
+                'countA' => 0,
+                'partnerCount' => 0,
+                'rentedStandsCount' => 0,
+                'totalStandsCount' => 0,
+                'errorMessage' => $errorMessage,
+            ]);
+        }
 
         try {
-            if ($request->has('db_error') || $request->has('database_error')) {
-                throw new \PDOException('Simulated database connection error');
-            }
-
             $totalVerkopers = Verkoper::count();
             $countAAPlus = Stand::where('StandType', 'AA+')->count();
             $countAA = Stand::where('StandType', 'AA')->count();
@@ -60,8 +75,6 @@ class VerkoperController extends Controller
             }
 
             $verkopers = $query->orderBy('Id', 'asc')->paginate(6)->withQueryString();
-            $dbError = false;
-            $errorMessage = null;
 
             return view('verkopers.index', compact(
                 'verkopers',
@@ -74,38 +87,25 @@ class VerkoperController extends Controller
                 'partnerCount',
                 'rentedStandsCount',
                 'totalStandsCount',
-                'dbError',
                 'errorMessage'
             ));
         } catch (\Throwable $e) {
-            $verkopers = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ]);
-            $totalVerkopers = 0;
-            $countAAPlus = 0;
-            $countAA = 0;
-            $countA = 0;
-            $partnerCount = 0;
-            $rentedStandsCount = 0;
-            $totalStandsCount = 0;
-            $dbError = true;
-            $errorMessage = 'Er kan momenteel geen verbinding worden gemaakt met de database. Controleer of de database server is ingeschakeld.';
+            $errorMessage = 'Database is momenteel niet beschikbaar, de verkopers konden niet worden geladen. Probeer het later opnieuw.';
 
-            return view('verkopers.index', compact(
-                'verkopers',
-                'search',
-                'selectedCategory',
-                'totalVerkopers',
-                'countAAPlus',
-                'countAA',
-                'countA',
-                'partnerCount',
-                'rentedStandsCount',
-                'totalStandsCount',
-                'dbError',
-                'errorMessage'
-            ));
+            return view('verkopers.index', [
+                'verkopers' => new LengthAwarePaginator([], 0, 6),
+                'search' => $search,
+                'selectedCategory' => $selectedCategory,
+                'totalVerkopers' => 0,
+                'countAAPlus' => 0,
+                'countAA' => 0,
+                'countA' => 0,
+                'partnerCount' => 0,
+                'rentedStandsCount' => 0,
+                'totalStandsCount' => 0,
+                'errorMessage' => $errorMessage,
+            ]);
         }
     }
 }
+

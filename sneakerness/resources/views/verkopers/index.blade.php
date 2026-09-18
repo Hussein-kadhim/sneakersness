@@ -49,8 +49,8 @@
                     <a href="{{ route('contactpersonen.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                         Contactpersonen
                     </a>
-                    <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
-                        Stand huren
+                    <a href="{{ route('stands.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
+                        Stands
                     </a>
                     <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                         Events
@@ -118,16 +118,27 @@
                 </p>
             </div>
 
-            @if(isset($dbError) && $dbError)
-                @include('partials.database-error', ['itemType' => 'verkopers'])
+            @if(!empty($errorMessage))
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-red-900 text-sm sm:text-base">
+                            Verbindingsfout
+                        </h2>
+                        <p class="text-red-700 text-xs sm:text-sm mt-0.5 leading-relaxed">
+                            {{ $errorMessage }}
+                        </p>
+                    </div>
+                </div>
             @else
-                <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
-                    <div class="bg-white rounded-xl p-3.5 border border-slate-200">
-                        <span class="text-xs text-slate-400 font-medium block">Totaal bezet</span>
-                        <div class="mt-1 flex items-baseline gap-1">
-                            <span class="text-2xl font-bold text-slate-900">{{ $rentedStandsCount }}</span>
-                            <span class="text-xs text-slate-400">/ {{ $totalStandsCount }}</span>
-                        </div>
+            <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
+                <div class="bg-white rounded-xl p-3.5 border border-slate-200">
+                    <span class="text-xs text-slate-400 font-medium block">Totaal bezet</span>
+                    <div class="mt-1 flex items-baseline gap-1">
+                        <span class="text-2xl font-bold text-slate-900">{{ $totalVerkopers }}</span>
+                        <span class="text-xs text-slate-400">/ 52</span>
                     </div>
 
                     <div class="bg-white rounded-xl p-3.5 border border-slate-200">
@@ -362,7 +373,7 @@
                     </div>
                 </div>
             @endif
-        @endif
+            @endif
 
         </div>
     </main>
