@@ -32,6 +32,9 @@
                         <a href="{{ route('contactpersonen.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('contactpersonen.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                             Contactpersonen
                         </a>
+                        <a href="{{ route('stands.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('stands.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
+                            Stands
+                        </a>
                         <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                             Stand huren
                         </a>

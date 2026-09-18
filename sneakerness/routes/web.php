@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactpersoonController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StandController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerkoperController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
+    Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
 
     Route::get('/dashboard', function () {
         return redirect()->route('verkopers.index');
