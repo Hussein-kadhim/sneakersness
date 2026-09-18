@@ -18,6 +18,7 @@ class StandController extends Controller
         $availableStandsCount = Stand::where('VerhuurdStatus', 0)->count();
 
         $search = trim($request->input('q', ''));
+        $selectedCategory = trim($request->input('category', ''));
 
         $query = Stand::query()->with('verkoper');
 
@@ -37,11 +38,25 @@ class StandController extends Controller
             });
         }
 
+        if ($selectedCategory !== '') {
+            $catLower = strtolower($selectedCategory);
+            if ($catLower === 'verhuurd') {
+                $query->where('VerhuurdStatus', 1);
+            } elseif ($catLower === 'beschikbaar') {
+                $query->where('VerhuurdStatus', 0);
+            } elseif (in_array(strtoupper($selectedCategory), ['AA+', 'AA', 'A'])) {
+                $query->where('StandType', strtoupper($selectedCategory));
+            } else {
+                $query->where('StandType', 'like', "%{$selectedCategory}%");
+            }
+        }
+
         $stands = $query->orderBy('Id', 'asc')->paginate(6)->withQueryString();
 
         return view('stands.index', compact(
             'stands',
             'search',
+            'selectedCategory',
             'totalStands',
             'countAAPlus',
             'countAA',
