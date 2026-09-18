@@ -40,6 +40,9 @@
                     <a href="{{ route('home') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                         Home
                     </a>
+                    <a href="{{ route('tickets.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
+                        Tickets
+                    </a>
                     <a href="{{ route('verkopers.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
                         Verkopers
                     </a>
@@ -137,78 +140,77 @@
                         <span class="text-3xl font-bold text-slate-900">{{ $totalContactpersonen }}</span>
                         <span class="text-xs text-slate-400">personen</span>
                     </div>
-                </div>
 
-                <div class="bg-white rounded-xl p-4 border border-slate-200">
-                    <span class="text-xs text-slate-400 font-medium block">GEKOPPELD</span>
-                    <div class="mt-1.5 flex items-baseline gap-1.5">
-                        <span class="text-3xl font-bold text-slate-900">{{ $linkedCount }}</span>
-                        <span class="text-xs text-slate-400">/ {{ $totalContactpersonen }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hidden lg:grid grid-cols-4 gap-4 mb-8">
-                <div class="bg-white rounded-xl p-5 border border-slate-200">
-                    <span class="text-xs sm:text-sm text-slate-500 font-medium block">Totaal contactpersonen</span>
-                    <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">{{ $totalContactpersonen }}</div>
-                </div>
-
-                <div class="bg-white rounded-xl p-5 border border-slate-200">
-                    <span class="text-xs sm:text-sm text-slate-500 font-medium block">Gekoppeld aan verkoper</span>
-                    <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
-                        {{ $linkedCount }} <span class="text-xl font-bold text-slate-400">/ 52 stands</span>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-5 border border-slate-200">
-                    <span class="text-xs sm:text-sm text-slate-500 font-medium block">Primaire aanspreekpunten</span>
-                    <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
-                        {{ $primaryCount }} <span class="text-base font-semibold text-slate-500">vertegenwoordigers</span>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-5 border border-slate-200">
-                    <span class="text-xs sm:text-sm text-slate-500 font-medium block">Ongekoppeld</span>
-                    <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
-                        {{ $unlinkedCount }} <span class="text-xl font-bold text-slate-400">personen</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <form method="GET" action="{{ route('contactpersonen.index') }}">
-                    <div class="relative mb-3">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200">
+                        <span class="text-xs text-slate-400 font-medium block">GEKOPPELD</span>
+                        <div class="mt-1.5 flex items-baseline gap-1.5">
+                            <span class="text-3xl font-bold text-slate-900">{{ $linkedCount }}</span>
+                            <span class="text-xs text-slate-400">/ {{ $totalContactpersonen }}</span>
                         </div>
-                        <input
-                            type="text"
-                            name="q"
-                            value="{{ $search }}"
-                            placeholder="Zoek op naam, e-mailadres, telefoonnummer of gekoppelde verkoper..."
-                            class="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-lg text-sm sm:text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        >
-                        @if($search !== '')
-                            <a href="{{ route('contactpersonen.index') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
-                                <i class="fa-solid fa-xmark text-sm"></i>
-                            </a>
-                        @endif
                     </div>
-                </form>
-
-                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div class="text-xs sm:text-sm text-slate-400">
-                        {{ $contactpersonen->total() }} contactpersonen gevonden
-                    </div>
-                    <a href="#" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        Contactpersoon toevoegen
-                    </a>
                 </div>
-            </div>
 
-            @if($contactpersonen->isEmpty())
+                <div class="hidden lg:grid grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white rounded-xl p-5 border border-slate-200">
+                        <span class="text-xs sm:text-sm text-slate-500 font-medium block">Totaal contactpersonen</span>
+                        <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">{{ $totalContactpersonen }}</div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 border border-slate-200">
+                        <span class="text-xs sm:text-sm text-slate-500 font-medium block">Gekoppeld aan verkoper</span>
+                        <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+                            {{ $linkedCount }} <span class="text-xl font-bold text-slate-400">/ 52 stands</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 border border-slate-200">
+                        <span class="text-xs sm:text-sm text-slate-500 font-medium block">Primaire aanspreekpunten</span>
+                        <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+                            {{ $primaryCount }} <span class="text-base font-semibold text-slate-500">vertegenwoordigers</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 border border-slate-200">
+                        <span class="text-xs sm:text-sm text-slate-500 font-medium block">Ongekoppeld</span>
+                        <div class="text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
+                            {{ $unlinkedCount }} <span class="text-xl font-bold text-slate-400">personen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <form method="GET" action="{{ route('contactpersonen.index') }}">
+                        <div class="relative mb-3">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                            </div>
+                            <input
+                                type="text"
+                                name="q"
+                                value="{{ $search }}"
+                                placeholder="Zoek op naam, e-mailadres, telefoonnummer of gekoppelde verkoper..."
+                                class="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-lg text-sm sm:text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                            >
+                            @if($search !== '')
+                                <a href="{{ route('contactpersonen.index') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+
+                    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div class="text-xs sm:text-sm text-slate-400">
+                            {{ $contactpersonen->total() }} contactpersonen gevonden
+                        </div>
+                        <a href="#" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            Contactpersoon toevoegen
+                        </a>
+                    </div>
+                </div>
+
+                @if($contactpersonen->isEmpty())
                 <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
                     Geen contactpersonen gevonden.
                 </div>
