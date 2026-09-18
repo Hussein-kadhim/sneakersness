@@ -162,6 +162,44 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                <form method="GET" action="{{ route('stands.index') }}">
+                    <div class="relative mb-3">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ $search ?? '' }}"
+                            placeholder="Zoek op standtype, hal, verkoper of opmerking..."
+                            class="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                        >
+                        @if(!empty($search))
+                            <a href="{{ route('stands.index') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </a>
+                        @endif
+                    </div>
+                </form>
+
+                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div class="text-xs text-slate-400">
+                        {{ $stands->total() }} stands gevonden
+                    </div>
+                    <a href="#" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        Stand toevoegen
+                    </a>
+                </div>
+            </div>
+
+            @if($stands->isEmpty())
+                <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
+                    Geen stands gevonden.
+                </div>
+            @endif
+
         </div>
     </main>
 
