@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/verkopers/verkopersoverzicht.css',
                 'resources/css/contactpersonen/contactpersonenoverzicht.css',
+                'resources/css/stands/standoverzicht.css',
                 'resources/js/app.js',
             ],
             refresh: true,
