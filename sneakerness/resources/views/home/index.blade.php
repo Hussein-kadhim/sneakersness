@@ -24,7 +24,7 @@
                     </a>
                 </div>
 
-                <nav class="navbar hidden md:flex items-center gap-1.5 text-sm font-medium">
+                <nav class="navbar hidden md:flex items-center gap-1.5 text-sm font-medium" aria-label="Hoofdnavigatie">
                     <button type="button" class="close-menu md:hidden text-xl text-slate-400 hover:text-slate-700 self-end mb-2" aria-label="Sluiten"><i class="fa-solid fa-xmark"></i></button>
                     <a href="{{ route('home') }}" class="w-full md:w-auto px-3.5 py-1.5 text-orange-600 bg-orange-50 font-semibold rounded-lg">Home</a>
                     <a href="{{ route('verkopers.index') }}" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">Verkopers</a>
