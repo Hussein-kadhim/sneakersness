@@ -17,12 +17,31 @@ class StandController extends Controller
         $rentedStandsCount = Stand::where('VerhuurdStatus', 1)->count();
         $availableStandsCount = Stand::where('VerhuurdStatus', 0)->count();
 
+        $search = trim($request->input('q', ''));
+
         $query = Stand::query()->with('verkoper');
+
+        if ($request->has('empty')) {
+            $query->whereNull('Id');
+        }
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('StandType', 'like', "%{$search}%")
+                    ->orWhere('Opmerking', 'like', "%{$search}%")
+                    ->orWhere('Prijs', 'like', "%{$search}%")
+                    ->orWhereHas('verkoper', function ($sub) use ($search) {
+                        $sub->where('Naam', 'like', "%{$search}%")
+                            ->orWhere('VerkooptSoort', 'like', "%{$search}%");
+                    });
+            });
+        }
 
         $stands = $query->orderBy('Id', 'asc')->paginate(6)->withQueryString();
 
         return view('stands.index', compact(
             'stands',
+            'search',
             'totalStands',
             'countAAPlus',
             'countAA',
