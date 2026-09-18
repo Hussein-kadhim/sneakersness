@@ -23,8 +23,22 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
-            $errorMessage = 'Er kan momenteel geen verbinding worden gemaakt met de database. Controleer of de database server is ingeschakeld.';
+            $errorMessage = 'Database is momenteel niet beschikbaar, de gegevens konden niet worden geladen. Probeer het later opnieuw.';
             $dbError = true;
+
+            if ($request->is('tickets*')) {
+                return response()->view('tickets.index', [
+                    'tickets' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6),
+                    'search' => '',
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de tickets konden niet worden geladen. Probeer het later opnieuw.',
+                    'totalTicketsCount' => '0',
+                    'validTicketsCount' => '0',
+                    'attentionTicketsCount' => '0',
+                    'scannedTicketsCount' => '0',
+                    'capacityPercentage' => '0%',
+                ], 200);
+            }
 
             if ($request->is('contactpersonen*')) {
                 $search = trim($request->input('q', ''));
