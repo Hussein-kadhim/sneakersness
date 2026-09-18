@@ -92,7 +92,7 @@
             </div>
             <div class="seller-grid">
                 @forelse($verkopers as $index => $verkoper)
-                    <a href="{{ route('verkopers.index') }}" class="seller-card">
+                    <a href="{{ route('verkopers.index') }}" class="seller-card" aria-label="Bekijk {{ $verkoper->Naam }} bij de verkopers">
                         <span class="card-number">0{{ $index + 1 }}</span>
                         <div class="seller-icon"><i class="fa-solid fa-star"></i></div>
                         <div class="seller-info">
