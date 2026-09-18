@@ -8,11 +8,15 @@ use Tests\TestCase;
 
 class VerkoperOverviewTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test Happy Scenario: overzicht toont verkopers, stat cards en niet-werkende actieknoppen.
      */
     public function test_happy_scenario_organisator_sees_verkopers_list_and_stats(): void
     {
+        $this->seed(\Database\Seeders\SneakernessSeeder::class);
+
         $organisator = User::where('email', 'organisator@sneakerness.com')->first();
         if (!$organisator) {
             $organisator = User::factory()->create([
@@ -76,12 +80,18 @@ class VerkoperOverviewTest extends TestCase
     }
 
     /**
-     * Test tijdelijke contactpersonen pagina is verwijderd (geeft 404).
+     * Test Unhappy Scenario: wanneer database offline/fout is,
+     * toont het overzicht een rode melding en foutboodschap.
      */
-    public function test_temporary_contactpersonen_route_is_removed(): void
+    public function test_unhappy_scenario_shows_red_database_error_when_database_is_offline(): void
     {
-        $response = $this->get('/contactpersonen');
-        $response->assertStatus(404);
+        $response = $this->get('/verkopers?db_error=1');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verbindingsfout');
+        $response->assertSee('Database is momenteel niet beschikbaar');
+        $response->assertSee('de verkopers konden niet worden geladen');
+        $response->assertSee('sn-db-alert');
     }
 
     /**

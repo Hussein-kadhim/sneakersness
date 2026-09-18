@@ -78,4 +78,23 @@ class ContactpersoonOverviewTest extends TestCase
         $response->assertSee('Geen contactpersonen gevonden');
         $response->assertSee('Contactpersoon toevoegen');
     }
+
+    public function test_unhappy_scenario_shows_red_database_error_when_database_is_offline(): void
+    {
+        $organisator = User::where('email', 'organisator@sneakerness.com')->first();
+        if (!$organisator) {
+            $organisator = User::factory()->create([
+                'role' => 'organisator',
+                'email' => 'organisator@sneakerness.com',
+            ]);
+        }
+
+        $response = $this->actingAs($organisator)->get('/contactpersonen?db_error=1');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verbindingsfout');
+        $response->assertSee('Database is momenteel niet beschikbaar');
+        $response->assertSee('de contactpersonen konden niet worden geladen');
+        $response->assertSee('sn-db-alert');
+    }
 }
