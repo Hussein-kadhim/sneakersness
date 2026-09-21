@@ -107,7 +107,7 @@
     </header>
 
     <main class="flex-grow py-5 sm:py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
 
             <div class="mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -504,7 +504,7 @@
     </div>
 
     <footer class="py-6 text-center">
-        <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="w-full px-4 text-center">
             <p class="text-xs text-slate-500">
                 &copy; 2026 Sneakerness Rotterdam &ndash; Alle rechten voorbehouden
             </p>
