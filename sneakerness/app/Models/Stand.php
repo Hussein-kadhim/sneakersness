@@ -69,4 +69,31 @@ class Stand extends Model
         }
         return 'Stand #' . $this->StandType . '-' . str_pad($this->Id, 3, '0', STR_PAD_LEFT);
     }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->VerhuurdStatus ? 'Verhuurd' : 'Beschikbaar';
+    }
+
+    public function getStatusColorClassAttribute(): string
+    {
+        return $this->VerhuurdStatus
+            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+            : 'bg-amber-50 text-amber-700 border border-amber-200';
+    }
+
+    public function getTypeBadgeClassAttribute(): string
+    {
+        return match ($this->StandType) {
+            'AA+' => 'bg-purple-50 text-purple-700 border border-purple-200',
+            'AA'  => 'bg-blue-50 text-blue-700 border border-blue-200',
+            default => 'bg-slate-100 text-slate-700 border border-slate-200',
+        };
+    }
+
+    public function getFormattedPriceAttribute(): string
+    {
+        return '€ ' . number_format((float)$this->Prijs, 2, ',', '.');
+    }
 }
+
