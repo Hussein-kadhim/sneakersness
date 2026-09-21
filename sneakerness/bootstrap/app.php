@@ -23,6 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
+            if ($request->is('events*')) {
+                return response()->view('evenementen.index', [
+                    'databaseError' => true,
+                    'search' => '',
+                ], 200);
+            }
+
             if ($request->is('tickets*')) {
                 return response()->view('tickets.index', [
                     'tickets' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6),
