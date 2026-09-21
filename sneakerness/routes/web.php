@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactpersoonController;
+use App\Http\Controllers\EvenementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerkoperController;
@@ -11,6 +12,7 @@ Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index'
 Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
 Route::resource('verkopers', VerkoperController::class)->except(['index']);
 Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
+Route::get('/events', [EvenementController::class, 'index'])->middleware('auth')->name('events.index');
 
 
 Route::get('/dashboard', function () {
