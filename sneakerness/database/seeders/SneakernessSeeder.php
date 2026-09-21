@@ -60,22 +60,8 @@ class SneakernessSeeder extends Seeder
             ['Id' => 4, 'Naam' => 'Tom Bakker', 'Email' => 'tom.bakker@gmail.com', 'IsActief' => 1, 'Opmerking' => 'Sneaker collector', 'DatumAangemaakt' => now(), 'DatumGewijzigd' => now()],
         ]);
 
-        // 3. Evenement
-        DB::table('Evenement')->insert([
-            [
-                'Id' => 1,
-                'OrganisatorId' => 1,
-                'Naam' => 'Sneakerness Rotterdam 2026',
-                'Datum' => '2026-10-24',
-                'Locatie' => 'Van Nelle Fabriek Rotterdam',
-                'AantalTicketsPerTijdslot' => 750,
-                'BeschikbareStands' => 55,
-                'IsActief' => 1,
-                'Opmerking' => 'Sneakerness Rotterdam Drop Hub Editie 2026',
-                'DatumAangemaakt' => now(),
-                'DatumGewijzigd' => now(),
-            ],
-        ]);
+        // 3. Events, nadat de organisatoren bestaan vanwege de foreign key.
+        $this->call(EvenementSeeder::class);
 
         // 4. Prijzen
         DB::table('Prijs')->insert([

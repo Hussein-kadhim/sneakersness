@@ -23,8 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
-            $errorMessage = 'Database is momenteel niet beschikbaar, de gegevens konden niet worden geladen. Probeer het later opnieuw.';
-            $dbError = true;
+            if ($request->is('events*')) {
+                return response()->view('evenementen.index', [
+                    'databaseError' => true,
+                    'search' => '',
+                ], 200);
+            }
 
             if ($request->is('tickets*')) {
                 return response()->view('tickets.index', [
