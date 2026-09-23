@@ -12,8 +12,20 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('verkopers.index')" :active="request()->routeIs('verkopers.index')">
+                    <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
+                        {{ __('Tickets') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('verkopers.index')" :active="request()->routeIs('verkopers.*')">
                         {{ __('Verkopers') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('contactpersonen.index')" :active="request()->routeIs('contactpersonen.*')">
+                        {{ __('Contactpersonen') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('stands.index')" :active="request()->routeIs('stands.*')">
+                        {{ __('Stands') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
+                        {{ __('Events') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -67,8 +79,20 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('verkopers.index')" :active="request()->routeIs('verkopers.index')">
+            <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
+                {{ __('Tickets') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('verkopers.index')" :active="request()->routeIs('verkopers.*')">
                 {{ __('Verkopers') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('contactpersonen.index')" :active="request()->routeIs('contactpersonen.*')">
+                {{ __('Contactpersonen') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('stands.index')" :active="request()->routeIs('stands.*')">
+                {{ __('Stands') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
+                {{ __('Events') }}
             </x-responsive-nav-link>
         </div>
 

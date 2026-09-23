@@ -23,7 +23,7 @@
 
 <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
     <div class="overlay"></div>
-    <div class="sn-header-container w-full" style="padding-left: clamp(20px, 7vw, 110px); padding-right: clamp(20px, 7vw, 110px);">
+    <div class="sn-header-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 sm:h-20">
             <div class="flex items-center gap-6 lg:gap-10">
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5">
@@ -58,14 +58,8 @@
                         <a href="{{ route('stands.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('stands.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                             Stands
                         </a>
-                        <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
-                            Stand huren
-                        </a>
-                        <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
+                        <a href="{{ route('events.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('events.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                             Events
-                        </a>
-                        <a href="#" class="w-full md:w-auto px-3.5 py-1.5 text-slate-500 hover:text-slate-900 rounded-lg">
-                            Bezoekers
                         </a>
                     @endif
 

@@ -23,124 +23,81 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6);
+            $search = trim($request->input('q', ''));
+            $selectedCategory = trim($request->input('category', ''));
+
             if ($request->is('events*')) {
                 return response()->view('evenementen.index', [
-                    'databaseError' => true,
-                    'search' => '',
+                    'events' => $emptyPaginator,
+                    'search' => $search,
+                    'totalEvents' => 0,
+                    'activeEvents' => 0,
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de events konden niet worden geladen. Probeer het later opnieuw.',
                 ], 200);
             }
 
             if ($request->is('tickets*')) {
                 return response()->view('tickets.index', [
-                    'tickets' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6),
-                    'search' => '',
-                    'dbError' => true,
-                    'errorMessage' => 'Database is momenteel niet beschikbaar, de tickets konden niet worden geladen. Probeer het later opnieuw.',
+                    'tickets' => $emptyPaginator,
+                    'search' => $search,
                     'totalTicketsCount' => '0',
                     'validTicketsCount' => '0',
                     'attentionTicketsCount' => '0',
                     'scannedTicketsCount' => '0',
                     'capacityPercentage' => '0%',
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de tickets konden niet worden geladen. Probeer het later opnieuw.',
                 ], 200);
             }
 
             if ($request->is('contactpersonen*')) {
-                $search = trim($request->input('q', ''));
-                $contactpersonen = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
-                    'path' => $request->url(),
-                    'query' => $request->query(),
-                ]);
-                $totalContactpersonen = 0;
-                $linkedCount = 0;
-                $unlinkedCount = 0;
-                $primaryCount = 0;
-
-                return response()->view('contactpersonen.index', compact(
-                    'contactpersonen',
-                    'search',
-                    'totalContactpersonen',
-                    'linkedCount',
-                    'unlinkedCount',
-                    'primaryCount',
-                    'dbError',
-                    'errorMessage'
-                ), 200);
+                return response()->view('contactpersonen.index', [
+                    'contactpersonen' => $emptyPaginator,
+                    'search' => $search,
+                    'totalContactpersonen' => 0,
+                    'linkedCount' => 0,
+                    'unlinkedCount' => 0,
+                    'primaryCount' => 0,
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de contactpersonen konden niet worden geladen. Probeer het later opnieuw.',
+                ], 200);
             }
 
-            if ($request->is('/')) {
-                return response()->view('home.index', [
-                    'verkopers' => collect(),
-                    'totalVerkopers' => 0,
-                    'partnerCount' => 0,
+            if ($request->is('stands*')) {
+                return response()->view('stands.index', [
+                    'stands' => $emptyPaginator,
+                    'search' => $search,
+                    'selectedCategory' => $selectedCategory,
+                    'totalStands' => 0,
+                    'countAAPlus' => 0,
+                    'countAA' => 0,
+                    'countA' => 0,
                     'rentedStandsCount' => 0,
-                    'totalStands' => 55,
-                    'categories' => collect(),
+                    'availableStandsCount' => 0,
                     'dbError' => true,
-                    'errorMessage' => 'Database is momenteel niet beschikbaar.',
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de stands konden niet worden geladen. Probeer het later opnieuw.',
                 ], 200);
             }
 
             if ($request->is('verkopers*')) {
-                $search = trim($request->input('q', ''));
-                $selectedCategory = trim($request->input('category', ''));
-                $verkopers = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
-                    'path' => $request->url(),
-                    'query' => $request->query(),
-                ]);
-                $totalVerkopers = 0;
-                $countAAPlus = 0;
-                $countAA = 0;
-                $countA = 0;
-                $partnerCount = 0;
-                $rentedStandsCount = 0;
-                $totalStandsCount = 0;
-
-                return response()->view('verkopers.index', compact(
-                    'verkopers',
-                    'search',
-                    'selectedCategory',
-                    'totalVerkopers',
-                    'countAAPlus',
-                    'countAA',
-                    'countA',
-                    'partnerCount',
-                    'rentedStandsCount',
-                    'totalStandsCount',
-                    'dbError',
-                    'errorMessage'
-                ), 200);
+                return response()->view('verkopers.index', [
+                    'verkopers' => $emptyPaginator,
+                    'search' => $search,
+                    'selectedCategory' => $selectedCategory,
+                    'totalVerkopers' => 0,
+                    'countAAPlus' => 0,
+                    'countAA' => 0,
+                    'countA' => 0,
+                    'partnerCount' => 0,
+                    'rentedStandsCount' => 0,
+                    'totalStandsCount' => 0,
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de verkopers konden niet worden geladen. Probeer het later opnieuw.',
+                ], 200);
             }
 
-            if ($request->is('stands*')) {
-                $search = trim($request->input('q', ''));
-                $selectedCategory = trim($request->input('category', ''));
-                $stands = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6, 1, [
-                    'path' => $request->url(),
-                    'query' => $request->query(),
-                ]);
-                $totalStands = 0;
-                $countAAPlus = 0;
-                $countAA = 0;
-                $countA = 0;
-                $rentedStandsCount = 0;
-                $availableStandsCount = 0;
-
-                return response()->view('stands.index', compact(
-                    'stands',
-                    'search',
-                    'selectedCategory',
-                    'totalStands',
-                    'countAAPlus',
-                    'countAA',
-                    'countA',
-                    'rentedStandsCount',
-                    'availableStandsCount',
-                    'dbError',
-                    'errorMessage'
-                ), 200);
-            }
-
-            // Fallback voor elke andere pagina (bv. /login, /register, etc.)
             return response()->view('home.index', [
                 'verkopers' => collect(),
                 'totalVerkopers' => 0,
@@ -149,7 +106,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'totalStands' => 55,
                 'categories' => collect(),
                 'dbError' => true,
-                'errorMessage' => $errorMessage,
+                'errorMessage' => 'Database is momenteel niet beschikbaar. Probeer het later opnieuw.',
             ], 200);
         });
     })->create();
