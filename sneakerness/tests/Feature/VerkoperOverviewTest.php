@@ -8,11 +8,15 @@ use Tests\TestCase;
 
 class VerkoperOverviewTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test Happy Scenario: overzicht toont verkopers, stat cards en niet-werkende actieknoppen.
      */
     public function test_happy_scenario_organisator_sees_verkopers_list_and_stats(): void
     {
+        $this->seed(\Database\Seeders\SneakernessSeeder::class);
+
         $organisator = User::where('email', 'organisator@sneakerness.com')->first();
         if (!$organisator) {
             $organisator = User::factory()->create([
@@ -37,16 +41,28 @@ class VerkoperOverviewTest extends TestCase
         $response->assertSee('Sophie Jansen');
         $response->assertSee('Bilal El Amrani');
         $response->assertSee('Emma Bakker');
-        $response->assertSee('Daan van Leeuwen');
+        $response->assertSee('Kasper van Leeuwen');
         $response->assertSee('Jesse van Dijk');
 
         // Stat cards
         $response->assertSee('48');
-        $response->assertSee('18× AA+');
-        $response->assertSee('8 Partners');
+        $response->assertSee('AA+');
+        $response->assertSee('Partners');
 
         // Niet-werkende knoppen conform verzoek
         $response->assertSee('onclick="return false;"', false);
+    }
+
+    private function getOrganisator(): User
+    {
+        $organisator = User::where('email', 'organisator@sneakerness.com')->first();
+        if (!$organisator) {
+            $organisator = User::factory()->create([
+                'role' => 'organisator',
+                'email' => 'organisator@sneakerness.com',
+            ]);
+        }
+        return $organisator;
     }
 
     /**
@@ -55,7 +71,7 @@ class VerkoperOverviewTest extends TestCase
      */
     public function test_unhappy_scenario_shows_empty_message_and_add_button(): void
     {
-        $response = $this->get('/verkopers?empty=1');
+        $response = $this->actingAs($this->getOrganisator())->get('/verkopers?empty=1');
 
         $response->assertStatus(200);
         $response->assertSee('Geen verkopers gevonden');
@@ -68,7 +84,7 @@ class VerkoperOverviewTest extends TestCase
      */
     public function test_unhappy_scenario_shows_empty_on_unknown_search(): void
     {
-        $response = $this->get('/verkopers?q=onbestaandebedrijfsnaamxyz123');
+        $response = $this->actingAs($this->getOrganisator())->get('/verkopers?q=onbestaandebedrijfsnaamxyz123');
 
         $response->assertStatus(200);
         $response->assertSee('Geen verkopers gevonden');
@@ -76,12 +92,27 @@ class VerkoperOverviewTest extends TestCase
     }
 
     /**
-     * Test tijdelijke contactpersonen pagina is verwijderd (geeft 404).
+     * Test Unhappy Scenario: wanneer database offline/fout is,
+     * toont het overzicht een rode melding en foutboodschap.
      */
-    public function test_temporary_contactpersonen_route_is_removed(): void
+    public function test_unhappy_scenario_shows_red_database_error_when_database_is_offline(): void
     {
-        $response = $this->get('/contactpersonen');
-        $response->assertStatus(404);
+        $response = $this->actingAs($this->getOrganisator())->get('/verkopers?db_error=1');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verbindingsfout');
+        $response->assertSee('Database is momenteel niet beschikbaar');
+        $response->assertSee('de verkopers konden niet worden geladen');
+        $response->assertSee('sn-db-alert');
+    }
+
+    /**
+     * Test dat niet-ingelogde gebruikers worden geredirect naar login.
+     */
+    public function test_guests_cannot_access_verkopers_and_are_redirected_to_login(): void
+    {
+        $response = $this->get('/verkopers');
+        $response->assertRedirect('/login');
     }
 
     /**

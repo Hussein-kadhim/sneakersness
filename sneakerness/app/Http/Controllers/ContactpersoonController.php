@@ -15,7 +15,7 @@ class ContactpersoonController extends Controller
         $search = trim($request->input('q', ''));
         $errorMessage = null;
 
-        if ($request->has('error') || $request->has('unhappy')) {
+        if ($request->has('error') || $request->has('unhappy') || $request->has('db_error') || $request->has('database_error')) {
             $errorMessage = 'Database is momenteel niet beschikbaar, de contactpersonen konden niet worden geladen. Probeer het later opnieuw.';
             return view('contactpersonen.index', [
                 'contactpersonen' => new LengthAwarePaginator([], 0, 6),
