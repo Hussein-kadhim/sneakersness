@@ -1,0 +1,169 @@
+html, body {
+    overflow-x: hidden;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+html.menu-open,
+body.menu-open {
+    overflow: hidden !important;
+    height: 100% !important;
+    touch-action: none;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 40;
+    touch-action: none;
+}
+
+@media (max-width: 767px) {
+    .navbar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -100%;
+        width: 280px;
+        max-width: 80vw;
+        height: 100vh;
+        height: 100dvh;
+        background: #ffffff;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem 1.25rem;
+        z-index: 50;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar.active {
+        display: flex;
+        right: 0;
+        touch-action: pan-y;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Database Error & Unhappy State Styles (Sneakerness Premium)                */
+/* -------------------------------------------------------------------------- */
+.sn-error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.25rem;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-left: 4px solid #e11d48;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: #9f1239;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.sn-error-banner-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: #ffe4e6;
+    color: #e11d48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9375rem;
+    flex-shrink: 0;
+}
+
+.sn-error-banner-title {
+    font-weight: 700;
+    color: #881337;
+    display: block;
+}
+
+.sn-error-card {
+    background: #ffffff;
+    border: 1px solid #fecdd3;
+    border-radius: 1rem;
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.04);
+}
+
+.sn-error-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #e11d48;
+    font-size: 1.5rem;
+    margin: 0 auto 1.25rem auto;
+}
+
+.sn-error-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.sn-error-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    max-width: 440px;
+    margin: 0 auto 1.5rem auto;
+    line-height: 1.5;
+}
+
+.sn-error-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: #0f172a;
+    color: #ffffff !important;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.sn-error-btn:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+.sn-alert-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3125rem 0.75rem;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #be123c;
+}
+
+.sn-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: #e11d48;
+    animation: snPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes snPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
