@@ -1,9 +1,10 @@
 /* ==========================================================================
-   Stands Overzicht - Custom Styling & Mobiel Menu
+   Stands Overzicht - Custom Styling & Mobielmenu
    ========================================================================== */
 
 /* Basis instellingen en lettertype */
-html, body {
+html,
+body {
     overflow-x: hidden;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
@@ -30,6 +31,7 @@ body.menu-open {
    Mobiele Navigatie Drawer (< 768px)
    ========================================================================== */
 @media (max-width: 767px) {
+
     /* Uitschuifbare navigatiebalk aan de rechterkant */
     .navbar {
         position: fixed;
@@ -58,4 +60,3 @@ body.menu-open {
         touch-action: pan-y;
     }
 }
-
