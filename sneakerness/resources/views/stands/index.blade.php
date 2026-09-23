@@ -1,24 +1,29 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+    {{-- Pagina meta-informatie en titel --}}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stand Overzicht &ndash; Sneakerness Rotterdam</title>
     <meta name="description" content="Beheer en bekijk alle stands, types, prijzen en bezetting voor Sneakerness Rotterdam 2024.">
 
+    {{-- Externe lettertypen en pictogrammen (Google Fonts Plus Jakarta Sans & FontAwesome) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    {{-- Vite assets: Tailwind styling, specifieke CSS voor stands en algemene JavaScript --}}
     @vite(['resources/css/app.css', 'resources/css/stands/standoverzicht.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
 
+    {{-- Navigatiebalk en Header --}}
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="overlay"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 sm:h-20">
+                {{-- Logo en branding --}}
                 <div class="flex items-center gap-3">
                     <a href="{{ route('home') }}" class="flex items-center gap-2.5">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-500 flex items-center justify-center font-bold text-white text-base">
@@ -33,6 +38,7 @@
                     </a>
                 </div>
 
+                {{-- Hoofdmenu links (desktop navigatie + uitschuifmenu voor mobiel) --}}
                 <nav class="navbar hidden md:flex items-center gap-1.5 text-sm font-medium">
                     <button type="button" class="close-menu md:hidden text-xl text-slate-400 hover:text-slate-700 self-end mb-2" aria-label="Sluiten">
                         <i class="fa-solid fa-xmark"></i>
@@ -56,6 +62,7 @@
                         Bezoekers
                     </a>
 
+                    {{-- Authenticatie knoppen in mobiel menu --}}
                     <div class="pt-3 mt-1.5 border-t border-slate-200 w-full flex flex-col gap-2 md:hidden">
                         @auth
                             <form method="POST" action="{{ route('logout') }}" class="w-full">
@@ -75,6 +82,7 @@
                     </div>
                 </nav>
 
+                {{-- Authenticatie knoppen desktop en mobiele hamburger knop --}}
                 <div class="flex items-center gap-3">
                     <div class="hidden md:flex items-center gap-3">
                         @auth
@@ -95,6 +103,7 @@
                         @endauth
                     </div>
 
+                    {{-- Hamburger knop voor mobiel menu --}}
                     <button type="button" class="hamburger md:hidden border border-slate-200 rounded-lg p-2 text-slate-700 hover:bg-slate-50 flex items-center justify-center" aria-label="Menu">
                         <i class="fa-solid fa-bars text-lg"></i>
                     </button>
@@ -103,9 +112,11 @@
         </div>
     </header>
 
+    {{-- Hoofdinhoud van de pagina --}}
     <main class="flex-grow py-5 sm:py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+            {{-- Pagina titel en introtekst --}}
             <div class="mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Stand Overzicht
@@ -115,6 +126,7 @@
                 </p>
             </div>
 
+            {{-- Foutmelding weergave (unhappy flow of database verbindingsfout) --}}
             @if(!empty($errorMessage))
                 <div class="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
                     <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
@@ -130,6 +142,7 @@
                     </div>
                 </div>
             @else
+                {{-- KPI Statistiekenkaarten: Mobiele weergave (2 kolommen) --}}
                 <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
                     <div class="bg-white rounded-xl p-3.5 border border-slate-200">
                         <span class="text-xs text-slate-400 font-medium block">Totaal stands</span>
@@ -148,6 +161,7 @@
                     </div>
                 </div>
 
+                {{-- KPI Statistiekenkaarten: Desktop weergave (4 kolommen) --}}
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
                         <span class="text-xs text-slate-500 font-medium block">Totaal stands</span>
@@ -177,6 +191,7 @@
                     </div>
                 </div>
 
+                {{-- Zoekbalk, tellers en actieknop voor toevoegen --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('stands.index') }}">
                         <div class="relative mb-3">
@@ -191,7 +206,7 @@
                                 class="w-full pl-9 pr-10 py-2.5 bg-white border border-slate-200 rounded-lg text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                             >
                             @if(!empty($search))
-                                <a href="{{ route('stands.index') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                                <a href="{{ route('stands.index') }}" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600" title="Zoekopdracht wissen">
                                     <i class="fa-solid fa-xmark text-xs"></i>
                                 </a>
                             @endif
@@ -209,11 +224,13 @@
                     </div>
                 </div>
 
+                {{-- Lege staat: Geen stands gevonden --}}
                 @if($stands->isEmpty())
                     <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
                         Geen stands gevonden.
                     </div>
                 @else
+                    {{-- Responsieve weergave: Kaarten voor mobiele apparaten (< 768px) --}}
                     <div class="block md:hidden space-y-3 mb-4">
                         @foreach($stands as $stand)
                             <div class="bg-white rounded-xl border border-slate-200 p-4">
@@ -281,6 +298,7 @@
                         @endforeach
                     </div>
 
+                    {{-- Responsieve weergave: Tabel voor desktops en tablets (>= 768px) --}}
                     <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <table class="w-full text-left border-collapse table-fixed">
                             <thead>
@@ -296,6 +314,7 @@
                             <tbody class="divide-y divide-slate-100 text-sm">
                                 @foreach($stands as $stand)
                                     <tr class="hover:bg-slate-50">
+                                        {{-- Stand type, ID en locatie --}}
                                         <td class="py-4 px-4">
                                             <div class="flex items-center gap-2">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold {{ $stand->type_badge_class }}">
@@ -310,6 +329,7 @@
                                             </div>
                                         </td>
 
+                                        {{-- Gekoppelde verkoper gegevens --}}
                                         <td class="py-4 px-4">
                                             @if($stand->verkoper)
                                                 <div class="font-bold text-slate-900 text-sm sm:text-base truncate">
@@ -328,6 +348,7 @@
                                             @endif
                                         </td>
 
+                                        {{-- Dagen bezetting --}}
                                         <td class="py-4 px-4">
                                             <div class="font-medium text-slate-900 text-sm">
                                                 {{ $stand->days_text }}
@@ -337,6 +358,7 @@
                                             </div>
                                         </td>
 
+                                        {{-- Prijs weergave --}}
                                         <td class="py-4 px-4">
                                             <div class="font-bold text-slate-900 text-sm sm:text-base">
                                                 {{ $stand->formatted_price }}
@@ -346,12 +368,14 @@
                                             </div>
                                         </td>
 
+                                        {{-- Status badge (Verhuurd / Beschikbaar) --}}
                                         <td class="py-4 px-3 whitespace-nowrap">
                                             <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold {{ $stand->status_color_class }}">
                                                 {{ $stand->status_label }}
                                             </span>
                                         </td>
 
+                                        {{-- Actieknoppen (Wijzigen / Verwijderen) --}}
                                         <td class="py-4 px-4 whitespace-nowrap text-right">
                                             <div class="flex items-center justify-end gap-2.5 text-xs sm:text-[13px]">
                                                 <a href="#" class="text-orange-500 hover:text-orange-600 font-semibold">
@@ -369,12 +393,14 @@
                         </table>
                     </div>
 
+                    {{-- Paginering en resultaten telling balk --}}
                     <div class="mt-4 bg-white border border-slate-200 rounded-lg p-3 flex items-center justify-between text-xs sm:text-sm text-slate-600">
                         <div>
                             <span class="sm:hidden font-bold text-slate-900">{{ $stands->firstItem() }}-{{ $stands->lastItem() }}</span>
                             <span class="hidden sm:inline">{{ $stands->firstItem() }} tot {{ $stands->lastItem() }}</span> van {{ $stands->total() }} <span class="hidden sm:inline">stands</span>
                         </div>
                         <div>
+                            {{-- Custom pagination blade template --}}
                             {{ $stands->links('stands.partials.pagination') }}
                         </div>
                     </div>
@@ -384,6 +410,7 @@
         </div>
     </main>
 
+    {{-- Footer --}}
     <footer class="py-6 text-center">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <p class="text-xs text-slate-500">

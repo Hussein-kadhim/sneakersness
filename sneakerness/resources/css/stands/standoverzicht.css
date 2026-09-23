@@ -1,8 +1,14 @@
+/* ==========================================================================
+   Stands Overzicht - Custom Styling & Mobiel Menu
+   ========================================================================== */
+
+/* Basis instellingen en lettertype */
 html, body {
     overflow-x: hidden;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
+/* Voorkomen van scrollen op de achtergrond wanneer het mobiele menu actief is */
 html.menu-open,
 body.menu-open {
     overflow: hidden !important;
@@ -10,6 +16,7 @@ body.menu-open {
     touch-action: none;
 }
 
+/* Donkere backdrop overlay voor het geopende mobiele menu */
 .overlay {
     display: none;
     position: fixed;
@@ -19,7 +26,11 @@ body.menu-open {
     touch-action: none;
 }
 
+/* ==========================================================================
+   Mobiele Navigatie Drawer (< 768px)
+   ========================================================================== */
 @media (max-width: 767px) {
+    /* Uitschuifbare navigatiebalk aan de rechterkant */
     .navbar {
         position: fixed;
         top: 0;
@@ -40,9 +51,11 @@ body.menu-open {
         box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
     }
 
+    /* Actieve toestand: drawer schuift naar binnen */
     .navbar.active {
         display: flex;
         right: 0;
         touch-action: pan-y;
     }
 }
+
