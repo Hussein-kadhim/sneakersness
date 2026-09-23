@@ -7,14 +7,17 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
+// Controller voor het beheer van stands op de beursvloer
 class StandController extends Controller
 {
+    // Toont het standsoverzicht met filters, zoekfunctionaliteit en bezettingsgraden
     public function index(Request $request): View
     {
         $search = trim($request->input('q', ''));
         $selectedCategory = trim($request->input('category', ''));
         $errorMessage = null;
 
+        // Simulatie van het unhappy scenario bij databaseproblemen
         if ($request->has('error') || $request->has('unhappy')) {
             $errorMessage = 'Database is momenteel niet beschikbaar, de stands konden niet worden geladen. Probeer het later opnieuw.';
             return view('stands.index', [
@@ -32,6 +35,7 @@ class StandController extends Controller
         }
 
         try {
+            // Bezettings- en type-statistieken verzamelen voor de tellers
             $totalStands = Stand::count();
             $countAAPlus = Stand::where('StandType', 'AA+')->count();
             $countAA = Stand::where('StandType', 'AA')->count();
@@ -39,12 +43,15 @@ class StandController extends Controller
             $rentedStandsCount = Stand::where('VerhuurdStatus', 1)->count();
             $availableStandsCount = Stand::where('VerhuurdStatus', 0)->count();
 
+            // Query met gekoppelde verkopergegevens inladen
             $query = Stand::query()->with('verkoper');
 
+            // Lege weergave forceren voor testdoeleinden
             if ($request->has('empty')) {
                 $query->whereNull('Id');
             }
 
+            // Zoeken op standtype, toelichting, prijs of naam/assortiment van de verkoper
             if ($search !== '') {
                 $query->where(function ($q) use ($search) {
                     $q->where('StandType', 'like', "%{$search}%")
@@ -57,6 +64,7 @@ class StandController extends Controller
                 });
             }
 
+            // Filteren op status (verhuurd/beschikbaar) of type stand (AA+, AA, A)
             if ($selectedCategory !== '') {
                 $catLower = strtolower($selectedCategory);
                 if ($catLower === 'verhuurd') {
@@ -70,6 +78,7 @@ class StandController extends Controller
                 }
             }
 
+            // Paginering met 6 stands per pagina
             $stands = $query->orderBy('Id', 'asc')->paginate(6)->withQueryString();
 
             return view('stands.index', compact(
@@ -85,6 +94,7 @@ class StandController extends Controller
                 'errorMessage'
             ));
         } catch (\Throwable $e) {
+            // Nette foutafhandeling met fallback naar een lege paginator
             $errorMessage = 'Database is momenteel niet beschikbaar, de stands konden niet worden geladen. Probeer het later opnieuw.';
 
             return view('stands.index', [
@@ -102,4 +112,3 @@ class StandController extends Controller
         }
     }
 }
-

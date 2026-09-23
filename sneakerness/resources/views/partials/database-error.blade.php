@@ -1,11 +1,14 @@
+{{-- Herbruikbare waarschuwingsmelding voor database- en verbindingsfouten --}}
 @php
     $type = $itemType ?? 'gegevens';
 @endphp
 
 <div class="sn-db-alert">
+    {{-- Waarschuwingsicoon --}}
     <div class="sn-db-alert-icon">
         <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
+    {{-- Tekstuele toelichting voor de gebruiker --}}
     <div class="sn-db-alert-content">
         <h3 class="sn-db-alert-title">Verbindingsfout</h3>
         <p class="sn-db-alert-message">
@@ -14,6 +17,7 @@
     </div>
 </div>
 
+{{-- Inline styling voor de foutmelding component --}}
 <style>
     .sn-db-alert {
         display: flex;

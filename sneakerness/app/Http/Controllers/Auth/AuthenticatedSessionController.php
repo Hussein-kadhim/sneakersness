@@ -9,19 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+// Controller voor inloggen en uitloggen van gebruikers
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
+    // Toont het inlogscherm
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
+    // Verwerkt het inlogverzoek en vernieuwt de sessie-ID
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
@@ -31,9 +28,7 @@ class AuthenticatedSessionController extends Controller
         return redirect()->intended(route('verkopers.index', absolute: false));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
+    // Beëindigt de sessie en logt de gebruiker uit
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();

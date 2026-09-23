@@ -1,3 +1,4 @@
+{{-- Landingspagina van Sneakerness Rotterdam --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sneakerness Rotterdam | Home</title>
     <meta name="description" content="Het centrale overzicht van Sneakerness Rotterdam 2026.">
+    {{-- Lettertypes en stijlen inladen --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,9 +14,11 @@
     @vite(['resources/css/app.css', 'resources/css/verkopers/verkopersoverzicht.css', 'resources/css/home/home.css', 'resources/js/app.js'])
 </head>
 <body class="home-page">
-@include('partials.header')
+    {{-- Bovenste navigatiebalk --}}
+    @include('partials.header')
 
     <main>
+        {{-- Hero sectie met introductie en actieknoppen --}}
         <section class="hero-shell">
             <div class="hero-copy">
                 <p class="eyebrow">ROTTERDAM / 2026 / COMMUNITY</p>
@@ -33,6 +37,7 @@
             </div>
         </section>
 
+        {{-- Statistiekenbalk met actuele cijfers --}}
         <section class="stats-row" aria-label="Sneakerness cijfers">
             <div><strong>{{ $totalVerkopers }}</strong><span>verkopers</span></div>
             <div><strong>{{ $partnerCount }}</strong><span>partners</span></div>
@@ -40,6 +45,7 @@
             <div class="stats-note"><span>01</span><strong>ONE COMMUNITY.<br>ENDLESS STORIES.</strong></div>
         </section>
 
+        {{-- Uitgelichte verkopers (spotlight selectie) --}}
         <section class="content-section" id="programma">
             <div class="section-heading">
                 <div><p class="eyebrow">DISCOVER THE LINE-UP</p><h2>In the spotlight</h2></div>
@@ -65,6 +71,7 @@
             </div>
         </section>
 
+        {{-- Overzicht van populairste productcategorieën --}}
         <section class="category-section">
             <div class="category-intro"><p class="eyebrow">FIND YOUR THING</p><h2>Alles wat<br>beweegt.</h2></div>
             <div class="category-list">
@@ -77,6 +84,7 @@
         </section>
     </main>
 
+    {{-- Voettekst --}}
     <footer class="home-footer"><span>SNEAKERNESS <b>ROTTERDAM</b></span><span>MADE FOR THE CULTURE <i>✳</i></span><span>© {{ date('Y') }}</span></footer>
 </body>
 </html>

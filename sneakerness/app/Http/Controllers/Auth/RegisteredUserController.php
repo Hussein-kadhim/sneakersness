@@ -13,21 +13,16 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+// Controller voor het registreren van nieuwe gebruikers
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
+    // Toont het registratieformulier
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
+    // Valideert de invoer, maakt een nieuw account aan en logt de gebruiker direct in
     public function store(Request $request): RedirectResponse
     {
         $request->validate([

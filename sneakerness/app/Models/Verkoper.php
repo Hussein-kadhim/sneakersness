@@ -7,16 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Model voor de verkopers en standhouders op Sneakerness
 class Verkoper extends Model
 {
     use HasFactory;
 
+    // Database tabel en primaire sleutel instellen
     protected $table = 'Verkoper';
     protected $primaryKey = 'Id';
 
+    // Aangepaste kolomnamen voor timestamps
     const CREATED_AT = 'DatumAangemaakt';
     const UPDATED_AT = 'DatumGewijzigd';
 
+    // Toegestane invoervelden
     protected $fillable = [
         'Naam',
         'SpecialeStatus',
@@ -26,6 +30,7 @@ class Verkoper extends Model
         'Opmerking',
     ];
 
+    // Data types converteren
     protected $casts = [
         'SpecialeStatus' => 'boolean',
         'IsActief' => 'boolean',
@@ -33,11 +38,13 @@ class Verkoper extends Model
         'DatumGewijzigd' => 'datetime',
     ];
 
+    // Relatie: een verkoper kan meerdere stands huren of bezitten
     public function stands(): HasMany
     {
         return $this->hasMany(Stand::class, 'VerkoperId', 'Id');
     }
 
+    // Veel-op-veel relatie met contactpersonen via de koppeltabel
     public function contactpersonen(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -50,16 +57,19 @@ class Verkoper extends Model
         )->withPivot(['IsActief', 'Opmerking', 'DatumAangemaakt', 'DatumGewijzigd']);
     }
 
+    // Handige helper: haalt de eerste stand van deze verkoper op
     public function getPrimaryStandAttribute(): ?Stand
     {
         return $this->stands->first();
     }
 
+    // Handige helper: haalt de primaire contactpersoon op
     public function getPrimaryContactAttribute(): ?Contactpersoon
     {
         return $this->contactpersonen->first();
     }
 
+    // Status label bepalen voor de weergave in tabellen en kaarten
     public function getStatusLabelAttribute(): string
     {
         if (!empty($this->Opmerking) && in_array($this->Opmerking, ['Actief', 'Bevestigd', 'In behandeling', 'Inactief'])) {
@@ -78,6 +88,7 @@ class Verkoper extends Model
         return 'In behandeling';
     }
 
+    // CSS badge kleurstelling voor de status van de verkoper
     public function getStatusColorClassAttribute(): string
     {
         return match ($this->status_label) {
@@ -88,6 +99,7 @@ class Verkoper extends Model
         };
     }
 
+    // Badge styling toekennen op basis van het type assortiment (bijv. sneakers, kleding, custom)
     public function getCategoryColorClassAttribute(): string
     {
         $category = strtolower($this->VerkooptSoort ?? '');

@@ -1,3 +1,4 @@
+{{-- Algemene voettekst van de applicatie --}}
 <footer class="py-6 text-center">
     <div class="w-full px-4 text-center">
         <p class="text-xs sm:text-sm text-slate-500">

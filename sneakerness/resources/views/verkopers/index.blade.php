@@ -1,3 +1,4 @@
+{{-- Overzichtspagina voor verkopers en standhouders --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -15,11 +16,13 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
 
+    {{-- Bovenste navigatiebalk --}}
     @include('partials.header')
 
     <main class="flex-grow py-5 sm:py-10">
         <div class="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
 
+            {{-- Pagina titel en toelichting --}}
             <div class="mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Verkopers Overzicht
@@ -29,6 +32,7 @@
                 </p>
             </div>
 
+            {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage))
                 <div class="sn-db-alert bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
                     <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
@@ -44,6 +48,7 @@
                     </div>
                 </div>
             @else
+            {{-- Statistiekenkaarten voor mobiel --}}
             <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
                 <div class="bg-white rounded-xl p-3.5 border border-slate-200">
                     <span class="text-xs text-slate-400 font-medium block">Totaal bezet</span>
@@ -62,6 +67,7 @@
                 </div>
             </div>
 
+                {{-- Statistiekenkaarten voor desktop --}}
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
                         <span class="text-xs text-slate-500 font-medium block">Totaal verkopers</span>
@@ -91,6 +97,7 @@
                     </div>
                 </div>
 
+                {{-- Zoekbalk en actieknoppen --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('verkopers.index') }}">
                         <div class="relative mb-3">
@@ -128,6 +135,7 @@
                     Geen verkopers gevonden.
                 </div>
             @else
+                {{-- Responsieve kaartweergave voor mobiel --}}
                 <div class="block md:hidden space-y-3 mb-4">
                     @foreach($verkopers as $verkoper)
                         @php
@@ -190,6 +198,7 @@
                     @endforeach
                 </div>
 
+                {{-- Tabelweergave voor desktop schermen --}}
                 <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -275,6 +284,7 @@
                     </table>
                 </div>
 
+                {{-- Paginering navigatie onderaan de pagina --}}
                 <div class="mt-4 bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
                     <div>
                         <span class="sm:hidden font-bold text-slate-900">{{ $verkopers->firstItem() }}-{{ $verkopers->lastItem() }}</span>
@@ -290,6 +300,7 @@
         </div>
     </main>
 
+    {{-- Algemene voettekst --}}
     @include('partials.footer')
 
 </body>
