@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
+    Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
+    Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
 
     Route::get('/dashboard', function () {
         return redirect()->route('verkopers.index');
