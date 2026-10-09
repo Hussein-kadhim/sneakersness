@@ -35,6 +35,12 @@ class Contactpersoon extends Model
         'DatumGewijzigd' => 'datetime',
     ];
 
+    // Accessor voor e-mailadres
+    public function getEmailAttribute(): ?string
+    {
+        return $this->attributes['Emailadres'] ?? null;
+    }
+
     // Veel-op-veel relatie met verkopers via de tussenliggende koppeltabel
     public function verkopers(): BelongsToMany
     {

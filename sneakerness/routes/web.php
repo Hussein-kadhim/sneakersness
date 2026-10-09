@@ -16,6 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
+    Route::get('/contactpersonen/create', [ContactpersoonController::class, 'create'])->name('contactpersonen.create');
+    Route::post('/contactpersonen', [ContactpersoonController::class, 'store'])->name('contactpersonen.store');
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
 

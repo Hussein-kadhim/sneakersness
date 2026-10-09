@@ -73,7 +73,7 @@ class ContactpersoonController extends Controller
             if ($search !== '') {
                 $query->where(function ($q) use ($search) {
                     $q->where('Naam', 'like', "%{$search}%")
-                        ->orWhere('Email', 'like', "%{$search}%")
+                        ->orWhere('Emailadres', 'like', "%{$search}%")
                         ->orWhere('Telefoonnummer', 'like', "%{$search}%")
                         ->orWhere('Opmerking', 'like', "%{$search}%")
                         ->orWhereHas('verkopers', function ($sub) use ($search) {
@@ -161,6 +161,59 @@ class ContactpersoonController extends Controller
         } catch (\Throwable $e) {
             Log::error('Fout bij uitvoeren van expliciete JOIN query voor contactpersonen: ' . $e->getMessage());
             return collect();
+        }
+    }
+
+    /**
+     * Toont het formulier om een nieuwe contactpersoon toe te voegen.
+     */
+    public function create(): View
+    {
+        return view('contactpersonen.create');
+    }
+
+    /**
+     * Slaat een nieuwe contactpersoon op in de database na validatie.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'voornaam'       => 'required|string|max:50',
+            'achternaam'     => 'required|string|max:50',
+            'emailadres'     => 'required|email|max:100',
+            'telefoonnummer' => 'required|string|max:20',
+            'opmerking'      => 'nullable|string|max:250',
+        ], [
+            'voornaam.required'       => 'De voornaam is verplicht.',
+            'achternaam.required'     => 'De achternaam is verplicht.',
+            'emailadres.required'     => 'Het e-mailadres is verplicht.',
+            'emailadres.email'        => 'Vul een geldig e-mailadres in.',
+            'telefoonnummer.required' => 'Het telefoonnummer is verplicht.',
+        ]);
+
+        try {
+            $naam = trim($validated['voornaam'] . ' ' . $validated['achternaam']);
+
+            Contactpersoon::create([
+                'Naam'           => $naam,
+                'Emailadres'     => $validated['emailadres'],
+                'Telefoonnummer' => $validated['telefoonnummer'],
+                'Opmerking'      => $validated['opmerking'] ?? null,
+                'IsActief'       => true,
+            ]);
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol toegevoegd');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij opslaan contactpersoon in ContactpersoonController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een fout opgetreden bij het opslaan van de contactpersoon in de database.',
+            ]);
         }
     }
 }
