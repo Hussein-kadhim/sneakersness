@@ -130,10 +130,12 @@
                         <div class="text-xs sm:text-sm text-slate-400">
                             {{ method_exists($events, 'total') ? $events->total() : count($events) }} events gevonden
                         </div>
-                        <a href="#" onclick="return false;" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Event toevoegen
-                        </a>
+                        @if(auth()->user()?->isOrganisator())
+                            <a href="{{ route('events.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                Event toevoegen
+                            </a>
+                        @endif
                     </div>
                 </div>
 
