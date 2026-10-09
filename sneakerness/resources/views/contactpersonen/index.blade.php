@@ -34,10 +34,19 @@
 
             {{-- Succesmelding na toevoegen --}}
             @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm">
+                <div id="success-alert" class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500">
                     <i class="fa-solid fa-check text-white text-base"></i>
                     <span>{{ session('success') }}</span>
                 </div>
+                <script>
+                    setTimeout(function() {
+                        var alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.style.opacity = '0';
+                            setTimeout(function() { alert.remove(); }, 500);
+                        }
+                    }, 2000);
+                </script>
             @endif
 
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
