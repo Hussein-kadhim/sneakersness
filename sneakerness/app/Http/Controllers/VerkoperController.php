@@ -149,6 +149,136 @@ class VerkoperController extends Controller
     }
 
     /**
+     * Toont het formulier om een nieuwe verkoper toe te voegen.
+     */
+    public function create(): View
+    {
+        $categories = [
+            'Sneakers',
+            'Streetwear & Merch',
+            'Art & Collectibles',
+            'Eten en Drinken',
+            'Kids Corner',
+            'Accessoires',
+            'Partners',
+            'Custom Sneakers',
+            'Overig',
+        ];
+
+        $standTypes = [
+            'A' => 'Stand A',
+            'AA' => 'Stand AA',
+            'AA+' => 'Stand AA+ (36m²)',
+        ];
+
+        return view('verkopers.create', compact('categories', 'standTypes'));
+    }
+
+    /**
+     * Slaat een nieuwe verkoper, contactpersoon en stand op in de database.
+     */
+    public function store(Request $request)
+    {
+        // Validatieregels volgens de specificatie (Happy & Unhappy scenario)
+        $validated = $request->validate([
+            'naam' => 'required|string|max:100',
+            'verkoopt_soort' => 'required|string|max:100',
+            'contactpersoon_naam' => 'required|string|max:100',
+            'contactpersoon_email' => 'required|email|max:100',
+            'contactpersoon_telefoon' => 'required|string|max:20',
+            'stand_type' => 'required|in:A,AA,AA+',
+            'stand_nummer' => 'required|string|max:150',
+            'dagen' => 'required|string|in:1,2,Zaterdag,Zondag,Weekend',
+            'status' => 'required|string',
+            'opmerking' => 'nullable|string|max:250',
+            'stuur_bevestiging' => 'nullable|boolean',
+        ], [
+            'naam.required' => 'Bedrijfsnaam is verplicht.',
+            'verkoopt_soort.required' => 'Selecteer een categorie.',
+            'contactpersoon_naam.required' => 'Naam van de contactpersoon is verplicht.',
+            'contactpersoon_email.required' => 'E-mailadres is verplicht.',
+            'contactpersoon_email.email' => 'Voer een geldig e-mailadres in.',
+            'contactpersoon_telefoon.required' => 'Telefoonnummer is verplicht.',
+            'stand_type.required' => 'Selecteer een standtype.',
+            'stand_type.in' => 'Selecteer een geldig standtype (A, AA of AA+).',
+            'stand_nummer.required' => 'Standnummer / Hal is verplicht.',
+            'dagen.required' => 'Selecteer de aanwezigheidsdagen.',
+            'status.required' => 'Selecteer een status.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $isActief = in_array(strtolower($validated['status']), ['actief', '1', 'bevestigd'], true);
+            $specialeStatus = strtolower($validated['verkoopt_soort']) === 'partners' ? 1 : 0;
+
+            // 1. Verkoper aanmaken
+            $verkoper = Verkoper::create([
+                'Naam'          => $validated['naam'],
+                'SpecialeStatus'=> $specialeStatus,
+                'VerkooptSoort' => $validated['verkoopt_soort'],
+                'StandType'     => $validated['stand_type'],
+                'Dagen'         => $validated['dagen'],
+                'IsActief'      => $isActief ? 1 : 0,
+                'Opmerking'     => $validated['status'],
+            ]);
+
+            // 2. Contactpersoon aanmaken
+            $contactpersoon = Contactpersoon::create([
+                'Naam'           => $validated['contactpersoon_naam'],
+                'Telefoonnummer' => $validated['contactpersoon_telefoon'],
+                'Emailadres'     => $validated['contactpersoon_email'],
+                'IsActief'       => 1,
+                'Opmerking'      => 'Contactpersoon ' . $validated['naam'],
+            ]);
+
+            // 3. Koppeltabel invullen
+            $verkoper->contactpersonen()->attach($contactpersoon->Id, [
+                'IsActief' => 1,
+                'Opmerking' => 'Aangemaakt via toevoegformulier',
+            ]);
+
+            // 4. Stand aanmaken
+            $aantalDagen = in_array($validated['dagen'], ['1', 'Zaterdag', 'Zondag'], true) ? 1 : 2;
+            $prijsMap = [
+                'AA+' => 450.00,
+                'AA' => 300.00,
+                'A' => 175.00,
+            ];
+            $prijs = $prijsMap[$validated['stand_type']] ?? 250.00;
+
+            Stand::create([
+                'VerkoperId'     => $verkoper->Id,
+                'StandType'      => $validated['stand_type'],
+                'Prijs'          => $prijs,
+                'VerhuurdStatus' => $isActief ? 1 : 0,
+                'IsActief'       => 1,
+                'Opmerking'      => $validated['stand_nummer'] . ($validated['opmerking'] ? ' • ' . $validated['opmerking'] : ''),
+            ]);
+
+            DB::commit();
+
+            Log::info('Nieuwe verkoper succesvol opgeslagen.', [
+                'verkoper_id' => $verkoper->Id,
+                'naam' => $verkoper->Naam,
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('success', 'Verkoper "' . $verkoper->Naam . '" is succesvol toegevoegd.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Fout bij het toevoegen van een verkoper: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een technische fout opgetreden bij het opslaan van de verkoper. Probeer het opnieuw.',
+            ]);
+        }
+    }
+
+    /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt verkopers op inclusief contactgegevens via MySQL Stored Procedure.
      *

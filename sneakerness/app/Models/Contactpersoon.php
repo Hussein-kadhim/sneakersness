@@ -23,7 +23,7 @@ class Contactpersoon extends Model
     protected $fillable = [
         'Naam',
         'Telefoonnummer',
-        'Email',
+        'Emailadres',
         'IsActief',
         'Opmerking',
     ];
