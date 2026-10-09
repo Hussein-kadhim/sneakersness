@@ -5,28 +5,35 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 
+// Configuratie van de Laravel applicatie (routing, middleware en error handling)
 return Application::configure(basePath: dirname(__DIR__))
+    // Routes laden voor webpagina's, artisan commando's en health check
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    // Middleware instellen: waar moeten gasten en ingelogde gebruikers naartoe gestuurd worden
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectTo(
             guests: '/login',
             users: '/verkopers',
         );
     })
+    // Foutafhandeling en fallback schermen bij database storingen
     ->withExceptions(function (Exceptions $exceptions): void {
+        // API-verzoeken altijd als JSON retourneren bij fouten
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
 
+        // Vang database-fouten (PDO / QueryException) op zodat de website netjes blijft werken
         $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
             $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6);
             $search = trim($request->input('q', ''));
             $selectedCategory = trim($request->input('category', ''));
 
+            // Fallback voor evenementen overzicht
             if ($request->is('events*')) {
                 return response()->view('evenementen.index', [
                     'events' => $emptyPaginator,
@@ -38,6 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Fallback voor tickets overzicht
             if ($request->is('tickets*')) {
                 return response()->view('tickets.index', [
                     'tickets' => $emptyPaginator,
@@ -52,6 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Fallback voor contactpersonen overzicht
             if ($request->is('contactpersonen*')) {
                 return response()->view('contactpersonen.index', [
                     'contactpersonen' => $emptyPaginator,
@@ -65,6 +74,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Fallback voor stands overzicht
             if ($request->is('stands*')) {
                 return response()->view('stands.index', [
                     'stands' => $emptyPaginator,
@@ -81,6 +91,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Fallback voor verkopers overzicht
             if ($request->is('verkopers*')) {
                 return response()->view('verkopers.index', [
                     'verkopers' => $emptyPaginator,
@@ -98,6 +109,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Standaard fallback voor de homepage / overige pagina's
             return response()->view('home.index', [
                 'verkopers' => collect(),
                 'totalVerkopers' => 0,

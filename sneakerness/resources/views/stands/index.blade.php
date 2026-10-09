@@ -1,3 +1,4 @@
+{{-- Overzichtspagina voor beursstands, verhuurstatus en tarieven --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -15,12 +16,14 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
 
+    {{-- Bovenste navigatiebalk --}}
     @include('partials.header')
 
 
     <main class="flex-grow py-5 sm:py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+            {{-- Pagina titel en toelichting --}}
             <div class="mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Stand Overzicht
@@ -30,6 +33,7 @@
                 </p>
             </div>
 
+            {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage) || !empty($dbError))
                 <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6 text-red-800 flex items-start gap-4 shadow-sm" role="alert">
                     <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600 mt-0.5">
@@ -43,6 +47,7 @@
                     </div>
                 </div>
             @else
+                {{-- Statistiekenkaarten mobiel --}}
                 <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
                     <div class="bg-white rounded-xl p-3.5 border border-slate-200">
                         <span class="text-xs text-slate-400 font-medium block">Totaal stands</span>
@@ -61,6 +66,7 @@
                     </div>
                 </div>
 
+                {{-- Statistiekenkaarten desktop --}}
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
                         <span class="text-xs text-slate-500 font-medium block">Totaal stands</span>
@@ -90,6 +96,7 @@
                     </div>
                 </div>
 
+                {{-- Zoek- en toevoegbalk --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('stands.index') }}">
                         <div class="relative mb-3">
@@ -127,7 +134,8 @@
                         Geen stands gevonden.
                     </div>
                 @else
-                    <div class="block md:hidden space-y-3 mb-4">
+                    {{-- Mobiele kaartweergave van stands --}}
+                <div class="block md:hidden space-y-3 mb-4">
                         @foreach($stands as $stand)
                             <div class="bg-white rounded-xl border border-slate-200 p-4">
                                 <div class="flex items-start justify-between">
@@ -194,6 +202,7 @@
                         @endforeach
                     </div>
 
+                {{-- Desktop tabelweergave van stands --}}
                 <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -290,6 +299,7 @@
                     </table>
                 </div>
 
+                {{-- Paginering onderaan de pagina --}}
                 <div class="mt-4 bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
                     <div>
                         <span class="sm:hidden font-bold text-slate-900">{{ $stands->firstItem() }}-{{ $stands->lastItem() }}</span>
@@ -305,6 +315,7 @@
         </div>
     </main>
 
+    {{-- Algemene voettekst --}}
     @include('partials.footer')
 
 </body>

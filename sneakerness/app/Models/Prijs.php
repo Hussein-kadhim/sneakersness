@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Model voor de toegangsprijzen en tarieven per tijdslot
 class Prijs extends Model
 {
     use HasFactory;
@@ -18,7 +18,6 @@ class Prijs extends Model
     const UPDATED_AT = 'DatumGewijzigd';
 
     protected $fillable = [
-        'EvenementId',
         'Datum',
         'Tijdslot',
         'Tarief',
@@ -27,18 +26,14 @@ class Prijs extends Model
     ];
 
     protected $casts = [
-        'Datum' => 'date',
-        'Tarief' => 'decimal:2',
-        'IsActief' => 'boolean',
+        'Datum'           => 'date',
+        'Tarief'          => 'decimal:2',
+        'IsActief'        => 'boolean',
         'DatumAangemaakt' => 'datetime',
-        'DatumGewijzigd' => 'datetime',
+        'DatumGewijzigd'  => 'datetime',
     ];
 
-    public function evenement(): BelongsTo
-    {
-        return $this->belongsTo(Evenement::class, 'EvenementId', 'Id');
-    }
-
+    // Relatie naar alle tickets die voor dit tarief verkocht zijn
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'PrijsId', 'Id');

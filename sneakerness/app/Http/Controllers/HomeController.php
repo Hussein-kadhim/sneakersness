@@ -7,10 +7,13 @@ use App\Models\Verkoper;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
+// Controller voor de openbare landingspagina van Sneakerness
 class HomeController extends Controller
 {
+    // Toont de homepage met statistieken, uitgelichte verkopers en categorieën
     public function index(): View
     {
+        // Haal maximaal 6 actieve verkopers op, met voorrang voor partners
         $verkopers = Verkoper::query()
             ->with('stands')
             ->where('IsActief', 1)
@@ -19,6 +22,7 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
+        // Totaal aantal stands bepalen (of fallback)
         $totalStands = Stand::count();
 
         return view('home.index', [
@@ -31,6 +35,7 @@ class HomeController extends Controller
         ]);
     }
 
+    // Haalt de top 4 populairste verkoopcategorieën op voor de categoriebalk
     private function categories(): Collection
     {
         return Verkoper::query()

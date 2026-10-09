@@ -391,3 +391,160 @@ INSERT INTO `Stand` (`Id`, `VerkoperId`, `StandType`, `Prijs`, `AantalDagen`, `V
 (53, 1,  'A',   350.00, 1, b'0', b'1', 'Stand #A-210 • Hal 2 Beschikbaar'),
 (54, 2,  'A',   350.00, 1, b'0', b'1', 'Stand #A-211 • Hal 2 Beschikbaar'),
 (55, 3,  'A',   350.00, 1, b'0', b'1', 'Stand #A-212 • Hal 2 Beschikbaar');
+
+-- ============================================================================
+-- STORED PROCEDURES (Sprint 01 Review: Stored Procedures & Expliciete Joins)
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- 1. sp_GetStandsMetVerkoper
+-- Doel: Haalt alle stands op gecombineerd met verkopergegevens via INNER JOIN
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetStandsMetVerkoper`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetStandsMetVerkoper`()
+BEGIN
+    SELECT 
+        s.Id AS StandId,
+        s.StandType,
+        s.Prijs,
+        s.AantalDagen,
+        s.VerhuurdStatus,
+        s.Opmerking AS StandLocatie,
+        v.Id AS VerkoperId,
+        v.Naam AS VerkoperNaam,
+        v.VerkooptSoort,
+        v.Logo
+    FROM `Stand` s
+    INNER JOIN `Verkoper` v ON s.VerkoperId = v.Id
+    WHERE s.IsActief = 1
+    ORDER BY s.Id ASC;
+END //
+DELIMITER ;
+
+-- ----------------------------------------------------------------------------
+-- 2. sp_GetStandStatistieken
+-- Doel: Aggregeert standstatistieken (aantallen per type en bezetting)
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetStandStatistieken`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetStandStatistieken`()
+BEGIN
+    SELECT 
+        COUNT(*) AS TotaalStands,
+        SUM(CASE WHEN StandType = 'AA+' THEN 1 ELSE 0 END) AS AantalAAPlus,
+        SUM(CASE WHEN StandType = 'AA' THEN 1 ELSE 0 END) AS AantalAA,
+        SUM(CASE WHEN StandType = 'A' THEN 1 ELSE 0 END) AS AantalA,
+        SUM(CASE WHEN VerhuurdStatus = 1 THEN 1 ELSE 0 END) AS VerhuurdAantal,
+        SUM(CASE WHEN VerhuurdStatus = 0 THEN 1 ELSE 0 END) AS BeschikbaarAantal
+    FROM `Stand`
+    WHERE IsActief = 1;
+END //
+DELIMITER ;
+
+-- ----------------------------------------------------------------------------
+-- 3. sp_GetTicketsMetDetails
+-- Doel: Haalt tickets op gecombineerd met Bezoeker, Evenement en Prijs via meervoudige INNER JOINs
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetTicketsMetDetails`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetTicketsMetDetails`()
+BEGIN
+    SELECT 
+        t.Id AS TicketId,
+        t.TicketCode,
+        t.Bestelnummer,
+        t.TicketType,
+        t.ZaalToegang,
+        t.Status,
+        t.Opmerking,
+        b.Naam AS BezoekerNaam,
+        b.Email AS BezoekerEmail,
+        e.Naam AS EvenementNaam,
+        e.Datum AS EvenementDatum,
+        e.Locatie AS EvenementLocatie,
+        p.Tarief AS TicketTarief,
+        p.Tijdslot AS TicketTijdslot
+    FROM `Ticket` t
+    INNER JOIN `Bezoeker` b ON t.BezoekerId = b.Id
+    INNER JOIN `Evenement` e ON t.EvenementId = e.Id
+    INNER JOIN `Prijs` p ON t.PrijsId = p.Id
+    WHERE t.IsActief = 1
+    ORDER BY t.TicketCode ASC;
+END //
+DELIMITER ;
+
+-- ----------------------------------------------------------------------------
+-- 4. sp_GetVerkopersMetDetails
+-- Doel: Haalt verkopers op inclusief gekoppelde contactpersonen via LEFT JOINs
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetVerkopersMetDetails`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetVerkopersMetDetails`()
+BEGIN
+    SELECT 
+        v.Id AS VerkoperId,
+        v.Naam AS VerkoperNaam,
+        v.SpecialeStatus,
+        v.VerkooptSoort,
+        v.Logo,
+        cp.Id AS ContactpersoonId,
+        cp.Naam AS ContactpersoonNaam,
+        cp.Email AS ContactpersoonEmail,
+        cp.Telefoonnummer AS ContactpersoonTelefoon
+    FROM `Verkoper` v
+    LEFT JOIN `ContactPerVerkoper` cpv ON v.Id = cpv.VerkoperId AND cpv.IsActief = 1
+    LEFT JOIN `Contactpersoon` cp ON cpv.ContactpersoonId = cp.Id AND cp.IsActief = 1
+    WHERE v.IsActief = 1
+    ORDER BY v.Id ASC;
+END //
+DELIMITER ;
+
+-- ----------------------------------------------------------------------------
+-- 5. sp_GetContactpersonenMetVerkoper
+-- Doel: Haalt contactpersonen op gekoppeld aan hun verkoper via LEFT JOINs
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetContactpersonenMetVerkoper`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetContactpersonenMetVerkoper`()
+BEGIN
+    SELECT 
+        cp.Id AS ContactpersoonId,
+        cp.Naam AS ContactpersoonNaam,
+        cp.Email AS ContactpersoonEmail,
+        cp.Telefoonnummer,
+        cp.Opmerking AS ContactRol,
+        v.Id AS VerkoperId,
+        v.Naam AS VerkoperNaam,
+        v.VerkooptSoort
+    FROM `Contactpersoon` cp
+    LEFT JOIN `ContactPerVerkoper` cpv ON cp.Id = cpv.ContactpersoonId AND cpv.IsActief = 1
+    LEFT JOIN `Verkoper` v ON cpv.VerkoperId = v.Id AND v.IsActief = 1
+    WHERE cp.IsActief = 1
+    ORDER BY cp.Id ASC;
+END //
+DELIMITER ;
+
+-- ----------------------------------------------------------------------------
+-- 6. sp_GetEvenementenMetOrganisator
+-- Doel: Haalt evenementen op gekoppeld aan de organisator via INNER JOIN
+-- ----------------------------------------------------------------------------
+DROP PROCEDURE IF EXISTS `sp_GetEvenementenMetOrganisator`;
+DELIMITER //
+CREATE PROCEDURE `sp_GetEvenementenMetOrganisator`()
+BEGIN
+    SELECT 
+        e.Id AS EvenementId,
+        e.Naam AS EvenementNaam,
+        e.Datum,
+        e.Locatie,
+        e.AantalTicketsPerTijdslot,
+        e.BeschikbareStands,
+        o.Id AS OrganisatorId,
+        o.Naam AS OrganisatorNaam
+    FROM `Evenement` e
+    INNER JOIN `Organisator` o ON e.OrganisatorId = o.Id
+    WHERE e.IsActief = 1
+    ORDER BY e.Datum ASC;
+END //
+DELIMITER ;

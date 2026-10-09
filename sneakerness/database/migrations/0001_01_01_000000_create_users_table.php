@@ -4,13 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migratie voor de standaard Laravel gebruikers-, wachtwoordreset- en sessietabellen
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    // Tabellen aanmaken
     public function up(): void
     {
+        // Tabel voor gebruikersaccounts
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -21,12 +21,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // Tabel voor wachtwoord herstel tokens
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+        // Tabel voor actieve gebruikerssessies
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -37,9 +39,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    // Tabellen verwijderen bij een rollback
     public function down(): void
     {
         Schema::dropIfExists('users');

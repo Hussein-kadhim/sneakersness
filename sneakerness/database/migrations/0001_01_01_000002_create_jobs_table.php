@@ -4,13 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migratie voor de background jobs, batches en gefaalde taken (queues)
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    // Queue tabellen aanmaken
     public function up(): void
     {
+        // Tabel voor openstaande achtergrondtaken
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
             $table->string('queue')->index();
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('created_at');
         });
 
+        // Tabel voor gegroepeerde taken (batches)
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->integer('finished_at')->nullable();
         });
 
+        // Tabel voor taken die na herhaalpogingen definitief zijn mislukt
         Schema::create('failed_jobs', function (Blueprint $table) {
             $table->id();
             $table->string('uuid')->unique();
@@ -47,9 +49,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    // Queue tabellen verwijderen bij een rollback
     public function down(): void
     {
         Schema::dropIfExists('jobs');

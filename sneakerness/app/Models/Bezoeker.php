@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Model voor bezoekers van het evenement
 class Bezoeker extends Model
 {
     use HasFactory;
@@ -18,17 +19,18 @@ class Bezoeker extends Model
 
     protected $fillable = [
         'Naam',
-        'Email',
+        'Emailadres',
         'IsActief',
         'Opmerking',
     ];
 
     protected $casts = [
-        'IsActief' => 'boolean',
+        'IsActief'        => 'boolean',
         'DatumAangemaakt' => 'datetime',
-        'DatumGewijzigd' => 'datetime',
+        'DatumGewijzigd'  => 'datetime',
     ];
 
+    // Relatie: een bezoeker kan meerdere tickets hebben
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'BezoekerId', 'Id');

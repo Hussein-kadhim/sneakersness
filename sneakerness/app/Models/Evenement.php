@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+// Model voor de Sneakerness evenementen
 class Evenement extends Model
 {
     use HasFactory;
@@ -18,7 +18,6 @@ class Evenement extends Model
     const UPDATED_AT = 'DatumGewijzigd';
 
     protected $fillable = [
-        'OrganisatorId',
         'Naam',
         'Datum',
         'Locatie',
@@ -29,22 +28,13 @@ class Evenement extends Model
     ];
 
     protected $casts = [
-        'Datum' => 'date',
-        'IsActief' => 'boolean',
+        'Datum'           => 'date',
+        'IsActief'        => 'boolean',
         'DatumAangemaakt' => 'datetime',
-        'DatumGewijzigd' => 'datetime',
+        'DatumGewijzigd'  => 'datetime',
     ];
 
-    public function organisator(): BelongsTo
-    {
-        return $this->belongsTo(Organisator::class, 'OrganisatorId', 'Id');
-    }
-
-    public function prijzen(): HasMany
-    {
-        return $this->hasMany(Prijs::class, 'EvenementId', 'Id');
-    }
-
+    // Relatie met alle tickets voor dit evenement
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'EvenementId', 'Id');

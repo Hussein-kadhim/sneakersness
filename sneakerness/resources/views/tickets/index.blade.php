@@ -1,3 +1,4 @@
+{{-- Overzichtspagina voor ticketbeheer en toegangscontrole --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -15,11 +16,13 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900" x-data="{ selectedTicket: null, showModal: false }">
 
+    {{-- Bovenste navigatiebalk --}}
     @include('partials.header')
 
     <main class="flex-grow py-5 sm:py-10">
         <div class="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
 
+            {{-- Pagina titel en introductietekst --}}
             <div class="mb-4 sm:mb-6">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     Tickets Overzicht
@@ -29,7 +32,7 @@
                 </p>
             </div>
 
-            {{-- Unhappy Scenario: Database foutmelding --}}
+            {{-- Unhappy scenario: database foutmelding --}}
             @if($dbError)
                 <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6 text-red-800 flex items-start gap-4 shadow-sm" role="alert">
                     <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600 mt-0.5">
@@ -44,7 +47,7 @@
                 </div>
             @else
 
-                <!-- KPI Cards Mobiel -->
+                {{-- KPI samenvattingskaarten mobiel --}}
                 <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
                     <div class="bg-white rounded-xl p-3.5 border border-slate-200">
                         <span class="text-xs text-slate-400 font-medium block">Totaal tickets</span>
@@ -63,7 +66,7 @@
                     </div>
                 </div>
 
-                <!-- KPI Cards Desktop -->
+                {{-- KPI samenvattingskaarten desktop --}}
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-6">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
                         <span class="text-xs text-slate-500 font-medium block">Totaal tickets</span>
@@ -92,7 +95,7 @@
                     </div>
                 </div>
 
-                <!-- Zoekbalk & Acties -->
+                {{-- Zoekbalk en actieknoppen --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('tickets.index') }}">
                         <div class="relative mb-3">
@@ -127,7 +130,7 @@
                         Geen tickets gevonden.
                     </div>
                 @else
-                    <!-- Mobiele Kaarten Weergave -->
+                    {{-- Mobiele kaartenweergave --}}
                     <div class="block md:hidden space-y-3 mb-4">
                         @foreach($tickets as $ticket)
                             @php
@@ -203,6 +206,7 @@
                         @endforeach
                     </div>
 
+                    {{-- Desktop tabelweergave van alle tickets --}}
                     <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -308,6 +312,7 @@
     </main>
 
     <!-- Details Modal -->
+    {{-- Detail pop-up modal voor het bekijken van een specifiek ticket (Alpine.js) --}}
     <div
         x-show="showModal"
         x-cloak
@@ -413,6 +418,7 @@
         </div>
     </div>
 
+    {{-- Algemene voettekst --}}
     @include('partials.footer')
 
 </body>

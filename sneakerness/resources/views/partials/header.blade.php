@@ -1,3 +1,4 @@
+{{-- Bovenste navigatiebalk met authenticatiestatus en mobiel menu --}}
 @php
     $isLoggedIn = false;
     $userName = 'Gebruiker';
@@ -26,6 +27,7 @@
     <div class="sn-header-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 sm:h-20">
             <div class="flex items-center gap-6 lg:gap-10">
+                {{-- Logo en link naar de homepagina --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5">
                     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-500 flex items-center justify-center font-bold text-white text-base">
                         SN
@@ -38,6 +40,7 @@
                     </span>
                 </a>
 
+                {{-- Hoofdmenu voor navigatie naar alle modules --}}
                 <nav class="navbar hidden md:flex items-center gap-1.5 text-sm font-medium" aria-label="Hoofdnavigatie">
                     <button type="button" class="close-menu md:hidden text-xl text-slate-400 hover:text-slate-700 self-end mb-2" aria-label="Sluiten">
                         <i class="fa-solid fa-xmark"></i>
@@ -45,6 +48,7 @@
                     <a href="{{ route('home') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('home') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                         Home
                     </a>
+                    {{-- Navigatielinks uitsluitend zichtbaar voor ingelogde gebruikers --}}
                     @if($isLoggedIn)
                         <a href="{{ route('tickets.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('tickets.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                             Tickets
@@ -63,6 +67,7 @@
                         </a>
                     @endif
 
+                    {{-- Mobiel uitklapmenu onderkant --}}
                     <div class="pt-3 mt-1.5 border-t border-slate-200 w-full flex flex-col gap-2 md:hidden">
                         @if($isLoggedIn)
                             <div class="px-3.5 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -86,6 +91,7 @@
                 </nav>
             </div>
 
+            {{-- Rechts: Gebruikersaccount status of login knoppen (Desktop) --}}
             <div class="flex items-center gap-3">
                 <div class="hidden md:flex items-center gap-3">
                     @if($isLoggedIn)
@@ -106,6 +112,7 @@
                     @endif
                 </div>
 
+                {{-- Hamburger knop voor mobiel --}}
                 <button type="button" class="hamburger md:hidden border border-slate-200 rounded-lg p-2 text-slate-700 hover:bg-slate-50 flex items-center justify-center" aria-label="Menu">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
