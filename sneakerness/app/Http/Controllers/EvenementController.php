@@ -3,15 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Organisator;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 // Controller voor het beheren en bekijken van Sneakerness edities en evenementen
 class EvenementController extends Controller
 {
+    public function create(): View
+    {
+        abort_unless(auth()->user()->isOrganisator(), 403);
+
+        $organisatoren = Organisator::where('IsActief', true)->orderBy('Naam')->get();
+
+        return view('evenementen.create', compact('organisatoren'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()->isOrganisator(), 403);
+
+        $validated = $request->validate([
+            'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
+            'Naam' => ['required', 'string', 'max:100'],
+            'Datum' => ['required', 'date'],
+            'Locatie' => ['required', 'string', 'max:150'],
+            'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
+            'BeschikbareStands' => ['required', 'integer', 'min:0'],
+            'IsActief' => ['required', 'boolean'],
+            'Opmerking' => ['nullable', 'string', 'max:250'],
+        ]);
+
+        Evenement::create($validated);
+
+        return redirect()
+            ->route('events.index')
+            ->with('success', 'Het event is toegevoegd.');
+    }
+
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
     public function index(Request $request): View
     {
