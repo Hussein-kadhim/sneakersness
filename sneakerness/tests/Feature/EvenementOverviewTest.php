@@ -82,4 +82,39 @@ class EvenementOverviewTest extends TestCase
         $response->assertSee('Event toevoegen');
         $response->assertSee('Test Organisator');
     }
+
+    public function test_organisator_can_create_an_event(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+        $organisatorId = DB::table('Organisator')->insertGetId([
+            'Naam' => 'Test Organisator',
+            'Gebruikersnaam' => 'test-organisator',
+            'Wachtwoord' => 'test',
+            'IsActief' => true,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('events.store'), [
+            'OrganisatorId' => $organisatorId,
+            'Naam' => 'Nieuw Sneakerness Event',
+            'Datum' => '2027-10-24',
+            'Locatie' => 'Van Nelle Fabriek',
+            'AantalTicketsPerTijdslot' => 750,
+            'BeschikbareStands' => 55,
+            'IsActief' => '1',
+            'Opmerking' => 'Test omschrijving',
+        ]);
+
+        $response->assertRedirect(route('events.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('Evenement', [
+            'OrganisatorId' => $organisatorId,
+            'Naam' => 'Nieuw Sneakerness Event',
+            'Datum' => '2027-10-24 00:00:00',
+            'Locatie' => 'Van Nelle Fabriek',
+            'AantalTicketsPerTijdslot' => 750,
+            'BeschikbareStands' => 55,
+            'IsActief' => 1,
+            'Opmerking' => 'Test omschrijving',
+        ]);
+    }
 }
