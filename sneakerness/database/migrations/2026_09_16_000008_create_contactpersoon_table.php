@@ -17,7 +17,7 @@ return new class extends Migration
             // Contactgegevens
             $table->string('Naam', 100);
             $table->string('Telefoonnummer', 20);
-            $table->string('Email', 100);
+            $table->string('Emailadres', 100);
 
             // Status en opmerkingen (zoals functie of rol)
             $table->boolean('IsActief')->default(true);

@@ -14,9 +14,6 @@ return new class extends Migration
             // Primaire sleutel
             $table->increments('Id');
 
-            // Koppeling naar het evenement
-            $table->unsignedInteger('EvenementId');
-
             // Datum, tijdstip en tarief
             $table->date('Datum');
             $table->time('Tijdslot');
@@ -29,9 +26,6 @@ return new class extends Migration
             // Tijdstempels
             $table->dateTime('DatumAangemaakt', 6)->useCurrent();
             $table->dateTime('DatumGewijzigd', 6)->useCurrent()->useCurrentOnUpdate();
-
-            // Foreign key relatie met de Evenement tabel
-            $table->foreign('EvenementId')->references('Id')->on('Evenement')->onDelete('cascade');
         });
     }
 
