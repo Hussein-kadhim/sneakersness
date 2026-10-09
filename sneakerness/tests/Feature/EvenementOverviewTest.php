@@ -117,4 +117,34 @@ class EvenementOverviewTest extends TestCase
             'Opmerking' => 'Test omschrijving',
         ]);
     }
+
+    public function test_non_organisator_cannot_create_an_event(): void
+    {
+        $user = User::factory()->create(['role' => 'bezoeker']);
+
+        $response = $this->actingAs($user)->get(route('events.create'));
+
+        $response->assertForbidden();
+
+        $response = $this->actingAs($user)->post(route('events.store'), []);
+
+        $response->assertForbidden();
+    }
+
+    public function test_event_creation_validates_required_fields(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+
+        $response = $this->actingAs($user)->post(route('events.store'), []);
+
+        $response->assertSessionHasErrors([
+            'OrganisatorId',
+            'Naam',
+            'Datum',
+            'Locatie',
+            'AantalTicketsPerTijdslot',
+            'BeschikbareStands',
+            'IsActief',
+        ]);
+    }
 }
