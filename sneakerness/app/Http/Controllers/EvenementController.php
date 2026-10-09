@@ -23,6 +23,27 @@ class EvenementController extends Controller
     }
 
 
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
+            'Naam' => ['required', 'string', 'max:100'],
+            'Datum' => ['required', 'date'],
+            'Locatie' => ['required', 'string', 'max:150'],
+            'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
+            'BeschikbareStands' => ['required', 'integer', 'min:0'],
+            'IsActief' => ['required', 'boolean'],
+            'Opmerking' => ['nullable', 'string', 'max:250'],
+        ]);
+
+        Evenement::create($validated);
+
+        return redirect()
+            ->route('events.index')
+            ->with('success', 'Het event is toegevoegd.');
+    }
+
+
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
     public function index(Request $request): View
     {
