@@ -32,6 +32,14 @@
                 </p>
             </div>
 
+            {{-- Succesmelding na toevoegen van verkoper (happy scenario) --}}
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage))
                 <div class="sn-db-alert bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
@@ -123,7 +131,7 @@
                         <div class="text-xs text-slate-400">
                             {{ $verkopers->total() }} verkopers gevonden
                         </div>
-                        <a href="#" onclick="return false;" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
+                        <a href="{{ route('verkopers.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
                             <i class="fa-solid fa-plus text-xs"></i>
                             Verkoper toevoegen
                         </a>
