@@ -47,7 +47,7 @@
 
             {{-- Formulier Kaart --}}
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <form action="{{ route('verkopers.store') }}" method="POST">
+                <form action="{{ route('verkopers.store') }}" method="POST" novalidate>
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">

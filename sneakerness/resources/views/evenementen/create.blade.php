@@ -28,7 +28,7 @@
                 <p class="text-sm sm:text-base text-slate-500 mt-2">Vul de gegevens in om een nieuw evenement aan te maken.</p>
             </div>
 
-            <form method="POST" action="{{ route('events.store') }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <form method="POST" action="{{ route('events.store') }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" novalidate>
                 @csrf
 
                 @if($errors->any())

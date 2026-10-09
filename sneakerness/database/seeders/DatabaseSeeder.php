@@ -25,13 +25,22 @@ class DatabaseSeeder extends Seeder
 
         $password = Hash::make('password');
 
-        // Organisator-account
+        // Organisator-account (in Users tabel)
         User::create([
             'name'              => 'Organisator',
             'email'             => 'organisator@sneakerness.com',
             'role'              => 'organisator',
             'password'          => $password,
             'email_verified_at' => now(),
+        ]);
+
+        // Organisator record (in Organisator entiteit tabel)
+        \App\Models\Organisator::create([
+            'Naam'           => 'Sneakerness Events B.V.',
+            'Gebruikersnaam' => 'organisator',
+            'Wachtwoord'     => $password,
+            'IsActief'       => true,
+            'Opmerking'      => 'Hoofdorganisator Sneakerness Rotterdam',
         ]);
 
         // Verkoper-account

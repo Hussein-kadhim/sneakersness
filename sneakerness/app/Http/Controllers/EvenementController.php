@@ -7,6 +7,7 @@ use App\Models\Organisator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -17,16 +18,33 @@ class EvenementController extends Controller
 {
     public function create(): View
     {
-        abort_unless(auth()->user()->isOrganisator(), 403);
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        abort_unless($user && $user->isOrganisator(), 403);
 
         $organisatoren = Organisator::where('IsActief', true)->orderBy('Naam')->get();
+
+        if ($organisatoren->isEmpty()) {
+            $organisator = Organisator::firstOrCreate(
+                ['Gebruikersnaam' => 'organisator'],
+                [
+                    'Naam' => 'Sneakerness Events B.V.',
+                    'Wachtwoord' => bcrypt('password'),
+                    'IsActief' => true,
+                    'Opmerking' => 'Hoofdorganisator Sneakerness Rotterdam',
+                ]
+            );
+            $organisatoren = collect([$organisator]);
+        }
 
         return view('evenementen.create', compact('organisatoren'));
     }
 
     public function store(Request $request): RedirectResponse
     {
-        abort_unless($request->user()->isOrganisator(), 403);
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+        abort_unless($user && $user->isOrganisator(), 403);
 
         $validated = $request->validate([
             'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
