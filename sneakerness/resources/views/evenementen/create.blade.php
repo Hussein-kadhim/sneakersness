@@ -31,6 +31,17 @@
             <form method="POST" action="{{ route('events.store') }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                 @csrf
 
+                @if($errors->any())
+                    <div class="m-5 sm:m-8 mb-0 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
+                        <p class="font-semibold mb-1">Controleer de ingevulde gegevens.</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="p-5 sm:p-8">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="sm:col-span-2">
