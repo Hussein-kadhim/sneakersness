@@ -64,4 +64,22 @@ class EvenementOverviewTest extends TestCase
         $response->assertSee('Amsterdam Event');
         $response->assertDontSee('Rotterdam Event');
     }
+
+    public function test_organisator_can_open_event_creation_form(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+
+        DB::table('Organisator')->insert([
+            'Naam' => 'Test Organisator',
+            'Gebruikersnaam' => 'test-organisator',
+            'Wachtwoord' => 'test',
+            'IsActief' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('events.create'));
+
+        $response->assertOk();
+        $response->assertSee('Event toevoegen');
+        $response->assertSee('Test Organisator');
+    }
 }
