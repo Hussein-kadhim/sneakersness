@@ -34,8 +34,8 @@
 
             {{-- Succesmelding na toevoegen van verkoper (happy scenario) --}}
             @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3">
-                    <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                <div class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm">
+                    <i class="fa-solid fa-check text-white text-base"></i>
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
