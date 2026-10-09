@@ -3,15 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Organisator;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 // Controller voor het beheren en bekijken van Sneakerness edities en evenementen
 class EvenementController extends Controller
 {
+    public function create(): View
+    {
+        $organisatoren = Organisator::where('IsActief', true)->orderBy('Naam')->get();
+
+        return view('evenementen.create', compact('organisatoren'));
+    }
+
+
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
     public function index(Request $request): View
     {
