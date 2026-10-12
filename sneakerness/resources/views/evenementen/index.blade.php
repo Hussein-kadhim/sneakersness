@@ -34,10 +34,19 @@
 
             {{-- Succesmelding na actie --}}
             @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3">
-                    <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                <div id="success-alert" class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500">
+                    <i class="fa-solid fa-check text-white text-base"></i>
                     <span>{{ session('success') }}</span>
                 </div>
+                <script>
+                    setTimeout(function() {
+                        var alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.style.opacity = '0';
+                            setTimeout(function() { alert.remove(); }, 500);
+                        }
+                    }, 2000);
+                </script>
             @endif
 
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
@@ -130,10 +139,12 @@
                         <div class="text-xs sm:text-sm text-slate-400">
                             {{ method_exists($events, 'total') ? $events->total() : count($events) }} events gevonden
                         </div>
-                        <a href="#" onclick="return false;" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Event toevoegen
-                        </a>
+                        @if(auth()->user()?->isOrganisator())
+                            <a href="{{ route('events.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-lg shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                Event toevoegen
+                            </a>
+                        @endif
                     </div>
                 </div>
 

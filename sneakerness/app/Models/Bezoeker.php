@@ -11,27 +11,23 @@ class Bezoeker extends Model
 {
     use HasFactory;
 
-    // Koppeling naar de tabel en primaire sleutel in de database
     protected $table = 'Bezoeker';
     protected $primaryKey = 'Id';
 
-    // Aangepaste kolomnamen voor aanmaak- en bewerkdatum
     const CREATED_AT = 'DatumAangemaakt';
     const UPDATED_AT = 'DatumGewijzigd';
 
-    // Velden die via mass-assignment ingevuld mogen worden
     protected $fillable = [
         'Naam',
-        'Email',
+        'Emailadres',
         'IsActief',
         'Opmerking',
     ];
 
-    // Data types automatisch casten
     protected $casts = [
-        'IsActief' => 'boolean',
+        'IsActief'        => 'boolean',
         'DatumAangemaakt' => 'datetime',
-        'DatumGewijzigd' => 'datetime',
+        'DatumGewijzigd'  => 'datetime',
     ];
 
     // Relatie: een bezoeker kan meerdere tickets hebben

@@ -16,7 +16,7 @@ return new class extends Migration
 
             // Persoonsgegevens van de bezoeker
             $table->string('Naam', 100);
-            $table->string('Email', 100)->unique();
+            $table->string('Emailadres', 100)->unique();
 
             // Status en opmerkingen
             $table->boolean('IsActief')->default(true);

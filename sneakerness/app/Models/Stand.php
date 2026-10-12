@@ -24,7 +24,6 @@ class Stand extends Model
         'VerkoperId',
         'StandType',
         'Prijs',
-        'AantalDagen',
         'VerhuurdStatus',
         'IsActief',
         'Opmerking',

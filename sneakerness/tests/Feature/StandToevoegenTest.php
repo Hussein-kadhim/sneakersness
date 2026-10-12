@@ -91,7 +91,6 @@ class StandToevoegenTest extends TestCase
             'StandType' => 'AA+',
             'VerkoperId' => $verkoper->Id,
             'Prijs' => 850.00,
-            'AantalDagen' => 2,
             'VerhuurdStatus' => 0,
             'Opmerking' => 'Stand #AA-999 • Hal 1',
             'IsActief' => 1,

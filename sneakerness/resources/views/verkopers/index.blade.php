@@ -32,6 +32,23 @@
                 </p>
             </div>
 
+            {{-- Succesmelding na toevoegen van verkoper (happy scenario) --}}
+            @if(session('success'))
+                <div id="success-alert" class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500">
+                    <i class="fa-solid fa-check text-white text-base"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.style.opacity = '0';
+                            setTimeout(function() { alert.remove(); }, 500);
+                        }
+                    }, 2000);
+                </script>
+            @endif
+
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage))
                 <div class="sn-db-alert bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
@@ -123,10 +140,12 @@
                         <div class="text-xs text-slate-400">
                             {{ $verkopers->total() }} verkopers gevonden
                         </div>
-                        <a href="#" onclick="return false;" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Verkoper toevoegen
-                        </a>
+                        @if(auth()->user()?->isOrganisator())
+                            <a href="{{ route('verkopers.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                Verkoper toevoegen
+                            </a>
+                        @endif
                     </div>
                 </div>
 

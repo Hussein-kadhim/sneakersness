@@ -25,6 +25,8 @@ class Verkoper extends Model
         'Naam',
         'SpecialeStatus',
         'VerkooptSoort',
+        'StandType',
+        'Dagen',
         'Logo',
         'IsActief',
         'Opmerking',

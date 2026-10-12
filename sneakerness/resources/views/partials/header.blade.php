@@ -48,20 +48,35 @@
                     <a href="{{ route('home') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('home') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                         Home
                     </a>
-                    {{-- Navigatielinks uitsluitend zichtbaar voor ingelogde gebruikers --}}
+                    {{-- Navigatielinks gefilterd op rol van de ingelogde gebruiker --}}
                     @if($isLoggedIn)
-                        <a href="{{ route('tickets.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('tickets.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
-                            Tickets
-                        </a>
-                        <a href="{{ route('verkopers.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ (request()->routeIs('verkopers.*') && !request()->routeIs('home')) ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
-                            Verkopers
-                        </a>
-                        <a href="{{ route('contactpersonen.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('contactpersonen.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
-                            Contactpersonen
-                        </a>
-                        <a href="{{ route('stands.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('stands.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
-                            Stands
-                        </a>
+                        @php $currentUser = Auth::user(); @endphp
+
+                        {{-- Tickets: Zichtbaar voor Organisator en Bezoeker --}}
+                        @if($currentUser?->isOrganisator() || $currentUser?->isBezoeker())
+                            <a href="{{ route('tickets.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('tickets.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
+                                Tickets
+                            </a>
+                        @endif
+
+                        {{-- Verkopers & Contactpersonen: Alleen voor Organisator beheer --}}
+                        @if($currentUser?->isOrganisator())
+                            <a href="{{ route('verkopers.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ (request()->routeIs('verkopers.*') && !request()->routeIs('home')) ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
+                                Verkopers
+                            </a>
+                            <a href="{{ route('contactpersonen.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('contactpersonen.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
+                                Contactpersonen
+                            </a>
+                        @endif
+
+                        {{-- Stands: Zichtbaar voor Organisator en Verkoper --}}
+                        @if($currentUser?->isOrganisator() || $currentUser?->isVerkoper())
+                            <a href="{{ route('stands.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('stands.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
+                                Stands
+                            </a>
+                        @endif
+
+                        {{-- Events: Voor iedereen zichtbaar --}}
                         <a href="{{ route('events.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('events.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">
                             Events
                         </a>

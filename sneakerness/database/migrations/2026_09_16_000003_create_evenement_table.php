@@ -14,9 +14,6 @@ return new class extends Migration
             // Primaire sleutel
             $table->increments('Id');
 
-            // Koppeling naar de organisator
-            $table->unsignedInteger('OrganisatorId');
-
             // Evenement details
             $table->string('Naam', 100);
             $table->date('Datum');
@@ -31,9 +28,6 @@ return new class extends Migration
             // Tijdstempels
             $table->dateTime('DatumAangemaakt', 6)->useCurrent();
             $table->dateTime('DatumGewijzigd', 6)->useCurrent()->useCurrentOnUpdate();
-
-            // Foreign key relatie met de Organisator tabel
-            $table->foreign('OrganisatorId')->references('Id')->on('Organisator')->onDelete('cascade');
         });
     }
 

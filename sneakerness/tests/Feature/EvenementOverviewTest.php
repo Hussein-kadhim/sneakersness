@@ -64,4 +64,87 @@ class EvenementOverviewTest extends TestCase
         $response->assertSee('Amsterdam Event');
         $response->assertDontSee('Rotterdam Event');
     }
+
+    public function test_organisator_can_open_event_creation_form(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+
+        DB::table('Organisator')->insert([
+            'Naam' => 'Test Organisator',
+            'Gebruikersnaam' => 'test-organisator',
+            'Wachtwoord' => 'test',
+            'IsActief' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('events.create'));
+
+        $response->assertOk();
+        $response->assertSee('Event toevoegen');
+        $response->assertSee('Test Organisator');
+    }
+
+    public function test_organisator_can_create_an_event(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+        $organisatorId = DB::table('Organisator')->insertGetId([
+            'Naam' => 'Test Organisator',
+            'Gebruikersnaam' => 'test-organisator',
+            'Wachtwoord' => 'test',
+            'IsActief' => true,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('events.store'), [
+            'OrganisatorId' => $organisatorId,
+            'Naam' => 'Nieuw Sneakerness Event',
+            'Datum' => '2027-10-24',
+            'Locatie' => 'Van Nelle Fabriek',
+            'AantalTicketsPerTijdslot' => 750,
+            'BeschikbareStands' => 55,
+            'IsActief' => '1',
+            'Opmerking' => 'Test omschrijving',
+        ]);
+
+        $response->assertRedirect(route('events.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('Evenement', [
+            'OrganisatorId' => $organisatorId,
+            'Naam' => 'Nieuw Sneakerness Event',
+            'Datum' => '2027-10-24 00:00:00',
+            'Locatie' => 'Van Nelle Fabriek',
+            'AantalTicketsPerTijdslot' => 750,
+            'BeschikbareStands' => 55,
+            'IsActief' => 1,
+            'Opmerking' => 'Test omschrijving',
+        ]);
+    }
+
+    public function test_non_organisator_cannot_create_an_event(): void
+    {
+        $user = User::factory()->create(['role' => 'bezoeker']);
+
+        $response = $this->actingAs($user)->get(route('events.create'));
+
+        $response->assertForbidden();
+
+        $response = $this->actingAs($user)->post(route('events.store'), []);
+
+        $response->assertForbidden();
+    }
+
+    public function test_event_creation_validates_required_fields(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+
+        $response = $this->actingAs($user)->post(route('events.store'), []);
+
+        $response->assertSessionHasErrors([
+            'OrganisatorId',
+            'Naam',
+            'Datum',
+            'Locatie',
+            'AantalTicketsPerTijdslot',
+            'BeschikbareStands',
+            'IsActief',
+        ]);
+    }
 }

@@ -16,8 +16,20 @@ return new class extends Migration
 
             // Bedrijfsnaam en gegevens van de standhouder
             $table->string('Naam', 100);
+
+            // SpecialeStatus: BIT-veld (bijv. 1 = partner)
             $table->boolean('SpecialeStatus')->default(false);
+
+            // Soort verkoper: Sneakers, Eten en Drinken, Kids Corner, etc.
             $table->string('VerkooptSoort', 100);
+
+            // Standtype: A, AA of AA+
+            $table->string('StandType', 10)->nullable();
+
+            // Aanwezigheidsdagen: Eén dag of Twee dagen
+            $table->string('Dagen', 20)->nullable();
+
+            // Logo: optioneel, alleen voor partners
             $table->string('Logo', 255)->nullable();
 
             // Status en opmerkingen

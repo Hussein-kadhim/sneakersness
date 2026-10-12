@@ -49,8 +49,8 @@ class VerkoperOverviewTest extends TestCase
         $response->assertSee('AA+');
         $response->assertSee('Partners');
 
-        // Niet-werkende knoppen conform verzoek
-        $response->assertSee('onclick="return false;"', false);
+        // Knop om verkoper toe te voegen heeft werkende route
+        $response->assertSee(route('verkopers.create'));
     }
 
     private function getOrganisator(): User
@@ -76,7 +76,7 @@ class VerkoperOverviewTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Geen verkopers gevonden');
         $response->assertSee('Verkoper toevoegen');
-        $response->assertSee('onclick="return false;"', false);
+        $response->assertSee(route('verkopers.create'));
     }
 
     /**

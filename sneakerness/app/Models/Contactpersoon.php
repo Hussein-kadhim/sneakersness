@@ -23,7 +23,7 @@ class Contactpersoon extends Model
     protected $fillable = [
         'Naam',
         'Telefoonnummer',
-        'Email',
+        'Emailadres',
         'IsActief',
         'Opmerking',
     ];
@@ -34,6 +34,12 @@ class Contactpersoon extends Model
         'DatumAangemaakt' => 'datetime',
         'DatumGewijzigd' => 'datetime',
     ];
+
+    // Accessor voor e-mailadres
+    public function getEmailAttribute(): ?string
+    {
+        return $this->attributes['Emailadres'] ?? null;
+    }
 
     // Veel-op-veel relatie met verkopers via de tussenliggende koppeltabel
     public function verkopers(): BelongsToMany

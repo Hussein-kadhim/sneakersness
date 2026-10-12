@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contactpersoon;
+use App\Models\Verkoper;
 use App\Models\ContactPerVerkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -73,7 +75,7 @@ class ContactpersoonController extends Controller
             if ($search !== '') {
                 $query->where(function ($q) use ($search) {
                     $q->where('Naam', 'like', "%{$search}%")
-                        ->orWhere('Email', 'like', "%{$search}%")
+                        ->orWhere('Emailadres', 'like', "%{$search}%")
                         ->orWhere('Telefoonnummer', 'like', "%{$search}%")
                         ->orWhere('Opmerking', 'like', "%{$search}%")
                         ->orWhereHas('verkopers', function ($sub) use ($search) {
@@ -161,6 +163,145 @@ class ContactpersoonController extends Controller
         } catch (\Throwable $e) {
             Log::error('Fout bij uitvoeren van expliciete JOIN query voor contactpersonen: ' . $e->getMessage());
             return collect();
+        }
+    }
+
+    /**
+     * Toont het formulier om een nieuwe contactpersoon toe te voegen.
+     */
+    public function create(): View
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        return view('contactpersonen.create');
+    }
+
+    /**
+     * Slaat een nieuwe contactpersoon op in de database na validatie.
+     */
+    public function store(Request $request)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        $validated = $request->validate([
+            'voornaam'       => 'required|string|max:50',
+            'achternaam'     => 'required|string|max:50',
+            'emailadres'     => 'required|email|max:100',
+            'telefoonnummer' => 'required|string|max:20',
+            'opmerking'      => 'nullable|string|max:250',
+        ], [
+            'voornaam.required'       => 'De voornaam is verplicht.',
+            'achternaam.required'     => 'De achternaam is verplicht.',
+            'emailadres.required'     => 'Het e-mailadres is verplicht.',
+            'emailadres.email'        => 'Vul een geldig e-mailadres in.',
+            'telefoonnummer.required' => 'Het telefoonnummer is verplicht.',
+        ]);
+
+        try {
+            $naam = trim($validated['voornaam'] . ' ' . $validated['achternaam']);
+
+            Contactpersoon::create([
+                'Naam'           => $naam,
+                'Emailadres'     => $validated['emailadres'],
+                'Telefoonnummer' => $validated['telefoonnummer'],
+                'Opmerking'      => $validated['opmerking'] ?? null,
+                'IsActief'       => true,
+            ]);
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol toegevoegd');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij opslaan contactpersoon in ContactpersoonController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een fout opgetreden bij het opslaan van de contactpersoon in de database.',
+            ]);
+        }
+    }
+
+    /**
+     * Toont het koppelingsscherm voor contactpersoon en verkoper.
+     */
+    public function koppelenForm(Request $request): View
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        $contactpersonen = Contactpersoon::orderBy('Naam', 'asc')->with('verkopers')->get();
+        $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->with('stands')->get();
+
+        $geselecteerdeContactpersoonId = $request->query('contactpersoon_id');
+        $geselecteerdeVerkoperId = $request->query('verkoper_id');
+
+        return view('contactpersonen.koppelen', compact(
+            'contactpersonen',
+            'verkopers',
+            'geselecteerdeContactpersoonId',
+            'geselecteerdeVerkoperId'
+        ));
+    }
+
+    /**
+     * Verwerkt het koppelen van een contactpersoon aan een verkoper.
+     */
+    public function koppelenStore(Request $request)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        // Unhappy scenario: controleer of zowel verkoper als contactpersoon zijn geselecteerd
+        if (!$request->filled('contactpersoon_id') || !$request->filled('verkoper_id')) {
+            return back()->withInput()->withErrors([
+                'general' => 'Selecteer zowel een verkoper als een contactpersoon',
+                'contactpersoon_id' => 'Selecteer zowel een verkoper als een contactpersoon',
+                'verkoper_id' => 'Selecteer zowel een verkoper als een contactpersoon',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'contactpersoon_id' => 'required|exists:Contactpersoon,Id',
+            'verkoper_id'       => 'required|exists:Verkoper,Id',
+            'rol'               => 'nullable|string|max:100',
+            'is_primair'        => 'nullable',
+        ], [
+            'contactpersoon_id.required' => 'Selecteer zowel een verkoper als een contactpersoon',
+            'contactpersoon_id.exists'   => 'De geselecteerde contactpersoon bestaat niet.',
+            'verkoper_id.required'       => 'Selecteer zowel een verkoper als een contactpersoon',
+            'verkoper_id.exists'         => 'De geselecteerde verkoper bestaat niet.',
+        ]);
+
+        try {
+            $contactpersoon = Contactpersoon::findOrFail($validated['contactpersoon_id']);
+            $verkoper = Verkoper::findOrFail($validated['verkoper_id']);
+
+            $rol = trim($request->input('rol', '')) ?: 'Standmanager';
+            $isPrimair = $request->has('is_primair');
+
+            ContactPerVerkoper::updateOrCreate(
+                [
+                    'VerkoperId'       => $verkoper->Id,
+                    'ContactpersoonId' => $contactpersoon->Id,
+                ],
+                [
+                    'IsActief'  => 1,
+                    'Opmerking' => $rol . ($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
+                ]
+            );
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol gekoppeld aan de verkoper');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het koppelen van contactpersoon aan verkoper: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een technische fout opgetreden bij het koppelen. Probeer het opnieuw.',
+            ]);
         }
     }
 }

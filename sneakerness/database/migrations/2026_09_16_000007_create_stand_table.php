@@ -17,10 +17,9 @@ return new class extends Migration
             // Gekoppelde verkoper
             $table->unsignedInteger('VerkoperId');
 
-            // Type stand (bijv. AA+, AA of A) en verhuurdetails
+            // Type stand (bijv. AA+, AA of A) en verhuurstatus
             $table->string('StandType', 10);
             $table->decimal('Prijs', 6, 2);
-            $table->tinyInteger('AantalDagen');
             $table->boolean('VerhuurdStatus')->default(false);
 
             // Status en opmerkingen
