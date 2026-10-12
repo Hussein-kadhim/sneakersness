@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('contactpersonen.koppelen.store');
     
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
+    Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
+    Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');

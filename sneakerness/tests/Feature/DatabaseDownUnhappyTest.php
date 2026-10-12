@@ -65,4 +65,18 @@ class DatabaseDownUnhappyTest extends TestCase
         $response->assertSee('Verbindingsfout');
         $response->assertSee('Database is momenteel niet beschikbaar');
     }
+
+    public function test_unhappy_scenario_stands_create_handles_database_query_exception_gracefully(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'organisator',
+            'email' => 'organisator@sneakerness.com',
+        ]);
+
+        $response = $this->actingAs($user)->get('/stands/create?db_error=1');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verbindingsfout');
+        $response->assertSee('Database is momenteel niet beschikbaar');
+    }
 }

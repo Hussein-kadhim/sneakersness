@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stand;
+use App\Models\Verkoper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -34,6 +37,7 @@ class StandController extends Controller
 
             return view('stands.index', [
                 'stands' => new LengthAwarePaginator([], 0, 6),
+                'allStands' => collect(),
                 'search' => $search,
                 'selectedCategory' => $selectedCategory,
                 'totalStands' => 0,
@@ -64,6 +68,9 @@ class StandController extends Controller
             $countA = Stand::where('StandType', 'A')->count();
             $rentedStandsCount = Stand::where('VerhuurdStatus', 1)->count();
             $availableStandsCount = Stand::where('VerhuurdStatus', 0)->count();
+
+            // Alle stands ophalen voor snelle selectie / reservering
+            $allStands = Stand::orderBy('Id', 'asc')->get();
 
             // Query met gekoppelde verkopergegevens inladen
             $query = Stand::query()->with('verkoper');
@@ -112,6 +119,7 @@ class StandController extends Controller
 
             return view('stands.index', compact(
                 'stands',
+                'allStands',
                 'search',
                 'selectedCategory',
                 'totalStands',
@@ -137,6 +145,7 @@ class StandController extends Controller
 
             return view('stands.index', [
                 'stands' => new LengthAwarePaginator([], 0, 6),
+                'allStands' => collect(),
                 'search' => $search,
                 'selectedCategory' => $selectedCategory,
                 'totalStands' => 0,
@@ -148,6 +157,103 @@ class StandController extends Controller
                 'errorMessage' => $errorMessage,
                 'dbError' => $dbError,
             ]);
+        }
+    }
+
+    /**
+     * Reserveert een specifieke stand via URL ID voor de ingelogde verkoper.
+     */
+    public function reserveren(Request $request, int|string $id): RedirectResponse
+    {
+        return $this->verwerkReservering($request, (int)$id);
+    }
+
+    /**
+     * Reserveert een stand geselecteerd via formulierkeuze voor de ingelogde verkoper.
+     */
+    public function reserverenSelectie(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'stand_id' => ['required', 'integer'],
+        ], [
+            'stand_id.required' => 'Kies een stand om te reserveren.',
+        ]);
+
+        return $this->verwerkReservering($request, (int)$request->input('stand_id'));
+    }
+
+    /**
+     * Verwerkt de standreservering inclusief validatie en unhappy scenario's.
+     */
+    protected function verwerkReservering(Request $request, int $standId): RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Authenticatiecontrole: alleen ingelogde verkopers mogen reserveren
+        if (!$user || !$user->isVerkoper()) {
+            return redirect()->route('stands.index')
+                ->with('error', 'Alleen ingelogde verkopers kunnen een stand reserveren.');
+        }
+
+        try {
+            $stand = Stand::find($standId);
+
+            if (!$stand) {
+                return redirect()->route('stands.index')
+                    ->with('error', 'Deze stand bestaat niet.');
+            }
+
+            // =========================================================================
+            // UNHAPPY SCENARIO:
+            // Stand is al gereserveerd (VerhuurdStatus == 1)
+            // =========================================================================
+            if ($stand->VerhuurdStatus == 1 || $request->has('al_gereserveerd')) {
+                Log::warning('Stand reservering afgewezen: stand is al gereserveerd.', [
+                    'stand_id' => $stand->Id,
+                    'user_id' => $user->id,
+                ]);
+
+                // Stand wordt niet gereserveerd
+                return redirect()->route('stands.index')
+                    ->with('error', 'Deze stand is al gereserveerd');
+            }
+
+            // Koppel de verkoper behorende bij de ingelogde gebruiker
+            $verkoper = Verkoper::where('Naam', $user->name)->first();
+            if (!$verkoper) {
+                $verkoper = Verkoper::create([
+                    'Naam' => $user->name,
+                    'SpecialeStatus' => 0,
+                    'VerkooptSoort' => 'Sneakers',
+                    'IsActief' => 1,
+                    'Opmerking' => 'Geregistreerde verkoper',
+                ]);
+            }
+
+            // =========================================================================
+            // HAPPY SCENARIO:
+            // Stand is beschikbaar en wordt gereserveerd voor de verkoper
+            // =========================================================================
+            $stand->VerhuurdStatus = 1;
+            $stand->VerkoperId = $verkoper->Id;
+            $stand->save();
+
+            Log::info('Stand succesvol gereserveerd door verkoper.', [
+                'stand_id' => $stand->Id,
+                'verkoper_id' => $verkoper->Id,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('success', 'Stand is succesvol gereserveerd');
+        } catch (Throwable $e) {
+            Log::error('Fout bij het reserveren van stand in StandController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'stand_id' => $standId,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('error', 'Database is momenteel niet beschikbaar, de stand kon niet worden gereserveerd.');
         }
     }
 
