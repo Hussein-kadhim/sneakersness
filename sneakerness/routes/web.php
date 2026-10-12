@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ContactpersoonController;
 use App\Http\Controllers\EvenementController;
@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('contactpersonen.koppelen.store');
     
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
+    Route::get('/stands/create', [StandController::class, 'create'])->name('stands.create');
+    Route::post('/stands', [StandController::class, 'store'])->name('stands.store');
     Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
     Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
