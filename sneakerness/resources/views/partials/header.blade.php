@@ -2,11 +2,13 @@
 @php
     $isLoggedIn = false;
     $userName = 'Gebruiker';
+    $currentUser = null;
 
     try {
         if (\Illuminate\Support\Facades\Auth::check()) {
             $isLoggedIn = true;
-            $userName = \Illuminate\Support\Facades\Auth::user()?->name ?? 'Gebruiker';
+            $currentUser = \Illuminate\Support\Facades\Auth::user();
+            $userName = $currentUser?->name ?? 'Gebruiker';
         }
     } catch (\Throwable $e) {
         // Unhappy scenario (database down): vang database fouten netjes af
@@ -50,8 +52,6 @@
                     </a>
                     {{-- Navigatielinks gefilterd op rol van de ingelogde gebruiker --}}
                     @if($isLoggedIn)
-                        @php $currentUser = Auth::user(); @endphp
-
                         {{-- Tickets: Zichtbaar voor Organisator en Bezoeker --}}
                         @if($currentUser?->isOrganisator() || $currentUser?->isBezoeker())
                             <a href="{{ route('tickets.index') }}" class="w-full md:w-auto px-3.5 py-1.5 {{ request()->routeIs('tickets.*') ? 'text-orange-600 bg-orange-50 font-semibold' : 'text-slate-500 hover:text-slate-900' }} rounded-lg">

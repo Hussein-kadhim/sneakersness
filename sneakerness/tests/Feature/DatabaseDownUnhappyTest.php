@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -115,5 +118,18 @@ class DatabaseDownUnhappyTest extends TestCase
         $response->assertSee('name="OrganisatorId"', false);
         $response->assertSee('action="'.route('events.store').'"', false);
         $response->assertDontSee('Verbindingsfout');
+    }
+
+    public function test_database_exception_before_event_controller_shows_event_creation_error(): void
+    {
+        $request = Request::create('/events/create', 'GET');
+        $exception = new QueryException('sqlite', 'select * from "users"', [], new \PDOException('Database unavailable'));
+
+        $response = app(ExceptionHandler::class)->render($request, $exception);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Event toevoegen', $response->getContent());
+        $this->assertStringContainsString('Verbindingsfout', $response->getContent());
+        $this->assertStringNotContainsString('name="OrganisatorId"', $response->getContent());
     }
 }
