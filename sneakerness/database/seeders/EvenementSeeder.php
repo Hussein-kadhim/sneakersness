@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class EvenementSeeder extends Seeder
 {
+    // Voegt evenementen toe aan de database.
     public function run(): void
     {
         DB::table('Evenement')->insert([
