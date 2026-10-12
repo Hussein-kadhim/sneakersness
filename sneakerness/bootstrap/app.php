@@ -1,9 +1,11 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 // Configuratie van de Laravel applicatie (routing, middleware en error handling)
 return Application::configure(basePath: dirname(__DIR__))
@@ -28,10 +30,18 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         // Vang database-fouten (PDO / QueryException) op zodat de website netjes blijft werken
-        $exceptions->render(function (\Illuminate\Database\QueryException|\PDOException $e, Request $request) {
-            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6);
+        $exceptions->render(function (QueryException|PDOException $e, Request $request) {
+            $emptyPaginator = new LengthAwarePaginator([], 0, 6);
             $search = trim($request->input('q', ''));
             $selectedCategory = trim($request->input('category', ''));
+
+            // Fallback voor event toevoegen wanneer de database niet bereikbaar is
+            if ($request->is('events/create*') || ($request->is('events*') && $request->isMethod('POST'))) {
+                return response()->view('evenementen.create', [
+                    'organisatoren' => collect(),
+                    'dbError' => true,
+                ], 200);
+            }
 
             // Fallback voor evenementen overzicht
             if ($request->is('events*')) {
@@ -40,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'search' => $search,
                     'totalEvents' => 0,
                     'activeEvents' => 0,
+                    'expectedVisitors' => 0,
                     'dbError' => true,
                     'errorMessage' => 'Database is momenteel niet beschikbaar, de events konden niet worden geladen. Probeer het later opnieuw.',
                 ], 200);

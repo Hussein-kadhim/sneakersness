@@ -3,7 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DatabaseDownUnhappyTest extends TestCase
@@ -78,5 +82,54 @@ class DatabaseDownUnhappyTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Verbindingsfout');
         $response->assertSee('Database is momenteel niet beschikbaar');
+    }
+
+    public function test_unhappy_scenario_event_create_shows_database_error_instead_of_form(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'organisator',
+            'email' => 'organisator@sneakerness.com',
+        ]);
+
+        $response = $this->actingAs($user)->get('/events/create?db_error=1');
+
+        $response->assertOk();
+        $response->assertSee('Event toevoegen');
+        $response->assertSee('Verbindingsfout');
+        $response->assertSee('de gegevens voor het aanmaken van het event konden niet worden geladen');
+        $response->assertDontSee('name="OrganisatorId"', false);
+        $response->assertDontSee('action="'.route('events.store').'"', false);
+    }
+
+    public function test_event_create_shows_form_when_database_is_available(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+
+        DB::table('Organisator')->insert([
+            'Naam' => 'Test Organisator',
+            'Gebruikersnaam' => 'test-organisator',
+            'Wachtwoord' => 'test',
+            'IsActief' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get('/events/create');
+
+        $response->assertOk();
+        $response->assertSee('name="OrganisatorId"', false);
+        $response->assertSee('action="'.route('events.store').'"', false);
+        $response->assertDontSee('Verbindingsfout');
+    }
+
+    public function test_database_exception_before_event_controller_shows_event_creation_error(): void
+    {
+        $request = Request::create('/events/create', 'GET');
+        $exception = new QueryException('sqlite', 'select * from "users"', [], new \PDOException('Database unavailable'));
+
+        $response = app(ExceptionHandler::class)->render($request, $exception);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('Event toevoegen', $response->getContent());
+        $this->assertStringContainsString('Verbindingsfout', $response->getContent());
+        $this->assertStringNotContainsString('name="OrganisatorId"', $response->getContent());
     }
 }
