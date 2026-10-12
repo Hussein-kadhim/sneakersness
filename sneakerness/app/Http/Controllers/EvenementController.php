@@ -12,32 +12,50 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 // Controller voor het beheren en bekijken van Sneakerness edities en evenementen
 class EvenementController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
         abort_unless($user && $user->isOrganisator(), 403);
 
-        $organisatoren = Organisator::where('IsActief', true)->orderBy('Naam')->get();
+        $dbError = false;
 
-        if ($organisatoren->isEmpty()) {
-            $organisator = Organisator::firstOrCreate(
-                ['Gebruikersnaam' => 'organisator'],
-                [
-                    'Naam' => 'Sneakerness Events B.V.',
-                    'Wachtwoord' => bcrypt('password'),
-                    'IsActief' => true,
-                    'Opmerking' => 'Hoofdorganisator Sneakerness Rotterdam',
-                ]
-            );
-            $organisatoren = collect([$organisator]);
+        try {
+            if ($request->has('db_error') || $request->has('unhappy')) {
+                throw new \RuntimeException('Database is momenteel niet beschikbaar');
+            }
+
+            $organisatoren = Organisator::where('IsActief', true)->orderBy('Naam')->get();
+
+            if ($organisatoren->isEmpty()) {
+                $organisator = Organisator::firstOrCreate(
+                    ['Gebruikersnaam' => 'organisator'],
+                    [
+                        'Naam' => 'Sneakerness Events B.V.',
+                        'Wachtwoord' => bcrypt('password'),
+                        'IsActief' => true,
+                        'Opmerking' => 'Hoofdorganisator Sneakerness Rotterdam',
+                    ]
+                );
+                $organisatoren = collect([$organisator]);
+            }
+        } catch (Throwable $e) {
+            Log::error('Fout bij het laden van het eventformulier in EvenementController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $dbError = true;
+            $organisatoren = collect();
         }
 
-        return view('evenementen.create', compact('organisatoren'));
+        return view('evenementen.create', compact('organisatoren', 'dbError'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -46,18 +64,30 @@ class EvenementController extends Controller
         $user = $request->user();
         abort_unless($user && $user->isOrganisator(), 403);
 
-        $validated = $request->validate([
-            'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
-            'Naam' => ['required', 'string', 'max:100'],
-            'Datum' => ['required', 'date'],
-            'Locatie' => ['required', 'string', 'max:150'],
-            'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
-            'BeschikbareStands' => ['required', 'integer', 'min:0'],
-            'IsActief' => ['required', 'boolean'],
-            'Opmerking' => ['nullable', 'string', 'max:250'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
+                'Naam' => ['required', 'string', 'max:100'],
+                'Datum' => ['required', 'date'],
+                'Locatie' => ['required', 'string', 'max:150'],
+                'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
+                'BeschikbareStands' => ['required', 'integer', 'min:0'],
+                'IsActief' => ['required', 'boolean'],
+                'Opmerking' => ['nullable', 'string', 'max:250'],
+            ]);
 
-        Evenement::create($validated);
+            Evenement::create($validated);
+        } catch (\PDOException $e) {
+            Log::error('Fout bij het opslaan van een evenement in EvenementController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('events.create')
+                ->with('databaseError', true);
+        }
 
         return redirect()
             ->route('events.index')
