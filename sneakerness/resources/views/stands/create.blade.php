@@ -40,6 +40,21 @@
                 </p>
             </div>
 
+            {{-- Foutmelding bij database storing (unhappy scenario) --}}
+            @if(!empty($errorMessage) || !empty($dbError))
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6 text-red-800 flex items-start gap-4 shadow-sm" role="alert">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-red-900 mb-1">Verbindingsfout</h3>
+                        <p class="text-sm text-red-700 leading-relaxed font-medium">
+                            {{ $errorMessage ?? 'Database is momenteel niet beschikbaar, de gegevens voor stand toevoegen konden niet worden geladen. Probeer het later opnieuw.' }}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             {{-- Formulierkaart --}}
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-6 sm:p-8">
