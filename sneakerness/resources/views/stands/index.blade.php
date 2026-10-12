@@ -21,6 +21,9 @@
 
 
     <main class="flex-grow py-5 sm:py-10">
+        @php
+            $allStands = $allStands ?? collect();
+        @endphp
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Pagina titel en toelichting --}}
@@ -33,7 +36,7 @@
                 </p>
             </div>
 
-            {{-- Succesmelding na toevoegen van een stand --}}
+            {{-- Succesmelding na actie (bijv. reservering) --}}
             @if(session('success'))
                 <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3 shadow-sm" role="status">
                     <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
@@ -41,20 +44,20 @@
                     </div>
                     <div>
                         <span class="font-bold block text-emerald-900 text-xs sm:text-sm">Gelukt</span>
-                        <span class="text-xs sm:text-sm">{{ session('success') }}</span>
+                        <span class="text-xs sm:text-sm font-medium">{{ session('success') }}</span>
                     </div>
                 </div>
             @endif
 
-            {{-- Foutmelding na actie --}}
+            {{-- Foutmelding na actie (bijv. al gereserveerd) --}}
             @if(session('error'))
                 <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm flex items-center gap-3 shadow-sm" role="alert">
                     <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600 shrink-0">
                         <i class="fa-solid fa-circle-xmark text-base"></i>
                     </div>
                     <div>
-                        <span class="font-bold block text-red-900 text-xs sm:text-sm">Fout</span>
-                        <span class="text-xs sm:text-sm">{{ session('error') }}</span>
+                        <span class="font-bold block text-red-900 text-xs sm:text-sm">Niet mogelijk</span>
+                        <span class="text-xs sm:text-sm font-medium">{{ session('error') }}</span>
                     </div>
                 </div>
             @endif
@@ -121,6 +124,54 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Verkoper reserveringspaneel: kies een stand en klik op Reserveren --}}
+                @if(Auth::check() && Auth::user()->isVerkoper())
+                    <div class="mb-6 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-orange-500 text-white uppercase tracking-wider">
+                                        Verkoper Portaal
+                                    </span>
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                                        Stand Reserveren
+                                    </h2>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 mt-1">
+                                    Kies een stand uit de lijst en reserveer deze direct voor het evenement.
+                                </p>
+                            </div>
+
+                            <form method="POST" action="{{ route('stands.reserveren.post') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                                @csrf
+                                <div class="relative min-w-[280px]">
+                                    <select
+                                        name="stand_id"
+                                        id="stand_reserveren_select"
+                                        required
+                                        class="w-full px-3.5 py-2.5 bg-white border border-orange-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                                    >
+                                        <option value="">-- Kies een stand om te reserveren --</option>
+                                        @foreach($allStands as $optStand)
+                                            <option value="{{ $optStand->Id }}">
+                                                Stand #{{ $optStand->StandType }}-{{ str_pad($optStand->Id, 3, '0', STR_PAD_LEFT) }} &bull; {{ $optStand->formatted_price }} ({{ $optStand->VerhuurdStatus ? 'Al gereserveerd' : 'Beschikbaar' }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button
+                                    type="submit"
+                                    id="btn_reserveren_keuze"
+                                    class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-sm transition-colors whitespace-nowrap"
+                                >
+                                    <i class="fa-solid fa-bookmark text-xs"></i>
+                                    Reserveren
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Zoek- en toevoegbalk --}}
                 <div class="mb-4">
@@ -217,12 +268,35 @@
                                 </div>
 
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
-                                        Wijzigen
-                                    </a>
-                                    <a href="#" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
-                                        Verwijderen
-                                    </a>
+                                    @if(Auth::check() && Auth::user()->isVerkoper())
+                                        <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="w-full">
+                                            @csrf
+                                            @if(!$stand->VerhuurdStatus)
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
+                                            @else
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-lock text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
+                                            @endif
+                                        </form>
+                                    @else
+                                        <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                            Wijzigen
+                                        </a>
+                                        <a href="#" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
+                                            Verwijderen
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -309,15 +383,39 @@
                                     </td>
 
                                     <td class="py-4 px-6 whitespace-nowrap text-right">
-                                        <div class="flex items-center justify-end gap-3 text-xs">
-                                            <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                Wijzigen
-                                            </a>
-                                            <span class="text-slate-300">|</span>
-                                            <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
-                                                Verwijderen
-                                            </a>
-                                        </div>
+                                         @if(Auth::check() && Auth::user()->isVerkoper())
+                                             <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
+                                                 @csrf
+                                                 @if(!$stand->VerhuurdStatus)
+                                                     <button
+                                                         type="submit"
+                                                         class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                     >
+                                                         <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                         Reserveren
+                                                     </button>
+                                                 @else
+                                                     <button
+                                                         type="submit"
+                                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                         title="Stand is reeds gereserveerd"
+                                                     >
+                                                         <i class="fa-solid fa-lock text-[10px]"></i>
+                                                         Reserveren
+                                                     </button>
+                                                 @endif
+                                            </form>
+                                        @else
+                                            <div class="flex items-center justify-end gap-3 text-xs">
+                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                    Wijzigen
+                                                </a>
+                                                <span class="text-slate-300">|</span>
+                                                <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
+                                                    Verwijderen
+                                                </a>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

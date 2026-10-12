@@ -17,8 +17,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
-    Route::get('/stands/create', [StandController::class, 'create'])->name('stands.create');
-    Route::post('/stands', [StandController::class, 'store'])->name('stands.store');
+    Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
+    Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
 
     Route::get('/dashboard', function () {

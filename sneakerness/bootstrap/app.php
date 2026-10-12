@@ -87,6 +87,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('stands*')) {
                 return response()->view('stands.index', [
                     'stands' => $emptyPaginator,
+                    'allStands' => collect(),
                     'search' => $search,
                     'selectedCategory' => $selectedCategory,
                     'totalStands' => 0,
