@@ -21,6 +21,9 @@
 
 
     <main class="flex-grow py-5 sm:py-10">
+        @php
+            $allStands = $allStands ?? collect();
+        @endphp
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Pagina titel en toelichting --}}
@@ -32,6 +35,32 @@
                     Bekijk en beheer alle geregistreerde stands en zie direct welke stands beschikbaar of verhuurd zijn voor Sneakerness Rotterdam 2024.
                 </p>
             </div>
+
+            {{-- Succesmelding na actie (bijv. reservering) --}}
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3 shadow-sm" role="status">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                        <i class="fa-solid fa-circle-check text-base"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold block text-emerald-900 text-xs sm:text-sm">Gelukt</span>
+                        <span class="text-xs sm:text-sm font-medium">{{ session('success') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Foutmelding na actie (bijv. al gereserveerd) --}}
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm flex items-center gap-3 shadow-sm" role="alert">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600 shrink-0">
+                        <i class="fa-solid fa-circle-xmark text-base"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold block text-red-900 text-xs sm:text-sm">Niet mogelijk</span>
+                        <span class="text-xs sm:text-sm font-medium">{{ session('error') }}</span>
+                    </div>
+                </div>
+            @endif
 
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage) || !empty($dbError))
