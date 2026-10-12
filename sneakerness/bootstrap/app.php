@@ -74,6 +74,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            // Fallback voor stand toevoegen (GET & POST)
+            if ($request->is('stands/create*') || ($request->is('stands*') && $request->isMethod('POST'))) {
+                return response()->view('stands.create', [
+                    'verkopers' => collect(),
+                    'dbError' => true,
+                    'errorMessage' => 'Database is momenteel niet beschikbaar, de gegevens voor stand toevoegen konden niet worden geladen. Probeer het later opnieuw.',
+                ], 200);
+            }
+
             // Fallback voor stands overzicht
             if ($request->is('stands*')) {
                 return response()->view('stands.index', [

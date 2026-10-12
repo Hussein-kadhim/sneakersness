@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stand;
+use App\Models\Verkoper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +150,142 @@ class StandController extends Controller
                 'errorMessage' => $errorMessage,
                 'dbError' => $dbError,
             ]);
+        }
+    }
+
+    /**
+     * Toont het formulier om een nieuwe stand toe te voegen.
+     */
+    public function create(Request $request): View
+    {
+        // =========================================================================
+        // DEMO VOOR DOCENT (Unhappy Scenario):
+        // Simulatie van het unhappy scenario bij databaseproblemen via URL parameters
+        // =========================================================================
+        if ($request->has('error') || $request->has('unhappy') || $request->has('db_error') || $request->has('database_error')) {
+            $errorMessage = 'Database is momenteel niet beschikbaar, de gegevens voor stand toevoegen konden niet worden geladen. Probeer het later opnieuw.';
+            $dbError = true;
+
+            // Criterium: Technische log voor unhappy scenario
+            Log::warning('Unhappy scenario gesimuleerd voor stand toevoegen formulier.', ['ip' => $request->ip()]);
+
+            return view('stands.create', [
+                'verkopers' => collect(),
+                'dbError' => $dbError,
+                'errorMessage' => $errorMessage,
+            ]);
+        }
+
+        try {
+            $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->get();
+
+            return view('stands.create', [
+                'verkopers' => $verkopers,
+                'dbError' => false,
+                'errorMessage' => null,
+            ]);
+        } catch (Throwable $e) {
+            // Criterium: Technische log wegschrijven in de catch
+            Log::error('Fout bij het ophalen van verkopers voor stand toevoegen in StandController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $errorMessage = 'Database is momenteel niet beschikbaar, de gegevens voor stand toevoegen konden niet worden geladen. Probeer het later opnieuw.';
+            $dbError = true;
+
+            return view('stands.create', [
+                'verkopers' => collect(),
+                'dbError' => $dbError,
+                'errorMessage' => $errorMessage,
+            ]);
+        }
+    }
+
+    /**
+     * Valideert en slaat een nieuw aangemaakte stand op in de database.
+     */
+    public function store(Request $request)
+    {
+        // =========================================================================
+        // DEMO VOOR DOCENT (Unhappy Scenario):
+        // Simulatie van het unhappy scenario bij databaseproblemen via parameters
+        // =========================================================================
+        if ($request->has('error') || $request->has('unhappy') || $request->has('db_error') || $request->has('database_error')) {
+            $errorMessage = 'Database is momenteel niet beschikbaar, de stand kon niet worden toegevoegd. Probeer het later opnieuw.';
+            $dbError = true;
+
+            Log::warning('Unhappy scenario gesimuleerd voor opslaan van stand.', ['ip' => $request->ip()]);
+
+            return response()->view('stands.create', [
+                'verkopers' => collect(),
+                'dbError' => $dbError,
+                'errorMessage' => $errorMessage,
+            ], 200);
+        }
+
+        $validated = $request->validate([
+            'StandType' => ['required', 'string', 'in:AA+,AA,A'],
+            'VerkoperId' => ['required', 'integer'],
+            'Prijs' => ['required', 'numeric', 'min:0', 'max:9999.99'],
+            'AantalDagen' => ['required', 'integer', 'in:1,2'],
+            'VerhuurdStatus' => ['required', 'boolean'],
+            'Opmerking' => ['nullable', 'string', 'max:250'],
+        ], [
+            'StandType.required' => 'Het standtype is verplicht.',
+            'StandType.in' => 'Kies een geldig standtype (AA+, AA of A).',
+            'VerkoperId.required' => 'Selecteer een verkoper voor deze stand.',
+            'Prijs.required' => 'De prijs is verplicht.',
+            'Prijs.numeric' => 'Voer een geldig bedrag in voor de prijs.',
+            'Prijs.min' => 'De prijs mag niet negatief zijn.',
+            'Prijs.max' => 'De prijs mag niet hoger zijn dan € 9.999,99.',
+            'AantalDagen.required' => 'Het aantal dagen is verplicht.',
+            'AantalDagen.in' => 'Kies 1 dag of 2 dagen.',
+            'VerhuurdStatus.required' => 'Selecteer de verhuurstatus.',
+            'Opmerking.max' => 'De opmerking mag maximaal 250 tekens lang zijn.',
+        ]);
+
+        try {
+            $stand = Stand::create([
+                'StandType' => $validated['StandType'],
+                'VerkoperId' => (int) $validated['VerkoperId'],
+                'Prijs' => $validated['Prijs'],
+                'AantalDagen' => (int) $validated['AantalDagen'],
+                'VerhuurdStatus' => (bool) $validated['VerhuurdStatus'],
+                'Opmerking' => $validated['Opmerking'] ?? null,
+                'IsActief' => true,
+            ]);
+
+            Log::info('Nieuwe stand succesvol toegevoegd.', [
+                'stand_id' => $stand->Id,
+                'stand_type' => $stand->StandType,
+                'verkoper_id' => $stand->VerkoperId,
+            ]);
+
+            return redirect()->route('stands.index')->with('success', 'Stand #' . $stand->StandType . '-' . str_pad($stand->Id, 3, '0', STR_PAD_LEFT) . ' is succesvol toegevoegd!');
+        } catch (Throwable $e) {
+            Log::error('Fout bij het opslaan van nieuwe stand in StandController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $errorMessage = 'Database is momenteel niet beschikbaar, de stand kon niet worden toegevoegd. Probeer het later opnieuw.';
+            $dbError = true;
+
+            $verkopers = collect();
+            try {
+                $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->get();
+            } catch (Throwable $ve) {
+                // Database verbinding niet beschikbaar
+            }
+
+            return response()->view('stands.create', [
+                'verkopers' => $verkopers,
+                'dbError' => $dbError,
+                'errorMessage' => $errorMessage,
+            ], 200);
         }
     }
 
