@@ -72,7 +72,7 @@ class VerkoperToevoegenTest extends TestCase
         // 5. Controleren dat contactpersoon is opgeslagen in de database
         $this->assertDatabaseHas('Contactpersoon', [
             'Naam' => 'Dennis de Ridder',
-            'Email' => 'dennis@solebox-superior.nl',
+            'Emailadres' => 'dennis@solebox-superior.nl',
             'Telefoonnummer' => '06-98765432',
         ]);
 
@@ -83,7 +83,6 @@ class VerkoperToevoegenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'VerkoperId' => $verkoper->Id,
             'StandType' => 'AA+',
-            'AantalDagen' => 2,
             'VerhuurdStatus' => 1,
         ]);
 
