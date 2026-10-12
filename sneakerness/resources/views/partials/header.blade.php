@@ -1,15 +1,18 @@
 {{-- Bovenste navigatiebalk met authenticatiestatus en mobiel menu --}}
 @php
     $isLoggedIn = false;
+    $currentUser = null;
     $userName = 'Gebruiker';
 
     try {
         if (\Illuminate\Support\Facades\Auth::check()) {
+            $currentUser = \Illuminate\Support\Facades\Auth::user();
             $isLoggedIn = true;
-            $userName = \Illuminate\Support\Facades\Auth::user()?->name ?? 'Gebruiker';
+            $userName = $currentUser?->name ?? 'Gebruiker';
         }
     } catch (\Throwable $e) {
         // Unhappy scenario (database down): vang database fouten netjes af
+        $currentUser = null;
         // Controleer sessie keys zonder SQL query uit te voeren
         $sessionKeys = array_keys(session()->all());
         foreach ($sessionKeys as $key) {
@@ -49,8 +52,7 @@
                         Home
                     </a>
                     {{-- Navigatielinks gefilterd op rol van de ingelogde gebruiker --}}
-                    @if($isLoggedIn)
-                        @php $currentUser = Auth::user(); @endphp
+                    @if($isLoggedIn && $currentUser)
 
                         {{-- Tickets: Zichtbaar voor Organisator en Bezoeker --}}
                         @if($currentUser?->isOrganisator() || $currentUser?->isBezoeker())
