@@ -18,6 +18,7 @@ class Evenement extends Model
     const UPDATED_AT = 'DatumGewijzigd';
 
     protected $fillable = [
+        'OrganisatorId',
         'Naam',
         'Datum',
         'Locatie',
