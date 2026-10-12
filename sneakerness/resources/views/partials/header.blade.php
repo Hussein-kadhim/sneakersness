@@ -3,16 +3,11 @@
     $isLoggedIn = false;
     $currentUser = null;
     $userName = 'Gebruiker';
-    $currentUser = null;
 
     try {
         if (\Illuminate\Support\Facades\Auth::check()) {
             $currentUser = \Illuminate\Support\Facades\Auth::user();
             $isLoggedIn = true;
-<<<<<<< HEAD
-=======
-            $currentUser = \Illuminate\Support\Facades\Auth::user();
->>>>>>> d52494db71e24bfefe525a62ad8e1fe95283705e
             $userName = $currentUser?->name ?? 'Gebruiker';
         }
     } catch (\Throwable $e) {
