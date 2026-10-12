@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contactpersoon;
+use App\Models\Verkoper;
 use App\Models\ContactPerVerkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -213,6 +214,84 @@ class ContactpersoonController extends Controller
 
             return back()->withInput()->withErrors([
                 'general' => 'Er is een fout opgetreden bij het opslaan van de contactpersoon in de database.',
+            ]);
+        }
+    }
+
+    /**
+     * Toont het koppelingsscherm voor contactpersoon en verkoper.
+     */
+    public function koppelenForm(Request $request): View
+    {
+        $contactpersonen = Contactpersoon::orderBy('Naam', 'asc')->with('verkopers')->get();
+        $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->with('stands')->get();
+
+        $geselecteerdeContactpersoonId = $request->query('contactpersoon_id');
+        $geselecteerdeVerkoperId = $request->query('verkoper_id');
+
+        return view('contactpersonen.koppelen', compact(
+            'contactpersonen',
+            'verkopers',
+            'geselecteerdeContactpersoonId',
+            'geselecteerdeVerkoperId'
+        ));
+    }
+
+    /**
+     * Verwerkt het koppelen van een contactpersoon aan een verkoper.
+     */
+    public function koppelenStore(Request $request)
+    {
+        // Unhappy scenario: controleer of zowel verkoper als contactpersoon zijn geselecteerd
+        if (!$request->filled('contactpersoon_id') || !$request->filled('verkoper_id')) {
+            return back()->withInput()->withErrors([
+                'general' => 'Selecteer zowel een verkoper als een contactpersoon',
+                'contactpersoon_id' => 'Selecteer zowel een verkoper als een contactpersoon',
+                'verkoper_id' => 'Selecteer zowel een verkoper als een contactpersoon',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'contactpersoon_id' => 'required|exists:Contactpersoon,Id',
+            'verkoper_id'       => 'required|exists:Verkoper,Id',
+            'rol'               => 'nullable|string|max:100',
+            'is_primair'        => 'nullable',
+        ], [
+            'contactpersoon_id.required' => 'Selecteer zowel een verkoper als een contactpersoon',
+            'contactpersoon_id.exists'   => 'De geselecteerde contactpersoon bestaat niet.',
+            'verkoper_id.required'       => 'Selecteer zowel een verkoper als een contactpersoon',
+            'verkoper_id.exists'         => 'De geselecteerde verkoper bestaat niet.',
+        ]);
+
+        try {
+            $contactpersoon = Contactpersoon::findOrFail($validated['contactpersoon_id']);
+            $verkoper = Verkoper::findOrFail($validated['verkoper_id']);
+
+            $rol = trim($request->input('rol', '')) ?: 'Standmanager';
+            $isPrimair = $request->has('is_primair');
+
+            ContactPerVerkoper::updateOrCreate(
+                [
+                    'VerkoperId'       => $verkoper->Id,
+                    'ContactpersoonId' => $contactpersoon->Id,
+                ],
+                [
+                    'IsActief'  => 1,
+                    'Opmerking' => $rol . ($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
+                ]
+            );
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol gekoppeld aan de verkoper');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het koppelen van contactpersoon aan verkoper: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file'      => $e->getFile(),
+                'line'      => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een technische fout opgetreden bij het koppelen. Probeer het opnieuw.',
             ]);
         }
     }
