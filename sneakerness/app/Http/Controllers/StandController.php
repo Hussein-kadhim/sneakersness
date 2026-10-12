@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stand;
+use App\Models\Verkoper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -149,6 +151,66 @@ class StandController extends Controller
                 'dbError' => $dbError,
             ]);
         }
+    }
+
+    /**
+     * Toont het formulier om een nieuwe stand toe te voegen.
+     */
+    public function create(Request $request): View
+    {
+        $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->get();
+
+        return view('stands.create', [
+            'verkopers' => $verkopers,
+            'dbError' => false,
+            'errorMessage' => null,
+        ]);
+    }
+
+    /**
+     * Valideert en slaat een nieuw aangemaakte stand op in de database.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'StandType' => ['required', 'string', 'in:AA+,AA,A'],
+            'VerkoperId' => ['required', 'integer', 'exists:Verkoper,Id'],
+            'Prijs' => ['required', 'numeric', 'min:0', 'max:9999.99'],
+            'AantalDagen' => ['required', 'integer', 'in:1,2'],
+            'VerhuurdStatus' => ['required', 'boolean'],
+            'Opmerking' => ['nullable', 'string', 'max:250'],
+        ], [
+            'StandType.required' => 'Het standtype is verplicht.',
+            'StandType.in' => 'Kies een geldig standtype (AA+, AA of A).',
+            'VerkoperId.required' => 'Selecteer een verkoper voor deze stand.',
+            'VerkoperId.exists' => 'De geselecteerde verkoper is ongeldig.',
+            'Prijs.required' => 'De prijs is verplicht.',
+            'Prijs.numeric' => 'Voer een geldig bedrag in voor de prijs.',
+            'Prijs.min' => 'De prijs mag niet negatief zijn.',
+            'Prijs.max' => 'De prijs mag niet hoger zijn dan € 9.999,99.',
+            'AantalDagen.required' => 'Het aantal dagen is verplicht.',
+            'AantalDagen.in' => 'Kies 1 dag of 2 dagen.',
+            'VerhuurdStatus.required' => 'Selecteer de verhuurstatus.',
+            'Opmerking.max' => 'De opmerking mag maximaal 250 tekens lang zijn.',
+        ]);
+
+        $stand = Stand::create([
+            'StandType' => $validated['StandType'],
+            'VerkoperId' => (int) $validated['VerkoperId'],
+            'Prijs' => $validated['Prijs'],
+            'AantalDagen' => (int) $validated['AantalDagen'],
+            'VerhuurdStatus' => (bool) $validated['VerhuurdStatus'],
+            'Opmerking' => $validated['Opmerking'] ?? null,
+            'IsActief' => true,
+        ]);
+
+        Log::info('Nieuwe stand succesvol toegevoegd.', [
+            'stand_id' => $stand->Id,
+            'stand_type' => $stand->StandType,
+            'verkoper_id' => $stand->VerkoperId,
+        ]);
+
+        return redirect()->route('stands.index')->with('success', 'Stand #' . $stand->StandType . '-' . str_pad($stand->Id, 3, '0', STR_PAD_LEFT) . ' is succesvol toegevoegd!');
     }
 
     /**
