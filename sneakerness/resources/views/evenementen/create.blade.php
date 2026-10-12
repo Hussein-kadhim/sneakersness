@@ -28,9 +28,11 @@
                 <p class="text-sm sm:text-base text-slate-500 mt-2">Vul de gegevens in om een nieuw evenement aan te maken.</p>
             </div>
 
+            {{-- Formulier voor het aanmaken van een nieuw evenement. --}}
             <form method="POST" action="{{ route('events.store') }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" novalidate>
                 @csrf
 
+                {{-- Toont alle validatiefouten bovenaan het formulier. --}}
                 @if($errors->any())
                     <div class="m-5 sm:m-8 mb-0 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
                         <p class="font-semibold mb-1">Controleer de ingevulde gegevens.</p>
@@ -43,6 +45,7 @@
                 @endif
 
                 <div class="p-5 sm:p-8">
+                    {{-- Velden voor de organisator en evenementgegevens. --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="sm:col-span-2">
                             <label for="Naam" class="block text-sm font-semibold text-slate-700 mb-1.5">Eventnaam <span class="text-orange-500">*</span></label>
@@ -110,6 +113,7 @@
                     </div>
                 </div>
 
+                {{-- Biedt opties om het formulier te annuleren of op te slaan. --}}
                 <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 px-5 sm:px-8 py-5 bg-slate-50 border-t border-slate-200">
                     <a href="{{ route('events.index') }}" class="inline-flex justify-center items-center px-5 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white">
                         Annuleren
