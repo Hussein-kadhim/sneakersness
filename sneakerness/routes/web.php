@@ -34,6 +34,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
 
     Route::get('/dashboard', function () {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->role === 'verkoper') {
+            return redirect()->route('stands.index');
+        }
+        if ($user && $user->role === 'bezoeker') {
+            return redirect()->route('events.index');
+        }
         return redirect()->route('verkopers.index');
     })->name('dashboard');
 

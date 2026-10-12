@@ -7,6 +7,7 @@ use App\Models\Stand;
 use App\Models\Verkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -153,6 +154,9 @@ class VerkoperController extends Controller
      */
     public function create(): View
     {
+        $user = Auth::user();
+        abort_unless($user && $user->role === 'organisator', 403);
+
         $categories = [
             'Sneakers',
             'Streetwear & Merch',
@@ -179,6 +183,9 @@ class VerkoperController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        abort_unless($user && $user->role === 'organisator', 403);
+
         // Validatieregels volgens de specificatie (Happy & Unhappy scenario)
         $validated = $request->validate([
             'naam' => 'required|string|max:100',

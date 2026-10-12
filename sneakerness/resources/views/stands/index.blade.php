@@ -199,10 +199,12 @@
                         <div class="text-xs text-slate-400">
                             {{ $stands->total() }} stands gevonden
                         </div>
-                        <a href="{{ route('stands.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Stand toevoegen
-                        </a>
+                        @if(auth()->user()?->isOrganisator())
+                            <a href="{{ route('stands.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                Stand toevoegen
+                            </a>
+                        @endif
                     </div>
                 </div>
 

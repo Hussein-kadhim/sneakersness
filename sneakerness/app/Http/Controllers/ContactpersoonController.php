@@ -7,6 +7,7 @@ use App\Models\Verkoper;
 use App\Models\ContactPerVerkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -170,6 +171,8 @@ class ContactpersoonController extends Controller
      */
     public function create(): View
     {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
         return view('contactpersonen.create');
     }
 
@@ -178,6 +181,8 @@ class ContactpersoonController extends Controller
      */
     public function store(Request $request)
     {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
         $validated = $request->validate([
             'voornaam'       => 'required|string|max:50',
             'achternaam'     => 'required|string|max:50',
@@ -223,6 +228,8 @@ class ContactpersoonController extends Controller
      */
     public function koppelenForm(Request $request): View
     {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
         $contactpersonen = Contactpersoon::orderBy('Naam', 'asc')->with('verkopers')->get();
         $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->with('stands')->get();
 
@@ -242,6 +249,8 @@ class ContactpersoonController extends Controller
      */
     public function koppelenStore(Request $request)
     {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
         // Unhappy scenario: controleer of zowel verkoper als contactpersoon zijn geselecteerd
         if (!$request->filled('contactpersoon_id') || !$request->filled('verkoper_id')) {
             return back()->withInput()->withErrors([
