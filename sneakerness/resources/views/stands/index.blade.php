@@ -220,12 +220,35 @@
                                 </div>
 
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
-                                        Wijzigen
-                                    </a>
-                                    <a href="#" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
-                                        Verwijderen
-                                    </a>
+                                    @if(Auth::check() && Auth::user()->isVerkoper())
+                                        <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="w-full">
+                                            @csrf
+                                            @if(!$stand->VerhuurdStatus)
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
+                                            @else
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-lock text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
+                                            @endif
+                                        </form>
+                                    @else
+                                        <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                            Wijzigen
+                                        </a>
+                                        <a href="#" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
+                                            Verwijderen
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -312,15 +335,39 @@
                                     </td>
 
                                     <td class="py-4 px-6 whitespace-nowrap text-right">
-                                        <div class="flex items-center justify-end gap-3 text-xs">
-                                            <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                Wijzigen
-                                            </a>
-                                            <span class="text-slate-300">|</span>
-                                            <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
-                                                Verwijderen
-                                            </a>
-                                        </div>
+                                         @if(Auth::check() && Auth::user()->isVerkoper())
+                                             <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
+                                                 @csrf
+                                                 @if(!$stand->VerhuurdStatus)
+                                                     <button
+                                                         type="submit"
+                                                         class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                     >
+                                                         <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                         Reserveren
+                                                     </button>
+                                                 @else
+                                                     <button
+                                                         type="submit"
+                                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                         title="Stand is reeds gereserveerd"
+                                                     >
+                                                         <i class="fa-solid fa-lock text-[10px]"></i>
+                                                         Reserveren
+                                                     </button>
+                                                 @endif
+                                            </form>
+                                        @else
+                                            <div class="flex items-center justify-end gap-3 text-xs">
+                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                    Wijzigen
+                                                </a>
+                                                <span class="text-slate-300">|</span>
+                                                <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
+                                                    Verwijderen
+                                                </a>
+                                            </div>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
