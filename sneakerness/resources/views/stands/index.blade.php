@@ -125,6 +125,54 @@
                     </div>
                 </div>
 
+                {{-- Verkoper reserveringspaneel: kies een stand en klik op Reserveren --}}
+                @if(Auth::check() && Auth::user()->isVerkoper())
+                    <div class="mb-6 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-orange-500 text-white uppercase tracking-wider">
+                                        Verkoper Portaal
+                                    </span>
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                                        Stand Reserveren
+                                    </h2>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 mt-1">
+                                    Kies een stand uit de lijst en reserveer deze direct voor het evenement.
+                                </p>
+                            </div>
+
+                            <form method="POST" action="{{ route('stands.reserveren.post') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                                @csrf
+                                <div class="relative min-w-[280px]">
+                                    <select
+                                        name="stand_id"
+                                        id="stand_reserveren_select"
+                                        required
+                                        class="w-full px-3.5 py-2.5 bg-white border border-orange-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                                    >
+                                        <option value="">-- Kies een stand om te reserveren --</option>
+                                        @foreach($allStands as $optStand)
+                                            <option value="{{ $optStand->Id }}">
+                                                Stand #{{ $optStand->StandType }}-{{ str_pad($optStand->Id, 3, '0', STR_PAD_LEFT) }} &bull; {{ $optStand->formatted_price }} ({{ $optStand->VerhuurdStatus ? 'Al gereserveerd' : 'Beschikbaar' }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button
+                                    type="submit"
+                                    id="btn_reserveren_keuze"
+                                    class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-sm transition-colors whitespace-nowrap"
+                                >
+                                    <i class="fa-solid fa-bookmark text-xs"></i>
+                                    Reserveren
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Zoek- en toevoegbalk --}}
                 <div class="mb-4">
                     <form method="GET" action="{{ route('stands.index') }}">
