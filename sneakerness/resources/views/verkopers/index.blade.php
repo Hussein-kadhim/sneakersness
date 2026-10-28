@@ -206,7 +206,7 @@
                             </div>
 
                             <div class="flex items-center justify-end gap-2">
-                                <a href="#" onclick="return false;" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                <a href="{{ route('verkopers.edit', $verkoper->Id) }}" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
                                     Wijzigen
                                 </a>
                                 <a href="#" onclick="return false;" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
@@ -288,7 +288,7 @@
 
                                     <td class="py-4 px-6 whitespace-nowrap text-right">
                                         <div class="flex items-center justify-end gap-3 text-xs">
-                                            <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                            <a href="{{ route('verkopers.edit', $verkoper->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
                                                 Wijzigen
                                             </a>
                                             <span class="text-slate-300">|</span>
