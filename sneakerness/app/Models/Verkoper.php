@@ -14,10 +14,12 @@ class Verkoper extends Model
 
     // Database tabel en primaire sleutel instellen
     protected $table = 'Verkoper';
+
     protected $primaryKey = 'Id';
 
     // Aangepaste kolomnamen voor timestamps
     const CREATED_AT = 'DatumAangemaakt';
+
     const UPDATED_AT = 'DatumGewijzigd';
 
     // Toegestane invoervelden
@@ -74,11 +76,11 @@ class Verkoper extends Model
     // Status label bepalen voor de weergave in tabellen en kaarten
     public function getStatusLabelAttribute(): string
     {
-        if (!empty($this->Opmerking) && in_array($this->Opmerking, ['Actief', 'Bevestigd', 'In behandeling', 'Inactief'])) {
+        if (! empty($this->Opmerking) && in_array($this->Opmerking, ['Actief', 'Bevestigd', 'In behandeling', 'Inactief'])) {
             return $this->Opmerking;
         }
 
-        if (!$this->IsActief) {
+        if (! $this->IsActief) {
             return 'Inactief';
         }
 
@@ -117,6 +119,101 @@ class Verkoper extends Model
         if (str_contains($category, 'tattoo') || str_contains($category, 'barber')) {
             return 'bg-purple-100 text-purple-800';
         }
+
         return 'bg-slate-100 text-slate-700';
+    }
+
+    /**
+     * Wijzigt de gegevens van de verkoper, inclusief gekoppelde contactpersoon en stand.
+     */
+    public function updateVerkoper(array $data): bool
+    {
+        $isActief = in_array(strtolower($data['status'] ?? 'actief'), ['actief', '1', 'bevestigd'], true);
+        $specialeStatus = strtolower($data['verkoopt_soort'] ?? '') === 'partners' ? 1 : ($this->SpecialeStatus ? 1 : 0);
+
+        $this->Naam = $data['naam'] ?? $this->Naam;
+        $this->VerkooptSoort = $data['verkoopt_soort'] ?? $this->VerkooptSoort;
+        $this->SpecialeStatus = $specialeStatus;
+        if (isset($data['stand_type'])) {
+            $this->StandType = $data['stand_type'];
+        }
+        if (isset($data['dagen'])) {
+            $this->Dagen = $data['dagen'];
+        }
+        $this->IsActief = $isActief ? 1 : 0;
+        if (isset($data['status'])) {
+            $this->Opmerking = $data['status'];
+        }
+
+        $saved = $this->save();
+
+        // Gekoppelde contactpersoon bijwerken
+        if (! empty($data['contactpersoon_naam']) || ! empty($data['contactpersoon_email']) || ! empty($data['contactpersoon_telefoon'])) {
+            $contact = $this->primary_contact;
+            if ($contact) {
+                if (! empty($data['contactpersoon_naam'])) {
+                    $contact->Naam = $data['contactpersoon_naam'];
+                }
+                if (! empty($data['contactpersoon_email'])) {
+                    $contact->Emailadres = $data['contactpersoon_email'];
+                }
+                if (! empty($data['contactpersoon_telefoon'])) {
+                    $contact->Telefoonnummer = $data['contactpersoon_telefoon'];
+                }
+                $contact->save();
+            } elseif (! empty($data['contactpersoon_naam']) && ! empty($data['contactpersoon_email'])) {
+                $newContact = Contactpersoon::create([
+                    'Naam' => $data['contactpersoon_naam'],
+                    'Emailadres' => $data['contactpersoon_email'],
+                    'Telefoonnummer' => $data['contactpersoon_telefoon'] ?? '',
+                    'IsActief' => 1,
+                    'Opmerking' => 'Contactpersoon '.$this->Naam,
+                ]);
+                $this->contactpersonen()->attach($newContact->Id, [
+                    'IsActief' => 1,
+                    'Opmerking' => 'Gekoppeld bij wijzigen verkoper',
+                ]);
+            }
+        }
+
+        // Gekoppelde stand bijwerken
+        if (isset($data['stand_type']) || isset($data['stand_nummer']) || isset($data['opmerking'])) {
+            $stand = $this->primary_stand;
+            $prijsMap = [
+                'AA+' => 450.00,
+                'AA' => 300.00,
+                'A' => 175.00,
+            ];
+
+            $standNummer = $data['stand_nummer'] ?? '';
+            $extraOpmerking = $data['opmerking'] ?? '';
+            $standOpmerking = $standNummer;
+            if ($extraOpmerking !== '') {
+                $standOpmerking = $standNummer !== '' ? ($standNummer.' • '.$extraOpmerking) : $extraOpmerking;
+            }
+
+            if ($stand) {
+                if (isset($data['stand_type'])) {
+                    $stand->StandType = $data['stand_type'];
+                    $stand->Prijs = $prijsMap[$data['stand_type']] ?? $stand->Prijs;
+                }
+                if ($standOpmerking !== '') {
+                    $stand->Opmerking = $standOpmerking;
+                }
+                $stand->VerhuurdStatus = $isActief ? 1 : 0;
+                $stand->save();
+            } elseif (! empty($data['stand_type'])) {
+                Stand::create([
+                    'VerkoperId' => $this->Id,
+                    'StandType' => $data['stand_type'],
+                    'Prijs' => $prijsMap[$data['stand_type']] ?? 250.00,
+                    'VerhuurdStatus' => $isActief ? 1 : 0,
+                    'IsActief' => 1,
+                    'Opmerking' => $standOpmerking ?: 'Stand toewijzing',
+                ]);
+            }
+        }
+
+        return $saved;
     }
 }
