@@ -216,4 +216,29 @@ class Verkoper extends Model
 
         return $saved;
     }
+
+    /**
+     * Controleert of de verkoper nog gekoppeld is aan één of meerdere contactpersonen of stands.
+     */
+    public function isGekoppeld(): bool
+    {
+        return $this->contactpersonen()->exists() || $this->stands()->exists();
+    }
+
+    /**
+     * Verwijder een verkoper uit de administratie.
+     * Retourneert false als de verkoper nog gekoppeld is en niet geforceerd mag worden.
+     */
+    public function deleteVerkoper(bool $force = false): bool
+    {
+        if (! $force && $this->isGekoppeld()) {
+            return false;
+        }
+
+        // Koppelingen met contactpersonen en stands ontkoppelen/verwijderen
+        $this->contactpersonen()->detach();
+        $this->stands()->delete();
+
+        return (bool) $this->delete();
+    }
 }

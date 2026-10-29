@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
     Route::get('/verkoper/wijzigen/{id}', [VerkoperController::class, 'edit'])->name('verkoper.wijzigen');
     Route::match(['post', 'put', 'patch'], '/verkoper/wijzigen/{id}', [VerkoperController::class, 'update'])->name('verkoper.wijzigen.update');
+    Route::match(['post', 'delete'], '/verkoper/verwijderen/{id}', [VerkoperController::class, 'delete'])->name('verkoper.destroy');
 
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
     Route::get('/contactpersonen/create', [ContactpersoonController::class, 'create'])->name('contactpersonen.create');

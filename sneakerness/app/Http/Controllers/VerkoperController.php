@@ -411,6 +411,64 @@ class VerkoperController extends Controller
     }
 
     /**
+     * Verwijdert een verkoper uit de administratie.
+     * Methode gevraagd in specificatie: delete() (of destroy()).
+     */
+    public function delete(Request $request, int|string $id)
+    {
+        $user = Auth::user();
+        abort_unless($user && ($user->role === 'organisator' || (method_exists($user, 'isOrganisator') && $user->isOrganisator())), 403);
+
+        $verkoper = Verkoper::with(['stands', 'contactpersonen'])->findOrFail($id);
+
+        $force = $request->boolean('force');
+
+        // Unhappy scenario: verkoper is nog gekoppeld aan contactpersoon of stand
+        if (! $force && $verkoper->isGekoppeld()) {
+            Log::warning('Verwijderen van verkoper geweigerd omdat deze nog gekoppeld is.', [
+                'verkoper_id' => $verkoper->Id,
+                'naam' => $verkoper->Naam,
+            ]);
+
+            $errorMessage = 'Deze verkoper kan niet worden verwijderd omdat de verkoper nog gekoppeld is.';
+
+            return redirect()->route('verkopers.index')
+                ->with('error', $errorMessage)
+                ->withErrors(['verkoper' => $errorMessage]);
+        }
+
+        try {
+            $naam = $verkoper->Naam;
+            $verkoper->deleteVerkoper($force);
+
+            Log::info('Verkoper succesvol verwijderd.', [
+                'verkoper_id' => $id,
+                'naam' => $naam,
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('success', 'Verkoper "'.$naam.'" is succesvol verwijderd.');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het verwijderen van verkoper: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('error', 'Er is een technische fout opgetreden bij het verwijderen van de verkoper.');
+        }
+    }
+
+    /**
+     * Resource destroy methode die doorstuurt naar delete().
+     */
+    public function destroy(Request $request, int|string $id)
+    {
+        return $this->delete($request, $id);
+    }
+
+    /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt verkopers op inclusief contactgegevens via MySQL Stored Procedure.
      */
