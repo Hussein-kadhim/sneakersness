@@ -32,7 +32,7 @@
                 </p>
             </div>
 
-            {{-- Succesmelding na toevoegen van verkoper (happy scenario) --}}
+            {{-- Succesmelding na actie (happy scenario) --}}
             @if(session('success'))
                 <div id="success-alert" class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500">
                     <i class="fa-solid fa-check text-white text-base"></i>
@@ -45,7 +45,24 @@
                             alert.style.opacity = '0';
                             setTimeout(function() { alert.remove(); }, 500);
                         }
-                    }, 2000);
+                    }, 3000);
+                </script>
+            @endif
+
+            {{-- Foutmelding na mislukte actie (bijv. unhappy scenario: verkoper nog gekoppeld) --}}
+            @if(session('error'))
+                <div id="error-alert" class="mb-6 p-4 bg-red-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500">
+                    <i class="fa-solid fa-circle-exclamation text-white text-base"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var alert = document.getElementById('error-alert');
+                        if (alert) {
+                            alert.style.opacity = '0';
+                            setTimeout(function() { alert.remove(); }, 500);
+                        }
+                    }, 4000);
                 </script>
             @endif
 
@@ -209,9 +226,13 @@
                                 <a href="{{ route('verkopers.edit', $verkoper->Id) }}" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
                                     Wijzigen
                                 </a>
-                                <a href="#" onclick="return false;" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
+                                <button
+                                    type="button"
+                                    onclick="openDeleteModal('{{ $verkoper->Id }}', '{{ addslashes($verkoper->Naam) }}', '{{ addslashes($stand?->location_display ?? 'Stand #' . ($stand?->StandType ?? 'AA') . '-' . str_pad($verkoper->Id, 3, '0', STR_PAD_LEFT)) }}', '{{ addslashes($stand ? ('Stand ' . $stand->StandType . ' • ' . $stand->days_short) : '') }}', '{{ addslashes($contact?->Naam ?? '') }}', '{{ addslashes($contact?->Email ?? '') }}')"
+                                    class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50 transition"
+                                >
                                     Verwijderen
-                                </a>
+                                </button>
                             </div>
                         </div>
                     @endforeach
@@ -292,9 +313,13 @@
                                                 Wijzigen
                                             </a>
                                             <span class="text-slate-300">|</span>
-                                            <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
+                                            <button
+                                                type="button"
+                                                onclick="openDeleteModal('{{ $verkoper->Id }}', '{{ addslashes($verkoper->Naam) }}', '{{ addslashes($stand?->location_display ?? 'Stand #' . ($stand?->StandType ?? 'AA') . '-' . str_pad($verkoper->Id, 3, '0', STR_PAD_LEFT)) }}', '{{ addslashes($stand ? ('Stand ' . $stand->StandType . ' • ' . $stand->days_short) : '') }}', '{{ addslashes($contact?->Naam ?? '') }}', '{{ addslashes($contact?->Email ?? '') }}')"
+                                                class="text-red-500 hover:text-red-700 font-semibold transition"
+                                            >
                                                 Verwijderen
-                                            </a>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -321,6 +346,107 @@
 
     {{-- Algemene voettekst --}}
     @include('partials.footer')
+
+    {{-- Bevestigingsmodal Verkoper Verwijderen (desktop en mobiel responsief) --}}
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        {{-- Backdrop --}}
+        <div id="deleteModalBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
+
+        {{-- Modal Card --}}
+        <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-6 sm:p-7 z-10 transition-all">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">
+                Verkoper verwijderen
+            </h3>
+
+            {{-- Desktop toelichting --}}
+            <p class="hidden sm:block text-sm text-slate-600 mb-4 leading-relaxed">
+                Weet je zeker dat je <strong id="deleteModalNameDesktop" class="font-bold text-slate-900"></strong> wilt verwijderen uit de administratie?
+            </p>
+
+            {{-- Desktop details box (Stand & Contactpersoon) --}}
+            <div id="deleteModalDetailsBox" class="hidden sm:block bg-slate-50 border border-slate-100 rounded-xl p-3.5 mb-6 text-xs text-slate-700 space-y-1">
+                <div id="deleteModalStandRow">
+                    <span class="font-bold text-slate-900">Stand:</span>
+                    <span id="deleteModalStandInfo" class="text-slate-600"></span>
+                </div>
+                <div id="deleteModalContactRow">
+                    <span class="font-bold text-slate-900">Contactpersoon:</span>
+                    <span id="deleteModalContactInfo" class="text-slate-600"></span>
+                </div>
+            </div>
+
+            {{-- Mobiele toelichting (exact conform mobiele design) --}}
+            <p class="sm:hidden text-sm text-slate-600 mb-6 leading-relaxed">
+                Weet je zeker dat je <strong id="deleteModalNameMobile" class="font-bold text-slate-900"></strong> (<span id="deleteModalStandMobile"></span>) wilt verwijderen? De standplek komt hiermee direct vrij.
+            </p>
+
+            {{-- Formulier --}}
+            <form id="deleteVerkoperForm" method="POST" action="">
+                @csrf
+                @method('DELETE')
+
+                {{-- Knoppen: Desktop side-by-side, Mobiel stacked --}}
+                <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
+                    <button
+                        type="button"
+                        onclick="closeDeleteModal()"
+                        class="w-full sm:w-auto order-2 sm:order-1 px-5 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold rounded-xl text-sm transition text-center"
+                    >
+                        Annuleren
+                    </button>
+                    <button
+                        type="submit"
+                        class="w-full sm:w-auto order-1 sm:order-2 px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl text-sm shadow-sm hover:shadow transition text-center"
+                    >
+                        Verwijderen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModal(id, name, standLocation, standDetails, contactName, contactEmail) {
+            var modal = document.getElementById('deleteModal');
+            var form = document.getElementById('deleteVerkoperForm');
+            var nameDesktop = document.getElementById('deleteModalNameDesktop');
+            var nameMobile = document.getElementById('deleteModalNameMobile');
+            var standMobile = document.getElementById('deleteModalStandMobile');
+            var standInfo = document.getElementById('deleteModalStandInfo');
+            var contactInfo = document.getElementById('deleteModalContactInfo');
+            var contactRow = document.getElementById('deleteModalContactRow');
+            var standRow = document.getElementById('deleteModalStandRow');
+
+            if (form) form.action = '/verkopers/' + id;
+            if (nameDesktop) nameDesktop.textContent = name;
+            if (nameMobile) nameMobile.textContent = name;
+
+            var standText = standLocation || 'Geen stand';
+            if (standDetails) standText += ' (' + standDetails + ')';
+            if (standInfo) standInfo.textContent = standText;
+            if (standMobile) standMobile.textContent = standLocation || 'Geen stand';
+
+            if (contactName) {
+                var contactText = contactName;
+                if (contactEmail) contactText += ' (' + contactEmail + ')';
+                if (contactInfo) contactInfo.textContent = contactText;
+                if (contactRow) contactRow.classList.remove('hidden');
+            } else {
+                if (contactRow) contactRow.classList.add('hidden');
+            }
+
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeDeleteModal() {
+            var modal = document.getElementById('deleteModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+    </script>
 
 </body>
 </html>
