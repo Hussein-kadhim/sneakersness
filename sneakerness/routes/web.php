@@ -27,6 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/contactpersonen', [ContactpersoonController::class, 'store'])->name('contactpersonen.store');
     Route::get('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenForm'])->name('contactpersonen.koppelen');
     Route::post('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('contactpersonen.koppelen.store');
+    Route::get('/contactpersonen/{contactpersoon}/edit', [ContactpersoonController::class, 'edit'])->name('contactpersonen.edit');
+    Route::put('/contactpersonen/{contactpersoon}', [ContactpersoonController::class, 'update'])->name('contactpersonen.update');
+    Route::patch('/contactpersonen/{contactpersoon}', [ContactpersoonController::class, 'update']);
+    Route::delete('/contactpersonen/{contactpersoon}/loskoppelen', [ContactpersoonController::class, 'delete'])->name('contactpersonen.loskoppelen');
+    Route::delete('/contactpersonen/{contactpersoon}', [ContactpersoonController::class, 'delete'])->name('contactpersonen.delete');
+    Route::delete('/contactpersonen/{contactpersoon}/destroy', [ContactpersoonController::class, 'destroy'])->name('contactpersonen.destroy');
+    Route::post('/contactpersonen/{contactpersoon}/delete', [ContactpersoonController::class, 'delete']);
 
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
     Route::get('/stands/create', [StandController::class, 'create'])->name('stands.create');
