@@ -323,4 +323,76 @@ class ContactpersoonController extends Controller
 
         return view('contactpersonen.edit', compact('contactpersoon', 'verkopers'));
     }
+
+    /**
+     * Slaat de gewijzigde gegevens van een contactpersoon op na validatie.
+     */
+    public function update(Request $request, int|string|Contactpersoon $contactpersoon)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        if (! $contactpersoon instanceof Contactpersoon) {
+            $contactpersoon = Contactpersoon::findOrFail($contactpersoon);
+        }
+
+        $validated = $request->validate([
+            'voornaam' => 'required|string|max:50',
+            'achternaam' => 'required|string|max:50',
+            'emailadres' => 'required|email|max:100',
+            'telefoonnummer' => 'required|string|max:20',
+            'functie' => 'nullable|string|max:100',
+            'opmerking' => 'nullable|string|max:250',
+            'verkoper_id' => 'nullable',
+            'status' => 'nullable|string|max:50',
+        ], [
+            'voornaam.required' => 'Dit veld is verplicht',
+            'achternaam.required' => 'Dit veld is verplicht',
+            'emailadres.required' => 'Dit veld is verplicht',
+            'emailadres.email' => 'Vul een geldig e-mailadres in.',
+            'telefoonnummer.required' => 'Dit veld is verplicht',
+        ]);
+
+        try {
+            $naam = trim($validated['voornaam'].' '.$validated['achternaam']);
+            $rol = $request->input('functie') ?: ($request->input('opmerking') ?: ($contactpersoon->Opmerking ?: 'Standmanager'));
+            $status = $request->input('status', 'Actief');
+            $isActief = in_array(strtolower($status), ['actief', '1', 'bevestigd', 'true'], true);
+
+            $contactpersoon->update([
+                'Naam' => $naam,
+                'Emailadres' => $validated['emailadres'],
+                'Telefoonnummer' => $validated['telefoonnummer'],
+                'Opmerking' => $rol,
+                'IsActief' => $isActief,
+            ]);
+
+            // Koppeling aan verkoper bijwerken
+            if ($request->filled('verkoper_id')) {
+                $verkoperId = (int) $request->input('verkoper_id');
+                $isPrimair = $request->has('is_primair');
+
+                $contactpersoon->verkopers()->sync([
+                    $verkoperId => [
+                        'IsActief' => 1,
+                        'Opmerking' => $rol.($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
+                    ],
+                ]);
+            } elseif ($request->has('verkoper_id') && empty($request->input('verkoper_id'))) {
+                $contactpersoon->verkopers()->detach();
+            }
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Gegevens succesvol bijgewerkt');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het bijwerken van contactpersoon in ContactpersoonController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een fout opgetreden bij het bijwerken van de contactpersoon in de database.',
+            ]);
+        }
+    }
 }
