@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
+    Route::delete('/events/{event}', [EvenementController::class, 'destroy'])->name('events.destroy');
 
     Route::get('/dashboard', function () {
         $user = \Illuminate\Support\Facades\Auth::user();
