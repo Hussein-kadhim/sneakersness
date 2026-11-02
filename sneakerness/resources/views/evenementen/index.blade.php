@@ -196,9 +196,11 @@
                                 </div>
 
                                 <div class="flex gap-2 mt-3">
-                                    <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
+                                    @if(auth()->user()?->isOrganisator())
+                                    <a href="{{ route('events.edit', $event->Id) }}" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Wijzigen
                                     </a>
+                                    @endif
                                     <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
                                         Verwijderen
                                     </a>
