@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StandController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VerkoperController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -17,13 +18,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenForm'])->name('verkopers.koppelen');
     Route::post('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('verkopers.koppelen.store');
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
-    
+    Route::get('/verkoper/wijzigen/{id}', [VerkoperController::class, 'edit'])->name('verkoper.wijzigen');
+    Route::match(['post', 'put', 'patch'], '/verkoper/wijzigen/{id}', [VerkoperController::class, 'update'])->name('verkoper.wijzigen.update');
+    Route::match(['post', 'delete'], '/verkoper/verwijderen/{id}', [VerkoperController::class, 'delete'])->name('verkoper.destroy');
+
     Route::get('/contactpersonen', [ContactpersoonController::class, 'index'])->name('contactpersonen.index');
     Route::get('/contactpersonen/create', [ContactpersoonController::class, 'create'])->name('contactpersonen.create');
     Route::post('/contactpersonen', [ContactpersoonController::class, 'store'])->name('contactpersonen.store');
     Route::get('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenForm'])->name('contactpersonen.koppelen');
     Route::post('/contactpersonen/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('contactpersonen.koppelen.store');
-    
+
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
     Route::get('/stands/create', [StandController::class, 'create'])->name('stands.create');
     Route::post('/stands', [StandController::class, 'store'])->name('stands.store');
@@ -35,13 +39,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/events/{event}', [EvenementController::class, 'destroy'])->name('events.destroy');
 
     Route::get('/dashboard', function () {
-        $user = \Illuminate\Support\Facades\Auth::user();
+        $user = Auth::user();
         if ($user && $user->role === 'verkoper') {
             return redirect()->route('stands.index');
         }
         if ($user && $user->role === 'bezoeker') {
             return redirect()->route('events.index');
         }
+
         return redirect()->route('verkopers.index');
     })->name('dashboard');
 
