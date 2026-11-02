@@ -32,6 +32,37 @@ class EvenementVerwijderenTest extends TestCase
         $overview->assertDontSee('Sneakerness Rotterdam 2026');
     }
 
+    public function test_database_error_during_event_deletion_keeps_the_event_and_shows_message(): void
+    {
+        $user = User::factory()->create(['role' => 'organisator']);
+        $eventId = $this->createEvent();
+
+        $response = $this->actingAs($user)->delete(route('events.destroy', [
+            'event' => $eventId,
+            'db_error' => 1,
+        ]));
+
+        $response->assertRedirect(route('events.index'));
+        $response->assertSessionHas('databaseError', true);
+        $this->assertDatabaseHas('Evenement', [
+            'Id' => $eventId,
+            'Naam' => 'Sneakerness Rotterdam 2026',
+        ]);
+
+        $overview = $this->get(route('events.index'));
+        $overview->assertOk();
+        $overview->assertSee('Er is een probleem met de database. Probeer het later opnieuw.');
+    }
+
+    public function test_non_organisator_cannot_delete_an_event(): void
+    {
+        $user = User::factory()->create(['role' => 'bezoeker']);
+        $eventId = $this->createEvent();
+
+        $this->actingAs($user)->delete(route('events.destroy', $eventId))->assertForbidden();
+        $this->assertDatabaseHas('Evenement', ['Id' => $eventId]);
+    }
+
     private function createEvent(): int
     {
         $organisatorId = DB::table('Organisator')->insertGetId([
