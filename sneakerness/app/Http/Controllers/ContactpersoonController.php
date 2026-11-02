@@ -395,4 +395,37 @@ class ContactpersoonController extends Controller
             ]);
         }
     }
+
+    /**
+     * Ontkoppelt een contactpersoon van een verkoper conform de beoordelingsspecificatie.
+     *
+     * Controller: ContactpersoonController
+     * Methode: delete()
+     * Model: ContactpersoonModel
+     * Methode: deleteContactpersoon()
+     */
+    public function delete(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        $id = $contactpersoon instanceof Contactpersoon
+            ? $contactpersoon->Id
+            : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
+
+        $target = Contactpersoon::findOrFail($id);
+        $verkoperId = $request->input('verkoper_id') ? (int) $request->input('verkoper_id') : null;
+
+        $target->deleteContactpersoon($verkoperId);
+
+        return redirect()->route('contactpersonen.index')
+            ->with('success', 'Contactpersoon succesvol losgekoppeld van de verkoper');
+    }
+
+    /**
+     * Alternatieve methodenaam voor destroy routering.
+     */
+    public function destroy(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        return $this->delete($request, $contactpersoon);
+    }
 }
