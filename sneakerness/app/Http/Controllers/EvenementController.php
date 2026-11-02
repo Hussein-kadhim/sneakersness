@@ -95,37 +95,7 @@ class EvenementController extends Controller
             ->with('success', 'Het event is toegevoegd.');
     }
 
-    public function edit(int $event): View
-    {
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
-        abort_unless($user && $user->isOrganisator(), 403);
-
-        try {
-            $event = Evenement::findOrFail($event);
-            $organisatoren = Organisator::orderBy('Naam')->get();
-        } catch (QueryException|\PDOException $e) {
-            Log::error('Fout bij het laden van het eventformulier in EvenementController: '.$e->getMessage(), [
-                'exception' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
-            return view('evenementen.edit', [
-                'event' => null,
-                'organisatoren' => collect(),
-                'dbError' => true,
-            ]);
-        }
-
-        return view('evenementen.edit', [
-            'event' => $event,
-            'organisatoren' => $organisatoren,
-            'dbError' => false,
-        ]);
-    }
-
-    public function update(Request $request, int $event): RedirectResponse
+    public function destroy(Request $request, int $event): RedirectResponse
     {
         /** @var \App\Models\User|null $user */
         $user = $request->user();
@@ -135,40 +105,28 @@ class EvenementController extends Controller
             if ($request->has('db_error') || $request->has('unhappy')) {
                 throw new QueryException(
                     'sqlite',
-                    'update "Evenement"',
+                    'delete from "Evenement"',
                     [],
                     new \PDOException('Database is momenteel niet beschikbaar')
                 );
             }
 
-            $validated = $request->validate([
-                'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')],
-                'Naam' => ['required', 'string', 'max:100'],
-                'Datum' => ['required', 'date'],
-                'Locatie' => ['required', 'string', 'max:150'],
-                'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
-                'BeschikbareStands' => ['required', 'integer', 'min:0'],
-                'IsActief' => ['required', 'boolean'],
-                'Opmerking' => ['nullable', 'string', 'max:250'],
-            ]);
-
-            Evenement::findOrFail($event)->update($validated);
+            Evenement::findOrFail($event)->delete();
         } catch (QueryException|\PDOException $e) {
-            Log::error('Fout bij het bijwerken van een evenement in EvenementController: '.$e->getMessage(), [
+            Log::error('Fout bij het verwijderen van een evenement in EvenementController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
 
             return redirect()
-                ->route('events.edit', $event)
-                ->withInput($request->except(['_token', '_method']))
+                ->route('events.index')
                 ->with('databaseError', true);
         }
 
         return redirect()
             ->route('events.index')
-            ->with('success', 'Het event is gewijzigd.');
+            ->with('success', 'Het event is verwijderd.');
     }
 
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
