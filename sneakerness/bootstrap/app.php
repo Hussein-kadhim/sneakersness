@@ -43,6 +43,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            if ($request->is('events/*/edit')) {
+                return response()->view('evenementen.edit', [
+                    'event' => null,
+                    'organisatoren' => collect(),
+                    'dbError' => true,
+                ], 200);
+            }
+
             // Fallback voor evenementen overzicht
             if ($request->is('events*')) {
                 return response()->view('evenementen.index', [
