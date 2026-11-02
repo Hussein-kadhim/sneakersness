@@ -336,6 +336,24 @@
         </form>
     </dialog>
 
+    <script>
+        const deleteEventDialog = document.getElementById('delete-event-dialog');
+        const deleteEventForm = document.getElementById('delete-event-form');
+        const deleteEventName = document.getElementById('delete-event-name');
+
+        document.querySelectorAll('[data-delete-url]').forEach((button) => {
+            button.addEventListener('click', () => {
+                deleteEventForm.action = button.dataset.deleteUrl;
+                deleteEventName.textContent = `“${button.dataset.eventName}”`;
+                deleteEventDialog.showModal();
+            });
+        });
+
+        document.querySelectorAll('[data-close-delete-dialog]').forEach((button) => {
+            button.addEventListener('click', () => deleteEventDialog.close());
+        });
+    </script>
+
     {{-- Algemene voettekst --}}
     @include('partials.footer')
 
