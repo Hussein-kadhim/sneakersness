@@ -43,6 +43,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 200);
             }
 
+            if ($request->is('events/*/edit')) {
+                return response()->view('evenementen.edit', [
+                    'event' => null,
+                    'organisatoren' => collect(),
+                    'dbError' => true,
+                ], 200);
+            }
+
+            if ($request->is('events/*') && in_array($request->method(), ['PUT', 'PATCH'], true)) {
+                return redirect()
+                    ->route('events.edit', $request->route('event'))
+                    ->withInput($request->except(['_token', '_method']))
+                    ->with('databaseError', true);
+            }
+
             // Fallback voor evenementen overzicht
             if ($request->is('events*')) {
                 return response()->view('evenementen.index', [

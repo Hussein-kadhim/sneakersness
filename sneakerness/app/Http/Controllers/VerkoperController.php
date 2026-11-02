@@ -7,6 +7,7 @@ use App\Models\Stand;
 use App\Models\Verkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -69,9 +70,9 @@ class VerkoperController extends Controller
             // Expliciete SQL LEFT JOIN demonstratie tussen Verkoper, ContactPerVerkoper en Contactpersoon
             if ($request->has('join') || $request->input('sort') === 'contactpersoon') {
                 $query->leftJoin('ContactPerVerkoper', 'Verkoper.Id', '=', 'ContactPerVerkoper.VerkoperId')
-                      ->leftJoin('Contactpersoon', 'ContactPerVerkoper.ContactpersoonId', '=', 'Contactpersoon.Id')
-                      ->select('Verkoper.*')
-                      ->distinct();
+                    ->leftJoin('Contactpersoon', 'ContactPerVerkoper.ContactpersoonId', '=', 'Contactpersoon.Id')
+                    ->select('Verkoper.*')
+                    ->distinct();
             }
 
             // Lege lijst forceren voor testdoeleinden
@@ -124,7 +125,7 @@ class VerkoperController extends Controller
             ));
         } catch (\Throwable $e) {
             // Criterium: Technische log wegschrijven
-            Log::error('Fout bij het ophalen van verkopers in VerkoperController: ' . $e->getMessage(), [
+            Log::error('Fout bij het ophalen van verkopers in VerkoperController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -220,22 +221,22 @@ class VerkoperController extends Controller
 
             // 1. Verkoper aanmaken
             $verkoper = Verkoper::create([
-                'Naam'          => $validated['naam'],
-                'SpecialeStatus'=> $specialeStatus,
+                'Naam' => $validated['naam'],
+                'SpecialeStatus' => $specialeStatus,
                 'VerkooptSoort' => $validated['verkoopt_soort'],
-                'StandType'     => $validated['stand_type'],
-                'Dagen'         => $validated['dagen'],
-                'IsActief'      => $isActief ? 1 : 0,
-                'Opmerking'     => $validated['status'],
+                'StandType' => $validated['stand_type'],
+                'Dagen' => $validated['dagen'],
+                'IsActief' => $isActief ? 1 : 0,
+                'Opmerking' => $validated['status'],
             ]);
 
             // 2. Contactpersoon aanmaken
             $contactpersoon = Contactpersoon::create([
-                'Naam'           => $validated['contactpersoon_naam'],
+                'Naam' => $validated['contactpersoon_naam'],
                 'Telefoonnummer' => $validated['contactpersoon_telefoon'],
-                'Emailadres'     => $validated['contactpersoon_email'],
-                'IsActief'       => 1,
-                'Opmerking'      => 'Contactpersoon ' . $validated['naam'],
+                'Emailadres' => $validated['contactpersoon_email'],
+                'IsActief' => 1,
+                'Opmerking' => 'Contactpersoon '.$validated['naam'],
             ]);
 
             // 3. Koppeltabel invullen
@@ -254,12 +255,12 @@ class VerkoperController extends Controller
             $prijs = $prijsMap[$validated['stand_type']] ?? 250.00;
 
             Stand::create([
-                'VerkoperId'     => $verkoper->Id,
-                'StandType'      => $validated['stand_type'],
-                'Prijs'          => $prijs,
+                'VerkoperId' => $verkoper->Id,
+                'StandType' => $validated['stand_type'],
+                'Prijs' => $prijs,
                 'VerhuurdStatus' => $isActief ? 1 : 0,
-                'IsActief'       => 1,
-                'Opmerking'      => $validated['stand_nummer'] . ($validated['opmerking'] ? ' • ' . $validated['opmerking'] : ''),
+                'IsActief' => 1,
+                'Opmerking' => $validated['stand_nummer'].($validated['opmerking'] ? ' • '.$validated['opmerking'] : ''),
             ]);
 
             DB::commit();
@@ -270,10 +271,10 @@ class VerkoperController extends Controller
             ]);
 
             return redirect()->route('verkopers.index')
-                ->with('success', 'Verkoper "' . $verkoper->Naam . '" is succesvol toegevoegd.');
+                ->with('success', 'Verkoper "'.$verkoper->Naam.'" is succesvol toegevoegd.');
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Fout bij het toevoegen van een verkoper: ' . $e->getMessage(), [
+            Log::error('Fout bij het toevoegen van een verkoper: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -286,20 +287,201 @@ class VerkoperController extends Controller
     }
 
     /**
+     * Toont het formulier om een bestaande verkoper te wijzigen.
+     */
+    public function edit(int|string $id): View
+    {
+        $user = Auth::user();
+        abort_unless($user && ($user->role === 'organisator' || (method_exists($user, 'isOrganisator') && $user->isOrganisator())), 403);
+
+        $verkoper = Verkoper::with(['stands', 'contactpersonen'])->findOrFail($id);
+
+        $categories = [
+            'Sneakers',
+            'Streetwear & Merch',
+            'Art & Collectibles',
+            'Eten en Drinken',
+            'Kids Corner',
+            'Accessoires',
+            'Partners',
+            'Custom Sneakers',
+            'Overig',
+        ];
+
+        $standTypes = [
+            'AA+' => 'Stand AA+ (36m²)',
+            'AA' => 'Stand AA',
+            'A' => 'Stand A',
+        ];
+
+        $contact = $verkoper->primary_contact;
+        $stand = $verkoper->primary_stand;
+
+        // Standnummer en extra opmerking ontleden
+        $standNummer = '';
+        $standExtra = '';
+        if ($stand && ! empty($stand->Opmerking)) {
+            $parts = explode(' • ', $stand->Opmerking, 2);
+            $standNummer = $parts[0] ?? '';
+            $standExtra = $parts[1] ?? '';
+        } elseif ($stand) {
+            $standNummer = 'Stand #'.$stand->StandType.'-'.str_pad($stand->Id, 3, '0', STR_PAD_LEFT);
+        } else {
+            $standNummer = 'Stand #AA-'.str_pad($verkoper->Id, 3, '0', STR_PAD_LEFT).' • Hal 1';
+        }
+
+        // Als er geen opmerking in stand zat, bekijk eventuele opmerking in Verkoper
+        if ($standExtra === '' && ! empty($verkoper->Opmerking) && ! in_array($verkoper->Opmerking, ['Actief', 'Bevestigd', 'In behandeling', 'Inactief'])) {
+            $standExtra = $verkoper->Opmerking;
+        }
+
+        return view('verkopers.edit', compact(
+            'verkoper',
+            'categories',
+            'standTypes',
+            'contact',
+            'stand',
+            'standNummer',
+            'standExtra'
+        ));
+    }
+
+    /**
+     * Verwerkt de wijzigingen van een bestaande verkoper in de database.
+     */
+    public function update(Request $request, int|string $id)
+    {
+        $user = Auth::user();
+        abort_unless($user && ($user->role === 'organisator' || (method_exists($user, 'isOrganisator') && $user->isOrganisator())), 403);
+
+        $validated = $request->validate([
+            'naam' => 'required|string|max:100',
+            'verkoopt_soort' => 'required|string|max:100',
+            'contactpersoon_naam' => 'required|string|max:100',
+            'contactpersoon_email' => 'required|email|max:100',
+            'contactpersoon_telefoon' => 'required|string|max:20',
+            'stand_type' => 'required|in:A,AA,AA+',
+            'stand_nummer' => 'required|string|max:150',
+            'dagen' => 'required|string',
+            'status' => 'required|string',
+            'opmerking' => 'nullable|string|max:250',
+            'stuur_bevestiging' => 'nullable|boolean',
+        ], [
+            'naam.required' => 'Bedrijfsnaam is verplicht.',
+            'verkoopt_soort.required' => 'Selecteer een categorie.',
+            'contactpersoon_naam.required' => 'Naam van de contactpersoon is verplicht.',
+            'contactpersoon_email.required' => 'E-mailadres is verplicht.',
+            'contactpersoon_email.email' => 'Voer een geldig e-mailadres in.',
+            'contactpersoon_telefoon.required' => 'Telefoonnummer is verplicht.',
+            'stand_type.required' => 'Selecteer een standtype.',
+            'stand_type.in' => 'Selecteer een geldig standtype (A, AA of AA+).',
+            'stand_nummer.required' => 'Standnummer / Hal is verplicht.',
+            'dagen.required' => 'Selecteer de aanwezigheidsdagen.',
+            'status.required' => 'Selecteer een status.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $verkoper = Verkoper::findOrFail($id);
+
+            // Model methode updateVerkoper aanroepen voor het wegschrijven naar de database
+            $verkoper->updateVerkoper($validated);
+
+            DB::commit();
+
+            Log::info('Verkoper succesvol bijgewerkt.', [
+                'verkoper_id' => $verkoper->Id,
+                'naam' => $verkoper->Naam,
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('success', 'Verkoper "'.$verkoper->Naam.'" is succesvol bijgewerkt.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Fout bij het bijwerken van verkoper: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een technische fout opgetreden bij het bijwerken van de verkoper. Probeer het opnieuw.',
+            ]);
+        }
+    }
+
+    /**
+     * Verwijdert een verkoper uit de administratie.
+     * Methode gevraagd in specificatie: delete() (of destroy()).
+     */
+    public function delete(Request $request, int|string $id)
+    {
+        $user = Auth::user();
+        abort_unless($user && ($user->role === 'organisator' || (method_exists($user, 'isOrganisator') && $user->isOrganisator())), 403);
+
+        $verkoper = Verkoper::with(['stands', 'contactpersonen'])->findOrFail($id);
+
+        $force = $request->boolean('force');
+
+        // Unhappy scenario: verkoper is nog gekoppeld aan contactpersoon of stand
+        if (! $force && $verkoper->isGekoppeld()) {
+            Log::warning('Verwijderen van verkoper geweigerd omdat deze nog gekoppeld is.', [
+                'verkoper_id' => $verkoper->Id,
+                'naam' => $verkoper->Naam,
+            ]);
+
+            $errorMessage = 'Deze verkoper kan niet worden verwijderd omdat de verkoper nog gekoppeld is.';
+
+            return redirect()->route('verkopers.index')
+                ->with('error', $errorMessage)
+                ->withErrors(['verkoper' => $errorMessage]);
+        }
+
+        try {
+            $naam = $verkoper->Naam;
+            $verkoper->deleteVerkoper($force);
+
+            Log::info('Verkoper succesvol verwijderd.', [
+                'verkoper_id' => $id,
+                'naam' => $naam,
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('success', 'Verkoper "'.$naam.'" is succesvol verwijderd.');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het verwijderen van verkoper: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()->route('verkopers.index')
+                ->with('error', 'Er is een technische fout opgetreden bij het verwijderen van de verkoper.');
+        }
+    }
+
+    /**
+     * Resource destroy methode die doorstuurt naar delete().
+     */
+    public function destroy(Request $request, int|string $id)
+    {
+        return $this->delete($request, $id);
+    }
+
+    /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt verkopers op inclusief contactgegevens via MySQL Stored Procedure.
-     *
-     * @return array
      */
     public function getVerkopersViaProcedure(): array
     {
         try {
             return DB::select('CALL sp_GetVerkopersMetDetails()');
         } catch (\Throwable $e) {
-            Log::error('Fout bij uitvoeren Stored Procedure sp_GetVerkopersMetDetails: ' . $e->getMessage(), [
+            Log::error('Fout bij uitvoeren Stored Procedure sp_GetVerkopersMetDetails: '.$e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return [];
         }
     }
@@ -307,7 +489,7 @@ class VerkoperController extends Controller
     /**
      * Criterium: Gebruik van expliciete Joins via Query Builder
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getVerkopersMetJoins()
     {
@@ -325,7 +507,8 @@ class VerkoperController extends Controller
                 ->where('Verkoper.IsActief', 1)
                 ->get();
         } catch (\Throwable $e) {
-            Log::error('Fout bij uitvoeren van expliciete JOIN query voor verkopers: ' . $e->getMessage());
+            Log::error('Fout bij uitvoeren van expliciete JOIN query voor verkopers: '.$e->getMessage());
+
             return collect();
         }
     }

@@ -49,6 +49,15 @@
                 </script>
             @endif
 
+            @if(session('databaseError'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
+                    <div class="flex items-center gap-2 font-semibold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Er is een probleem met de database. Probeer het later opnieuw.</span>
+                    </div>
+                </div>
+            @endif
+
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage))
                 <div class="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
@@ -196,12 +205,16 @@
                                 </div>
 
                                 <div class="flex gap-2 mt-3">
-                                    <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
+                                    @if(auth()->user()?->isOrganisator())
+                                    <a href="{{ route('events.edit', $event->Id) }}" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Wijzigen
                                     </a>
-                                    <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
-                                        Verwijderen
-                                    </a>
+                                    @if(auth()->user()?->isOrganisator())
+                                        <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
+                                            class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
+                                            Verwijderen
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -256,13 +269,17 @@
                                         </td>
                                         <td class="py-4 px-6 whitespace-nowrap text-right">
                                             <div class="flex items-center justify-end gap-3 text-xs">
-                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                @if(auth()->user()?->isOrganisator())
+                                                <a href="{{ route('events.edit', $event->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
                                                     Wijzigen
                                                 </a>
                                                 <span class="text-slate-300">|</span>
-                                                <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
-                                                    Verwijderen
-                                                </a>
+                                                @if(auth()->user()?->isOrganisator())
+                                                    <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
+                                                        class="text-slate-600 hover:text-slate-900">
+                                                        Verwijderen
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -292,6 +309,52 @@
 
         </div>
     </main>
+
+    <dialog id="delete-event-dialog" class="w-[calc(100%-2rem)] max-w-md rounded-xl p-0 shadow-2xl backdrop:bg-slate-900/40">
+        <form id="delete-event-form" method="POST" class="p-6">
+            @csrf
+            @method('DELETE')
+            <div class="flex items-start justify-between gap-4">
+                <h2 class="text-lg font-bold text-slate-900">Event verwijderen</h2>
+                <button type="button" data-close-delete-dialog aria-label="Sluiten" class="text-slate-400 hover:text-slate-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="mt-4 text-sm text-slate-600">
+                Weet je zeker dat je het event <span id="delete-event-name" class="font-semibold text-slate-900"></span> wilt verwijderen?
+            </p>
+            <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800" role="note">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                Let op: gekoppelde tickets worden ook verwijderd. Deze actie kan niet ongedaan worden gemaakt.
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" data-close-delete-dialog class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+                    Annuleren
+                </button>
+                <button type="submit" class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
+                    Verwijderen
+                </button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const deleteEventDialog = document.getElementById('delete-event-dialog');
+        const deleteEventForm = document.getElementById('delete-event-form');
+        const deleteEventName = document.getElementById('delete-event-name');
+
+        document.querySelectorAll('[data-delete-url]').forEach((button) => {
+            button.addEventListener('click', () => {
+                deleteEventForm.action = button.dataset.deleteUrl;
+                deleteEventName.textContent = `“${button.dataset.eventName}”`;
+                deleteEventDialog.showModal();
+            });
+        });
+
+        document.querySelectorAll('[data-close-delete-dialog]').forEach((button) => {
+            button.addEventListener('click', () => deleteEventDialog.close());
+        });
+    </script>
 
     {{-- Algemene voettekst --}}
     @include('partials.footer')
