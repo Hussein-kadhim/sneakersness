@@ -95,6 +95,40 @@ class EvenementController extends Controller
             ->with('success', 'Het event is toegevoegd.');
     }
 
+    public function destroy(Request $request, int $event): RedirectResponse
+    {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+        abort_unless($user && $user->isOrganisator(), 403);
+
+        try {
+            if ($request->has('db_error') || $request->has('unhappy')) {
+                throw new QueryException(
+                    'sqlite',
+                    'delete from "Evenement"',
+                    [],
+                    new \PDOException('Database is momenteel niet beschikbaar')
+                );
+            }
+
+            Evenement::findOrFail($event)->delete();
+        } catch (QueryException|\PDOException $e) {
+            Log::error('Fout bij het verwijderen van een evenement in EvenementController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('events.index')
+                ->with('databaseError', true);
+        }
+
+        return redirect()
+            ->route('events.index')
+            ->with('success', 'Het event is verwijderd.');
+    }
+
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
     public function index(Request $request): View
     {
