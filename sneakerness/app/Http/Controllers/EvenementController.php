@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evenement;
 use App\Models\Organisator;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -92,6 +93,36 @@ class EvenementController extends Controller
         return redirect()
             ->route('events.index')
             ->with('success', 'Het event is toegevoegd.');
+    }
+
+    public function edit(int $event): View
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        abort_unless($user && $user->isOrganisator(), 403);
+
+        try {
+            $event = Evenement::findOrFail($event);
+            $organisatoren = Organisator::orderBy('Naam')->get();
+        } catch (QueryException|\PDOException $e) {
+            Log::error('Fout bij het laden van het eventformulier in EvenementController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->view('evenementen.edit', [
+                'event' => null,
+                'organisatoren' => collect(),
+                'dbError' => true,
+            ]);
+        }
+
+        return view('evenementen.edit', [
+            'event' => $event,
+            'organisatoren' => $organisatoren,
+            'dbError' => false,
+        ]);
     }
 
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
