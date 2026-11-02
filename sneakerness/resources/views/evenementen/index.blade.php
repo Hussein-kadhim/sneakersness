@@ -272,9 +272,12 @@
                                                     Wijzigen
                                                 </a>
                                                 <span class="text-slate-300">|</span>
-                                                <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
-                                                    Verwijderen
-                                                </a>
+                                                @if(auth()->user()?->isOrganisator())
+                                                    <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
+                                                        class="text-slate-600 hover:text-slate-900">
+                                                        Verwijderen
+                                                    </button>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
