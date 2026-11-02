@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
     Route::get('/events/{event}/edit', [EvenementController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EvenementController::class, 'update'])->name('events.update');
 
     Route::get('/dashboard', function () {
         $user = \Illuminate\Support\Facades\Auth::user();

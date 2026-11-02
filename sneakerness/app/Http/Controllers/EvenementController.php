@@ -125,6 +125,52 @@ class EvenementController extends Controller
         ]);
     }
 
+    public function update(Request $request, int $event): RedirectResponse
+    {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+        abort_unless($user && $user->isOrganisator(), 403);
+
+        try {
+            if ($request->has('db_error') || $request->has('unhappy')) {
+                throw new QueryException(
+                    'sqlite',
+                    'update "Evenement"',
+                    [],
+                    new \PDOException('Database is momenteel niet beschikbaar')
+                );
+            }
+
+            $validated = $request->validate([
+                'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')],
+                'Naam' => ['required', 'string', 'max:100'],
+                'Datum' => ['required', 'date'],
+                'Locatie' => ['required', 'string', 'max:150'],
+                'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
+                'BeschikbareStands' => ['required', 'integer', 'min:0'],
+                'IsActief' => ['required', 'boolean'],
+                'Opmerking' => ['nullable', 'string', 'max:250'],
+            ]);
+
+            Evenement::findOrFail($event)->update($validated);
+        } catch (QueryException|\PDOException $e) {
+            Log::error('Fout bij het bijwerken van een evenement in EvenementController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('events.edit', $event)
+                ->withInput($request->except(['_token', '_method']))
+                ->with('databaseError', true);
+        }
+
+        return redirect()
+            ->route('events.index')
+            ->with('success', 'Het event is gewijzigd.');
+    }
+
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
     public function index(Request $request): View
     {
