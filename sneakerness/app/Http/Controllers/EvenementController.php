@@ -111,7 +111,7 @@ class EvenementController extends Controller
                 'line' => $e->getLine(),
             ]);
 
-            return response()->view('evenementen.edit', [
+            return view('evenementen.edit', [
                 'event' => null,
                 'organisatoren' => collect(),
                 'dbError' => true,
