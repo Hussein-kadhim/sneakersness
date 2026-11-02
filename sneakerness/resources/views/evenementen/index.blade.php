@@ -196,9 +196,11 @@
                                 </div>
 
                                 <div class="flex gap-2 mt-3">
-                                    <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
+                                    @if(auth()->user()?->isOrganisator())
+                                    <a href="{{ route('events.edit', $event->Id) }}" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Wijzigen
                                     </a>
+                                    @endif
                                     <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
                                         Verwijderen
                                     </a>
@@ -256,10 +258,12 @@
                                         </td>
                                         <td class="py-4 px-6 whitespace-nowrap text-right">
                                             <div class="flex items-center justify-end gap-3 text-xs">
-                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                @if(auth()->user()?->isOrganisator())
+                                                <a href="{{ route('events.edit', $event->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
                                                     Wijzigen
                                                 </a>
                                                 <span class="text-slate-300">|</span>
+                                                @endif
                                                 <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
                                                     Verwijderen
                                                 </a>
