@@ -208,9 +208,12 @@
                                     <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Wijzigen
                                     </a>
-                                    <a href="#" onclick="return false;" class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
-                                        Verwijderen
-                                    </a>
+                                    @if(auth()->user()?->isOrganisator())
+                                        <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
+                                            class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
+                                            Verwijderen
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
