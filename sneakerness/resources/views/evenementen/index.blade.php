@@ -49,6 +49,15 @@
                 </script>
             @endif
 
+            @if(session('databaseError'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
+                    <div class="flex items-center gap-2 font-semibold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Er is een probleem met de database. Probeer het later opnieuw.</span>
+                    </div>
+                </div>
+            @endif
+
             {{-- Foutmelding bij database storing (unhappy scenario) --}}
             @if(!empty($errorMessage))
                 <div class="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6">
