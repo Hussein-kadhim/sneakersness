@@ -136,4 +136,18 @@ class Contactpersoon extends Model
 
         return true;
     }
+
+    /**
+     * Ontkoppelt een contactpersoon van een verkoper conform de specificatie.
+     * Methode: unlinkVerkoper() of loskoppelVerkoper()
+     */
+    public function unlinkVerkoper(?int $verkoperId = null): bool
+    {
+        return $this->deleteContactpersoon($verkoperId);
+    }
+
+    public function loskoppelVerkoper(?int $verkoperId = null): bool
+    {
+        return $this->unlinkVerkoper($verkoperId);
+    }
 }
