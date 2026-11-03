@@ -196,7 +196,7 @@ class ContactpersoonWijzigenTest extends TestCase
         );
 
         $deleteResponse->assertRedirect(route('contactpersonen.index'));
-        $deleteResponse->assertSessionHas('success', 'Contactpersoon succesvol losgekoppeld van de verkoper');
+        $deleteResponse->assertSessionHas('success', 'Contactpersoon succesvol losgekoppeld');
 
         // Koppeling is verwijderd
         $this->assertEquals(0, $contactpersoon->fresh()->verkopers()->count());
