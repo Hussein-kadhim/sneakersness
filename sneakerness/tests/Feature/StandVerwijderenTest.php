@@ -19,7 +19,61 @@ class StandVerwijderenTest extends TestCase
             'role' => 'organisator',
             'email' => 'organisator@sneakerness.com',
         ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
     }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     private function createVerkoperUser(string $name = 'Sole Vault Rotterdam'): User
     {
@@ -28,7 +82,61 @@ class StandVerwijderenTest extends TestCase
             'role' => 'verkoper',
             'email' => strtolower(str_replace(' ', '.', $name)) . '@sneakerness.com',
         ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
     }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     private function createBezoekerUser(): User
     {
@@ -37,7 +145,61 @@ class StandVerwijderenTest extends TestCase
             'role' => 'bezoeker',
             'email' => 'bezoeker@sneakerness.com',
         ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
     }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     private function createTestStand(string $verkoperNaam = 'Test Verkoper', bool $isVerhuurd = false): Stand
     {
@@ -60,7 +222,61 @@ class StandVerwijderenTest extends TestCase
             'IsActief' => true,
             'Opmerking' => 'Stand #AA-100 • Hal 1',
         ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
     }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Happy scenario 1:
@@ -81,7 +297,61 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseMissing('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
     }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Happy scenario 2:
@@ -101,6 +371,114 @@ class StandVerwijderenTest extends TestCase
 
         $this->assertDatabaseMissing('Stand', [
             'Id' => $eigenStand->Id,
+        ]);
+        /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Beveiliging / Unhappy scenario 1:
+     * Verkoper probeert stand van een andere verkoper te verwijderen -> 403 Forbidden.
+     */
+    public function test_verkoper_kan_stand_van_andere_verkoper_niet_verwijderen(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Verkoper A');
+        $andermansStand = $this->createTestStand('Verkoper B', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)
+            ->delete("/stands/{$andermansStand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $andermansStand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 2:
+     * Bezoeker probeert een stand te verwijderen -> 403 Forbidden.
+     */
+    public function test_bezoeker_mag_geen_stand_verwijderen(): void
+    {
+        $bezoeker = $this->createBezoekerUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($bezoeker)
+            ->delete("/stands/{$stand->Id}");
+
+        $response->assertStatus(403);
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+
+    /**
+     * Beveiliging / Unhappy scenario 3:
+     * Niet-ingelogde bezoeker/gast wordt doorgestuurd naar login.
+     */
+    public function test_gast_wordt_doorgestuurd_naar_login(): void
+    {
+        $stand = $this->createTestStand();
+
+        $response = $this->delete("/stands/{$stand->Id}");
+
+        $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
         ]);
     }
 }
