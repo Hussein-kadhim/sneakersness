@@ -124,17 +124,19 @@ class Contactpersoon extends Model
     }
 
     /**
-     * Ontkoppelt een contactpersoon van een specifieke verkoper of van alle verkopers.
+     * Verwijdert een contactpersoon definitief of ontkoppelt van een specifieke verkoper.
      */
     public function deleteContactpersoon(?int $verkoperId = null): bool
     {
         if ($verkoperId) {
             $this->verkopers()->detach($verkoperId);
-        } else {
-            $this->verkopers()->detach();
+
+            return true;
         }
 
-        return true;
+        $this->verkopers()->detach();
+
+        return (bool) $this->delete();
     }
 
     /**

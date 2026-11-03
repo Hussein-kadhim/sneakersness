@@ -241,13 +241,9 @@
                                         Koppelen
                                     </a>
                                 @endif
-                                <form action="{{ route('contactpersonen.delete', $contactpersoon->Id) }}" method="POST" class="w-full" onsubmit="return confirm('Weet je zeker dat je deze contactpersoon wilt ontkoppelen of verwijderen?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full text-center py-2.5 px-3 border border-red-200 text-red-500 text-xs font-semibold rounded-lg hover:bg-red-50">
-                                        Verwijderen
-                                    </button>
-                                </form>
+                                <button type="button" onclick="openVerwijderModal('{{ $contactpersoon->Id }}', '{{ addslashes($contactpersoon->Naam) }}', '{{ addslashes($contactpersoon->role_display) }}', '{{ $verkoper ? addslashes($verkoper->Naam . ($stand ? ' (' . $stand->location_display . ')' : '')) : 'Geen verkoper gekoppeld' }}', '{{ addslashes($contactpersoon->Email) }}')" class="w-full text-center py-2.5 px-3 border border-red-200 text-red-500 text-xs font-semibold rounded-lg hover:bg-red-50 cursor-pointer">
+                                    Verwijderen
+                                </button>
                             </div>
                         </div>
                     @endforeach
@@ -336,11 +332,11 @@
                                                 <button type="button" onclick="openLoskoppelModal('{{ $contactpersoon->Id }}', '{{ addslashes($contactpersoon->Naam) }}', '{{ addslashes($verkoper->Naam) }}', '{{ $verkoper->Id }}')" class="text-orange-500 hover:text-orange-600 font-semibold bg-transparent border-none p-0 cursor-pointer">
                                                     Ontkoppelen
                                                 </button>
-                                                <span class="text-slate-300">|</span>
-                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                    Verwijderen
-                                                </a>
                                             @endif
+                                            <span class="text-slate-300">|</span>
+                                            <button type="button" onclick="openVerwijderModal('{{ $contactpersoon->Id }}', '{{ addslashes($contactpersoon->Naam) }}', '{{ addslashes($contactpersoon->role_display) }}', '{{ $verkoper ? addslashes($verkoper->Naam . ($stand ? ' (' . $stand->location_display . ')' : '')) : 'Geen verkoper gekoppeld' }}', '{{ addslashes($contactpersoon->Email) }}')" class="text-orange-500 hover:text-orange-600 font-semibold bg-transparent border-none p-0 cursor-pointer">
+                                                Verwijderen
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -372,7 +368,7 @@
                 Contactpersoon loskoppelen
             </h3>
             <p class="text-sm text-slate-600 mb-4 leading-relaxed">
-                Weet je zeker dat je contactpersoon <strong id="modalContactName" class="text-slate-900">Mark de Vries</strong> wilt loskoppelen van <strong id="modalVerkoperName" class="text-slate-900">Kicks Rotterdam</strong>?
+                Weet je zeker dat je contactpersoon <strong id="modalContactName" class="text-slate-900"></strong> wilt loskoppelen van <strong id="modalVerkoperName" class="text-slate-900"></strong>?
             </p>
 
             <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-6 text-xs text-slate-500 leading-relaxed text-left">
@@ -403,6 +399,49 @@
         </div>
     </div>
 
+    {{-- Bevestigingsdialoog Modal voor Verwijderen conform screenshot --}}
+    <div id="verwijderModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 relative animate-fadeIn">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">
+                Contactpersoon verwijderen
+            </h3>
+            <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                Weet je zeker dat je contactpersoon <strong id="verwijderModalContactName" class="text-slate-900"></strong> wilt verwijderen uit het systeem?
+            </p>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-3 text-xs text-slate-700 space-y-1.5 text-left">
+                <div><span class="font-bold">Functie:</span> <span id="verwijderModalFunctie">-</span></div>
+                <div><span class="font-bold">Gekoppeld aan:</span> <span id="verwijderModalVerkoper">-</span></div>
+                <div><span class="font-bold">E-mail:</span> <span id="verwijderModalEmail">-</span></div>
+            </div>
+
+            <p class="text-xs text-slate-500 mb-6 text-left leading-relaxed">
+                De koppeling met de verkoper wordt hierdoor ook automatisch beëindigd.
+            </p>
+
+            <form id="verwijderForm" method="POST" action="">
+                @csrf
+                @method('DELETE')
+
+                <div class="flex items-center justify-end gap-3">
+                    <button
+                        type="button"
+                        onclick="closeVerwijderModal()"
+                        class="px-5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-sm rounded-xl transition cursor-pointer"
+                    >
+                        Annuleren
+                    </button>
+                    <button
+                        type="submit"
+                        class="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-xl shadow-sm transition cursor-pointer"
+                    >
+                        Verwijderen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Algemene voettekst --}}
     @include('partials.footer')
 
@@ -417,6 +456,19 @@
 
         function closeLoskoppelModal() {
             document.getElementById('loskoppelModal').classList.add('hidden');
+        }
+
+        function openVerwijderModal(contactId, contactNaam, functie, verkoperTekst, email) {
+            document.getElementById('verwijderModalContactName').textContent = contactNaam;
+            document.getElementById('verwijderModalFunctie').textContent = functie;
+            document.getElementById('verwijderModalVerkoper').textContent = verkoperTekst;
+            document.getElementById('verwijderModalEmail').textContent = email;
+            document.getElementById('verwijderForm').action = '/contactpersonen/' + contactId;
+            document.getElementById('verwijderModal').classList.remove('hidden');
+        }
+
+        function closeVerwijderModal() {
+            document.getElementById('verwijderModal').classList.add('hidden');
         }
     </script>
 </body>
