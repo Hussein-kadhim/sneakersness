@@ -397,6 +397,77 @@ class ContactpersoonController extends Controller
     }
 
     /**
+     * Toont het detailscherm van een specifieke contactpersoon.
+     * View conform specificatie: contactpersoon_detail.php
+     */
+    public function show(int|string|Contactpersoon $contactpersoon): View
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        if (! $contactpersoon instanceof Contactpersoon) {
+            $contactpersoon = Contactpersoon::with('verkopers.stands')->findOrFail($contactpersoon);
+        } else {
+            $contactpersoon->loadMissing('verkopers.stands');
+        }
+
+        return view('contactpersonen.detail', compact('contactpersoon'));
+    }
+
+    /**
+     * Ontkoppelt een contactpersoon van een verkoper conform de specificatie.
+     *
+     * Controller: ContactpersoonController
+     * Methode: loskoppelen() of unlink()
+     * Model: ContactpersoonModel
+     * Methode: loskoppelVerkoper() of unlinkVerkoper()
+     */
+    public function loskoppelen(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        // Simulatie van unhappy scenario (server-/netwerkfout)
+        if ($request->has('error') || $request->has('unhappy') || $request->has('server_error') || $request->has('netwerk_fout') || $request->has('db_error')) {
+            Log::warning('Unhappy scenario gesimuleerd voor contactpersoon loskoppelen.', ['ip' => $request->ip()]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Loskoppelen mislukt, probeer het later opnieuw',
+            ])->with('error', 'Loskoppelen mislukt, probeer het later opnieuw');
+        }
+
+        try {
+            $id = $contactpersoon instanceof Contactpersoon
+                ? $contactpersoon->Id
+                : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
+
+            $target = Contactpersoon::findOrFail($id);
+            $verkoperId = $request->input('verkoper_id') ? (int) $request->input('verkoper_id') : null;
+
+            $target->loskoppelVerkoper($verkoperId);
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol losgekoppeld');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het loskoppelen van contactpersoon: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Loskoppelen mislukt, probeer het later opnieuw',
+            ])->with('error', 'Loskoppelen mislukt, probeer het later opnieuw');
+        }
+    }
+
+    /**
+     * Alias methode voor unlink() conform specificatie.
+     */
+    public function unlink(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        return $this->loskoppelen($request, $contactpersoon);
+    }
+
+    /**
      * Ontkoppelt een contactpersoon van een verkoper conform de beoordelingsspecificatie.
      *
      * Controller: ContactpersoonController
@@ -406,19 +477,7 @@ class ContactpersoonController extends Controller
      */
     public function delete(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
     {
-        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
-
-        $id = $contactpersoon instanceof Contactpersoon
-            ? $contactpersoon->Id
-            : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
-
-        $target = Contactpersoon::findOrFail($id);
-        $verkoperId = $request->input('verkoper_id') ? (int) $request->input('verkoper_id') : null;
-
-        $target->deleteContactpersoon($verkoperId);
-
-        return redirect()->route('contactpersonen.index')
-            ->with('success', 'Contactpersoon succesvol losgekoppeld van de verkoper');
+        return $this->loskoppelen($request, $contactpersoon);
     }
 
     /**
@@ -426,6 +485,6 @@ class ContactpersoonController extends Controller
      */
     public function destroy(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
     {
-        return $this->delete($request, $contactpersoon);
+        return $this->loskoppelen($request, $contactpersoon);
     }
 }
