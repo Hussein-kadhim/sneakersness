@@ -221,21 +221,30 @@
                             </div>
 
                             <div class="flex flex-col sm:flex-row gap-2 mt-3">
-                                <a href="#" class="w-full text-center py-2.5 px-3 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50">
+                                <a href="{{ route('contactpersonen.edit', $contactpersoon->Id) }}" class="w-full text-center py-2.5 px-3 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50">
                                     Wijzigen
                                 </a>
                                 @if($verkoper)
-                                    <a href="#" class="w-full text-center py-2.5 px-3 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50">
-                                        Ontkoppelen
-                                    </a>
+                                    <form action="{{ route('contactpersonen.loskoppelen', $contactpersoon->Id) }}" method="POST" class="w-full" onsubmit="return confirm('Weet je zeker dat je deze contactpersoon wilt ontkoppelen?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="verkoper_id" value="{{ $verkoper->Id }}">
+                                        <button type="submit" class="w-full text-center py-2.5 px-3 border border-slate-200 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50">
+                                            Ontkoppelen
+                                        </button>
+                                    </form>
                                 @else
                                     <a href="{{ route('contactpersonen.koppelen', ['contactpersoon_id' => $contactpersoon->Id]) }}" class="w-full text-center py-2.5 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Koppelen
                                     </a>
                                 @endif
-                                <a href="#" class="w-full text-center py-2.5 px-3 border border-red-200 text-red-500 text-xs font-semibold rounded-lg hover:bg-red-50">
-                                    Verwijderen
-                                </a>
+                                <form action="{{ route('contactpersonen.delete', $contactpersoon->Id) }}" method="POST" class="w-full" onsubmit="return confirm('Weet je zeker dat je deze contactpersoon wilt ontkoppelen of verwijderen?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-full text-center py-2.5 px-3 border border-red-200 text-red-500 text-xs font-semibold rounded-lg hover:bg-red-50">
+                                        Verwijderen
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     @endforeach
@@ -316,13 +325,20 @@
                                                 </a>
                                                 <span class="text-slate-300">|</span>
                                             @endif
-                                            <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                            <a href="{{ route('contactpersonen.edit', $contactpersoon->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
                                                 Wijzigen
                                             </a>
-                                            <span class="text-slate-300">|</span>
-                                            <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                Verwijderen
-                                            </a>
+                                            @if($verkoper)
+                                                <span class="text-slate-300">|</span>
+                                                <form action="{{ route('contactpersonen.loskoppelen', $contactpersoon->Id) }}" method="POST" class="inline" onsubmit="return confirm('Weet je zeker dat je deze contactpersoon wilt ontkoppelen van de verkoper?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <input type="hidden" name="verkoper_id" value="{{ $verkoper->Id }}">
+                                                    <button type="submit" class="text-orange-500 hover:text-orange-600 font-semibold bg-transparent border-none p-0 cursor-pointer">
+                                                        Ontkoppelen
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
