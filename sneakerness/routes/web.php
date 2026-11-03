@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/stands', [StandController::class, 'index'])->name('stands.index');
     Route::get('/stands/create', [StandController::class, 'create'])->name('stands.create');
     Route::post('/stands', [StandController::class, 'store'])->name('stands.store');
+    Route::get('/stands/select-edit', [StandController::class, 'selectEdit'])->name('stands.select-edit');
+    Route::get('/stands/{id}/edit', [StandController::class, 'edit'])->name('stands.edit');
+    Route::put('/stands/{id}', [StandController::class, 'update'])->name('stands.update');
+    Route::patch('/stands/{id}', [StandController::class, 'update']);
     Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
     Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
