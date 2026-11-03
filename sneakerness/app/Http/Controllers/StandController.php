@@ -398,6 +398,20 @@ class StandController extends Controller
             return redirect()->route('login');
         }
 
+        // =========================================================================
+        // UNHAPPY SCENARIO:
+        // Gesimuleerde databasefout via query-parameter
+        // =========================================================================
+        if ($request->hasAny(['error', 'unhappy', 'db_error', 'database_error'])) {
+            Log::warning('Gesimuleerde databasefout bij het verwijderen van een stand.', [
+                'stand_id' => $id,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('error', 'Stand verwijderen is niet gelukt');
+        }
+
         $stand = Stand::find((int) $id);
 
         if (!$stand) {
@@ -432,7 +446,13 @@ class StandController extends Controller
             return redirect()->route('stands.index')
                 ->with('success', 'Stand is succesvol verwijderd');
         } catch (Throwable $e) {
-            return redirect()->route('stands.index');
+            Log::error('Fout bij het verwijderen van stand in StandController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'stand_id' => $id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('error', 'Stand verwijderen is niet gelukt');
         }
     }
 
