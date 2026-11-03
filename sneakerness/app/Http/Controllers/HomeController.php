@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evenement;
 use App\Models\Stand;
 use App\Models\Verkoper;
 use Illuminate\Support\Collection;
@@ -25,6 +26,12 @@ class HomeController extends Controller
         // Totaal aantal stands bepalen (of fallback)
         $totalStands = Stand::count();
 
+        // Haal actieve evenementen op voor de ticket aankoop sectie
+        $events = Evenement::query()
+            ->where('IsActief', true)
+            ->orderBy('Datum', 'asc')
+            ->get();
+
         return view('home.index', [
             'verkopers' => $verkopers,
             'totalVerkopers' => Verkoper::count(),
@@ -32,6 +39,7 @@ class HomeController extends Controller
             'rentedStandsCount' => Stand::where('VerhuurdStatus', 1)->count(),
             'totalStands' => $totalStands > 0 ? $totalStands : 55,
             'categories' => $this->categories(),
+            'events' => $events,
         ]);
     }
 
