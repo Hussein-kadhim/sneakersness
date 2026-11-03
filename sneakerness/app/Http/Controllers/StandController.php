@@ -405,6 +405,21 @@ class StandController extends Controller
                 ->with('error', 'Deze stand bestaat niet.');
         }
 
+        // Autorisatiecontrole:
+        // Organisator mag alle stands verwijderen
+        // Verkoper mag alleen zijn eigen stand verwijderen
+        if ($user->isVerkoper()) {
+            $isEigenStand = ($stand->VerkoperId && $stand->verkoper && $stand->verkoper->Naam === $user->name);
+            if (!$isEigenStand) {
+                $userVerkoper = Verkoper::where('Naam', $user->name)->first();
+                if (!$userVerkoper || $stand->VerkoperId !== $userVerkoper->Id) {
+                    abort(403, 'Je bent niet bevoegd om deze stand te verwijderen.');
+                }
+            }
+        } elseif (!$user->isOrganisator()) {
+            abort(403, 'Je hebt geen rechten om een stand te verwijderen.');
+        }
+
         return redirect()->route('stands.index');
     }
 
