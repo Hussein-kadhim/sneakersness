@@ -468,7 +468,7 @@ class ContactpersoonController extends Controller
     }
 
     /**
-     * Ontkoppelt een contactpersoon van een verkoper conform de beoordelingsspecificatie.
+     * Verwijdert een contactpersoon definitief uit het systeem conform de specificatie.
      *
      * Controller: ContactpersoonController
      * Methode: delete()
@@ -477,7 +477,18 @@ class ContactpersoonController extends Controller
      */
     public function delete(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
     {
-        return $this->loskoppelen($request, $contactpersoon);
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        $id = $contactpersoon instanceof Contactpersoon
+            ? $contactpersoon->Id
+            : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
+
+        $target = Contactpersoon::findOrFail($id);
+
+        $target->deleteContactpersoon();
+
+        return redirect()->route('contactpersonen.index')
+            ->with('success', 'Contactpersoon succesvol verwijderd');
     }
 
     /**
@@ -485,6 +496,6 @@ class ContactpersoonController extends Controller
      */
     public function destroy(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
     {
-        return $this->loskoppelen($request, $contactpersoon);
+        return $this->delete($request, $contactpersoon);
     }
 }
