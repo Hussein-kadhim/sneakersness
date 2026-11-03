@@ -50,7 +50,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -71,6 +103,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -105,7 +201,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -126,6 +254,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -158,7 +350,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -179,6 +403,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -195,7 +483,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -216,6 +536,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -257,7 +641,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -278,6 +694,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -312,7 +792,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -333,6 +845,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -365,7 +941,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -386,6 +994,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -402,7 +1074,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -423,6 +1127,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -464,7 +1232,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -485,6 +1285,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -519,7 +1383,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -540,6 +1436,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -572,7 +1532,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -593,6 +1585,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -609,7 +1665,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -630,6 +1718,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -685,7 +1837,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -706,6 +1890,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -740,7 +1988,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -761,6 +2041,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -793,7 +2137,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -814,6 +2190,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -830,7 +2270,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -851,6 +2323,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -904,7 +2440,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -925,6 +2493,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -959,7 +2591,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -980,6 +2644,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1012,7 +2740,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1033,6 +2793,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -1049,7 +2873,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1070,6 +2926,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1123,7 +3043,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1144,6 +3096,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1178,7 +3194,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1199,6 +3247,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1231,7 +3343,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1252,6 +3396,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -1268,7 +3476,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1289,6 +3529,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -1322,7 +3626,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1343,6 +3679,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1377,7 +3777,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1398,6 +3830,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
 
@@ -1430,7 +3926,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1451,6 +3979,70 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
     /**
@@ -1467,7 +4059,39 @@ class StandVerwijderenTest extends TestCase
 
         $response->assertRedirect('/stands');
         $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
     }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
 
     /**
      * Unhappy scenario 5:
@@ -1488,5 +4112,69 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
+    }
+}
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Organisator.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_organisator(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $stand->Id));
+    }
+
+    /**
+     * UI weergave test:
+     * Standsoverzicht toont de werkende verwijderactie voor Verkoper bij eigen gereserveerde stand.
+     */
+    public function test_stands_overzicht_toont_verwijder_knop_voor_verkoper_bij_eigen_stand(): void
+    {
+        $verkoperUser = $this->createVerkoperUser('Eigen Verkoper');
+        $eigenStand = $this->createTestStand('Eigen Verkoper', isVerhuurd: true);
+
+        $response = $this->actingAs($verkoperUser)->get('/stands');
+
+        $response->assertStatus(200);
+        $response->assertSee('Jouw stand');
+        $response->assertSee('Verwijderen');
+        $response->assertSee(route('stands.destroy', $eigenStand->Id));
     }
 }
