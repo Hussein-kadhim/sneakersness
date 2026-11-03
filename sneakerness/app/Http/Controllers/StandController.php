@@ -420,7 +420,20 @@ class StandController extends Controller
             abort(403, 'Je hebt geen rechten om een stand te verwijderen.');
         }
 
-        return redirect()->route('stands.index');
+        try {
+            $standId = $stand->Id;
+            $stand->delete();
+
+            Log::info('Stand succesvol verwijderd.', [
+                'stand_id' => $standId,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('success', 'Stand is succesvol verwijderd');
+        } catch (Throwable $e) {
+            return redirect()->route('stands.index');
+        }
     }
 
     /**
