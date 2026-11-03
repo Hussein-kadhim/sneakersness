@@ -388,6 +388,27 @@ class StandController extends Controller
     }
 
     /**
+     * Verwijdert een stand van de beursvloer.
+     */
+    public function destroy(Request $request, int|string $id): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $stand = Stand::find((int) $id);
+
+        if (!$stand) {
+            return redirect()->route('stands.index')
+                ->with('error', 'Deze stand bestaat niet.');
+        }
+
+        return redirect()->route('stands.index');
+    }
+
+    /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt alle stands op inclusief verkoperdetails via MySQL Stored Procedure.
      *
