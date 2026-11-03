@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/stands', [StandController::class, 'store'])->name('stands.store');
     Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
     Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
+    Route::delete('/stands/{id}', [StandController::class, 'destroy'])->name('stands.destroy');
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
