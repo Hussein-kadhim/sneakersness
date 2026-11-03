@@ -12,9 +12,11 @@ class Bezoeker extends Model
     use HasFactory;
 
     protected $table = 'Bezoeker';
+
     protected $primaryKey = 'Id';
 
     const CREATED_AT = 'DatumAangemaakt';
+
     const UPDATED_AT = 'DatumGewijzigd';
 
     protected $fillable = [
@@ -25,14 +27,24 @@ class Bezoeker extends Model
     ];
 
     protected $casts = [
-        'IsActief'        => 'boolean',
+        'IsActief' => 'boolean',
         'DatumAangemaakt' => 'datetime',
-        'DatumGewijzigd'  => 'datetime',
+        'DatumGewijzigd' => 'datetime',
     ];
 
     // Relatie: een bezoeker kan meerdere tickets hebben
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'BezoekerId', 'Id');
+    }
+
+    public function getEmailAttribute(): ?string
+    {
+        return $this->attributes['Emailadres'] ?? $this->attributes['Email'] ?? null;
+    }
+
+    public function setEmailAttribute(?string $value): void
+    {
+        $this->attributes['Emailadres'] = $value;
     }
 }
