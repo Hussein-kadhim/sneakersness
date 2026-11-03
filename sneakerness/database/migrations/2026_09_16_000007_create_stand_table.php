@@ -20,6 +20,7 @@ return new class extends Migration
             // Type stand (bijv. AA+, AA of A) en verhuurstatus
             $table->string('StandType', 10);
             $table->decimal('Prijs', 6, 2);
+            $table->tinyInteger('AantalDagen')->default(1);
             $table->boolean('VerhuurdStatus')->default(false);
 
             // Status en opmerkingen

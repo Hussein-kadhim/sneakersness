@@ -23,6 +23,7 @@
     <main class="flex-grow py-5 sm:py-10">
         @php
             $allStands = $allStands ?? collect();
+            $myReservedStands = $myReservedStands ?? collect();
         @endphp
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -125,6 +126,55 @@
                     </div>
                 </div>
 
+                {{-- Verkoper standbeheer: eigen gereserveerde stand wijzigen --}}
+                @if(Auth::check() && Auth::user()->isVerkoper() && $myReservedStands->isNotEmpty())
+                    <div class="mb-6 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-blue-600 text-white uppercase tracking-wider">
+                                        Mijn Reservering
+                                    </span>
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                                        Stand Reservering Wijzigen
+                                    </h2>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 mt-1">
+                                    Je hebt {{ $myReservedStands->count() }} {{ $myReservedStands->count() === 1 ? 'stand' : 'stands' }} gereserveerd. Selecteer je stand en klik op "Wijzigen" om gegevens aan te passen.
+                                </p>
+                            </div>
+
+                            <form method="GET" action="{{ route('stands.select-edit') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                                <div class="relative min-w-[280px]">
+                                    <select
+                                        id="mijn_stand_select"
+                                        name="stand_id"
+                                        required
+                                        class="w-full px-3.5 py-2.5 bg-white border border-blue-200 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                                    >
+                                        @if($myReservedStands->count() > 1)
+                                            <option value="">-- Selecteer je stand om te wijzigen --</option>
+                                        @endif
+                                        @foreach($myReservedStands as $myStand)
+                                            <option value="{{ $myStand->Id }}">
+                                                Stand #{{ $myStand->StandType }}-{{ str_pad($myStand->Id, 3, '0', STR_PAD_LEFT) }} &bull; {{ $myStand->formatted_price }} ({{ $myStand->days_text }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button
+                                    type="submit"
+                                    id="btn_mijn_stand_wijzigen"
+                                    class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-sm transition-colors whitespace-nowrap"
+                                >
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                    Wijzigen
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Verkoper reserveringspaneel: kies een stand en klik op Reserveren --}}
                 @if(Auth::check() && Auth::user()->isVerkoper())
                     <div class="mb-6 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-200 rounded-2xl p-4 sm:p-6 shadow-sm">
@@ -167,6 +217,16 @@
                                 >
                                     <i class="fa-solid fa-bookmark text-xs"></i>
                                     Reserveren
+                                </button>
+                                <button
+                                    type="submit"
+                                    id="btn_reserveren_wijzigen"
+                                    formaction="{{ route('stands.select-edit') }}"
+                                    formmethod="GET"
+                                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs sm:text-sm rounded-xl border border-slate-300 shadow-sm transition-colors whitespace-nowrap"
+                                >
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                    Wijzigen
                                 </button>
                             </form>
                         </div>
@@ -226,6 +286,11 @@
                                             <h3 class="font-bold text-slate-900 text-base">
                                                 #{{ str_pad($stand->Id, 3, '0', STR_PAD_LEFT) }}
                                             </h3>
+                                            @if(Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && $myReservedStands->contains('Id', $stand->Id))
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
+                                                    Mijn stand
+                                                </span>
+                                            @endif
                                         </div>
                                         <p class="text-xs text-slate-400 mt-1">
                                             {{ $stand->location_display }}
@@ -270,8 +335,32 @@
                                 </div>
 
                                 <div class="flex items-center justify-end gap-2">
+                                    @php
+                                        $isMyStand = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && (($myReservedStands && $myReservedStands->contains('Id', $stand->Id)) || ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id) || ($stand->verkoper && $stand->verkoper->Naam === Auth::user()->name));
+                                    @endphp
                                     @if(Auth::check() && Auth::user()->isVerkoper())
-                                        @if(!$stand->VerhuurdStatus)
+                                        @if($isMyStand)
+                                            <div class="flex items-center gap-1.5 w-full">
+                                                <a
+                                                    href="{{ route('stands.edit', $stand->Id) }}"
+                                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                                    Wijzigen
+                                                </a>
+                                                <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button
+                                                        type="submit"
+                                                        class="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                        title="Stand verwijderen"
+                                                    >
+                                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @elseif(!$stand->VerhuurdStatus)
                                             <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="w-full">
                                                 @csrf
                                                 <button
@@ -280,18 +369,6 @@
                                                 >
                                                     <i class="fa-solid fa-bookmark text-[10px]"></i>
                                                     Reserveren
-                                                </button>
-                                            </form>
-                                        @elseif($stand->verkoper && $stand->verkoper->Naam === Auth::user()->name)
-                                            <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="w-full" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button
-                                                    type="submit"
-                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
-                                                >
-                                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
-                                                    Verwijderen
                                                 </button>
                                             </form>
                                         @else
@@ -308,7 +385,7 @@
                                         @endif
                                     @else
                                         <div class="flex items-center justify-end gap-2 w-full">
-                                            <a href="#" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                            <a href="{{ route('stands.edit', $stand->Id) }}" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
                                                 Wijzigen
                                             </a>
                                             <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
@@ -406,52 +483,62 @@
                                     </td>
 
                                     <td class="py-4 px-6 whitespace-nowrap text-right">
-                                         @if(Auth::check() && Auth::user()->isVerkoper())
-                                             @if($stand->VerhuurdStatus && $stand->verkoper && $stand->verkoper->Naam === Auth::user()->name)
-                                                 <div class="flex items-center justify-end gap-2 text-xs">
-                                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-lg font-medium text-[11px]">
-                                                         <i class="fa-solid fa-check text-[10px]"></i>
-                                                         Jouw stand
-                                                     </span>
-                                                     <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
-                                                         @csrf
-                                                         @method('DELETE')
-                                                         <button
-                                                             type="submit"
-                                                             class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
-                                                             title="Stand verwijderen"
-                                                         >
-                                                             <i class="fa-solid fa-trash-can text-[10px]"></i>
-                                                             Verwijderen
-                                                         </button>
-                                                     </form>
-                                                 </div>
-                                             @else
-                                                 <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
-                                                     @csrf
-                                                     @if(!$stand->VerhuurdStatus)
-                                                         <button
-                                                             type="submit"
-                                                             class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
-                                                         >
-                                                             <i class="fa-solid fa-bookmark text-[10px]"></i>
-                                                             Reserveren
-                                                         </button>
-                                                     @else
-                                                         <button
-                                                             type="submit"
-                                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
-                                                             title="Stand is reeds gereserveerd"
-                                                         >
-                                                             <i class="fa-solid fa-lock text-[10px]"></i>
-                                                             Reserveren
-                                                         </button>
-                                                     @endif
-                                                 </form>
-                                             @endif
+                                        @php
+                                            $isMyStandDesktop = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && (($myReservedStands && $myReservedStands->contains('Id', $stand->Id)) || ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id) || ($stand->verkoper && $stand->verkoper->Naam === Auth::user()->name));
+                                        @endphp
+                                        @if(Auth::check() && Auth::user()->isVerkoper())
+                                            @if($isMyStandDesktop)
+                                                <div class="flex items-center justify-end gap-2 text-xs">
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-lg font-medium text-[11px]">
+                                                        <i class="fa-solid fa-check text-[10px]"></i>
+                                                        Jouw stand
+                                                    </span>
+                                                    <a
+                                                        href="{{ route('stands.edit', $stand->Id) }}"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                    >
+                                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                                        Wijzigen
+                                                    </a>
+                                                    <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button
+                                                            type="submit"
+                                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                            title="Stand verwijderen"
+                                                        >
+                                                            <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                                            Verwijderen
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @else
+                                                <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
+                                                    @csrf
+                                                    @if(!$stand->VerhuurdStatus)
+                                                        <button
+                                                            type="submit"
+                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                        >
+                                                            <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                            Reserveren
+                                                        </button>
+                                                    @else
+                                                        <button
+                                                            type="submit"
+                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                            title="Stand is reeds gereserveerd"
+                                                        >
+                                                            <i class="fa-solid fa-lock text-[10px]"></i>
+                                                            Reserveren
+                                                        </button>
+                                                    @endif
+                                                </form>
+                                            @endif
                                         @else
                                             <div class="flex items-center justify-end gap-3 text-xs">
-                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                <a href="{{ route('stands.edit', $stand->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
                                                     Wijzigen
                                                 </a>
                                                 <span class="text-slate-300">|</span>
