@@ -36,7 +36,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -55,7 +91,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -68,6 +140,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -99,7 +243,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -118,7 +298,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -131,6 +347,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -162,7 +450,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -181,7 +505,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -194,6 +554,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -239,7 +671,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -258,7 +726,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -271,6 +775,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -314,7 +890,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -333,7 +945,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -346,6 +994,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -389,7 +1109,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -408,7 +1164,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -421,6 +1213,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
@@ -444,7 +1308,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $andermansStand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 2:
@@ -463,7 +1363,43 @@ class StandVerwijderenTest extends TestCase
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
         ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
     }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
 
     /**
      * Beveiliging / Unhappy scenario 3:
@@ -476,6 +1412,78 @@ class StandVerwijderenTest extends TestCase
         $response = $this->delete("/stands/{$stand->Id}");
 
         $response->assertRedirect('/login');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+        /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
+
+        $this->assertDatabaseHas('Stand', [
+            'Id' => $stand->Id,
+        ]);
+    }
+}
+    /**
+     * Unhappy scenario 4:
+     * Proberen een niet-bestaande stand te verwijderen geeft duidelijke foutmelding.
+     */
+    public function test_verwijderen_van_niet_bestaande_stand_geeft_foutmelding(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete('/stands/999999');
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Deze stand bestaat niet.');
+    }
+
+    /**
+     * Unhappy scenario 5:
+     * Gesimuleerde database storing bij verwijderen -> foutmelding en stand blijft behouden.
+     */
+    public function test_unhappy_scenario_gesimuleerde_database_fout_bij_verwijderen(): void
+    {
+        $organisator = $this->createOrganisatorUser();
+        $stand = $this->createTestStand();
+
+        $response = $this->actingAs($organisator)
+            ->from('/stands')
+            ->delete("/stands/{$stand->Id}?unhappy=1");
+
+        $response->assertRedirect('/stands');
+        $response->assertSessionHas('error', 'Stand verwijderen is niet gelukt');
 
         $this->assertDatabaseHas('Stand', [
             'Id' => $stand->Id,
