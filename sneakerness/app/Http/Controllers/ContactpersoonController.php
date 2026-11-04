@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contactpersoon;
-use App\Models\Verkoper;
 use App\Models\ContactPerVerkoper;
+use App\Models\Verkoper;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,9 +62,9 @@ class ContactpersoonController extends Controller
             // Expliciete SQL LEFT JOIN demonstratie tussen Contactpersoon, ContactPerVerkoper en Verkoper
             if ($request->has('join') || $request->input('sort') === 'verkoper') {
                 $query->leftJoin('ContactPerVerkoper', 'Contactpersoon.Id', '=', 'ContactPerVerkoper.ContactpersoonId')
-                      ->leftJoin('Verkoper', 'ContactPerVerkoper.VerkoperId', '=', 'Verkoper.Id')
-                      ->select('Contactpersoon.*')
-                      ->distinct();
+                    ->leftJoin('Verkoper', 'ContactPerVerkoper.VerkoperId', '=', 'Verkoper.Id')
+                    ->select('Contactpersoon.*')
+                    ->distinct();
             }
 
             // Testparameter om een lege lijst te simuleren
@@ -99,7 +100,7 @@ class ContactpersoonController extends Controller
             ));
         } catch (\Throwable $e) {
             // Criterium: Technische log wegschrijven
-            Log::error('Fout bij het ophalen van contactpersonen in ContactpersoonController: ' . $e->getMessage(), [
+            Log::error('Fout bij het ophalen van contactpersonen in ContactpersoonController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -123,18 +124,17 @@ class ContactpersoonController extends Controller
     /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt contactpersonen op inclusief verkopergegevens via MySQL Stored Procedure.
-     *
-     * @return array
      */
     public function getContactpersonenViaProcedure(): array
     {
         try {
             return DB::select('CALL sp_GetContactpersonenMetVerkoper()');
         } catch (\Throwable $e) {
-            Log::error('Fout bij uitvoeren Stored Procedure sp_GetContactpersonenMetVerkoper: ' . $e->getMessage(), [
+            Log::error('Fout bij uitvoeren Stored Procedure sp_GetContactpersonenMetVerkoper: '.$e->getMessage(), [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return [];
         }
     }
@@ -142,7 +142,7 @@ class ContactpersoonController extends Controller
     /**
      * Criterium: Gebruik van expliciete Joins via Query Builder
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getContactpersonenMetJoins()
     {
@@ -161,7 +161,8 @@ class ContactpersoonController extends Controller
                 ->where('Contactpersoon.IsActief', 1)
                 ->get();
         } catch (\Throwable $e) {
-            Log::error('Fout bij uitvoeren van expliciete JOIN query voor contactpersonen: ' . $e->getMessage());
+            Log::error('Fout bij uitvoeren van expliciete JOIN query voor contactpersonen: '.$e->getMessage());
+
             return collect();
         }
     }
@@ -184,34 +185,34 @@ class ContactpersoonController extends Controller
         abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
 
         $validated = $request->validate([
-            'voornaam'       => 'required|string|max:50',
-            'achternaam'     => 'required|string|max:50',
-            'emailadres'     => 'required|email|max:100',
+            'voornaam' => 'required|string|max:50',
+            'achternaam' => 'required|string|max:50',
+            'emailadres' => 'required|email|max:100',
             'telefoonnummer' => 'required|string|max:20',
-            'opmerking'      => 'nullable|string|max:250',
+            'opmerking' => 'nullable|string|max:250',
         ], [
-            'voornaam.required'       => 'De voornaam is verplicht.',
-            'achternaam.required'     => 'De achternaam is verplicht.',
-            'emailadres.required'     => 'Het e-mailadres is verplicht.',
-            'emailadres.email'        => 'Vul een geldig e-mailadres in.',
+            'voornaam.required' => 'De voornaam is verplicht.',
+            'achternaam.required' => 'De achternaam is verplicht.',
+            'emailadres.required' => 'Het e-mailadres is verplicht.',
+            'emailadres.email' => 'Vul een geldig e-mailadres in.',
             'telefoonnummer.required' => 'Het telefoonnummer is verplicht.',
         ]);
 
         try {
-            $naam = trim($validated['voornaam'] . ' ' . $validated['achternaam']);
+            $naam = trim($validated['voornaam'].' '.$validated['achternaam']);
 
             Contactpersoon::create([
-                'Naam'           => $naam,
-                'Emailadres'     => $validated['emailadres'],
+                'Naam' => $naam,
+                'Emailadres' => $validated['emailadres'],
                 'Telefoonnummer' => $validated['telefoonnummer'],
-                'Opmerking'      => $validated['opmerking'] ?? null,
-                'IsActief'       => true,
+                'Opmerking' => $validated['opmerking'] ?? null,
+                'IsActief' => true,
             ]);
 
             return redirect()->route('contactpersonen.index')
                 ->with('success', 'Contactpersoon succesvol toegevoegd');
         } catch (\Throwable $e) {
-            Log::error('Fout bij opslaan contactpersoon in ContactpersoonController: ' . $e->getMessage(), [
+            Log::error('Fout bij opslaan contactpersoon in ContactpersoonController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -252,7 +253,7 @@ class ContactpersoonController extends Controller
         abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
 
         // Unhappy scenario: controleer of zowel verkoper als contactpersoon zijn geselecteerd
-        if (!$request->filled('contactpersoon_id') || !$request->filled('verkoper_id')) {
+        if (! $request->filled('contactpersoon_id') || ! $request->filled('verkoper_id')) {
             return back()->withInput()->withErrors([
                 'general' => 'Selecteer zowel een verkoper als een contactpersoon',
                 'contactpersoon_id' => 'Selecteer zowel een verkoper als een contactpersoon',
@@ -262,14 +263,14 @@ class ContactpersoonController extends Controller
 
         $validated = $request->validate([
             'contactpersoon_id' => 'required|exists:Contactpersoon,Id',
-            'verkoper_id'       => 'required|exists:Verkoper,Id',
-            'rol'               => 'nullable|string|max:100',
-            'is_primair'        => 'nullable',
+            'verkoper_id' => 'required|exists:Verkoper,Id',
+            'rol' => 'nullable|string|max:100',
+            'is_primair' => 'nullable',
         ], [
             'contactpersoon_id.required' => 'Selecteer zowel een verkoper als een contactpersoon',
-            'contactpersoon_id.exists'   => 'De geselecteerde contactpersoon bestaat niet.',
-            'verkoper_id.required'       => 'Selecteer zowel een verkoper als een contactpersoon',
-            'verkoper_id.exists'         => 'De geselecteerde verkoper bestaat niet.',
+            'contactpersoon_id.exists' => 'De geselecteerde contactpersoon bestaat niet.',
+            'verkoper_id.required' => 'Selecteer zowel een verkoper als een contactpersoon',
+            'verkoper_id.exists' => 'De geselecteerde verkoper bestaat niet.',
         ]);
 
         try {
@@ -281,27 +282,220 @@ class ContactpersoonController extends Controller
 
             ContactPerVerkoper::updateOrCreate(
                 [
-                    'VerkoperId'       => $verkoper->Id,
+                    'VerkoperId' => $verkoper->Id,
                     'ContactpersoonId' => $contactpersoon->Id,
                 ],
                 [
-                    'IsActief'  => 1,
-                    'Opmerking' => $rol . ($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
+                    'IsActief' => 1,
+                    'Opmerking' => $rol.($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
                 ]
             );
 
             return redirect()->route('contactpersonen.index')
                 ->with('success', 'Contactpersoon succesvol gekoppeld aan de verkoper');
         } catch (\Throwable $e) {
-            Log::error('Fout bij het koppelen van contactpersoon aan verkoper: ' . $e->getMessage(), [
+            Log::error('Fout bij het koppelen van contactpersoon aan verkoper: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
-                'file'      => $e->getFile(),
-                'line'      => $e->getLine(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
 
             return back()->withInput()->withErrors([
                 'general' => 'Er is een technische fout opgetreden bij het koppelen. Probeer het opnieuw.',
             ]);
         }
+    }
+
+    /**
+     * Toont het formulier om een bestaande contactpersoon te bewerken.
+     */
+    public function edit(int|string|Contactpersoon $contactpersoon): View
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        if (! $contactpersoon instanceof Contactpersoon) {
+            $contactpersoon = Contactpersoon::with('verkopers.stands')->findOrFail($contactpersoon);
+        } else {
+            $contactpersoon->loadMissing('verkopers.stands');
+        }
+
+        $verkopers = Verkoper::where('IsActief', 1)->orderBy('Naam', 'asc')->with('stands')->get();
+
+        return view('contactpersonen.edit', compact('contactpersoon', 'verkopers'));
+    }
+
+    /**
+     * Slaat de gewijzigde gegevens van een contactpersoon op na validatie.
+     */
+    public function update(Request $request, int|string|Contactpersoon $contactpersoon)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        if (! $contactpersoon instanceof Contactpersoon) {
+            $contactpersoon = Contactpersoon::findOrFail($contactpersoon);
+        }
+
+        $validated = $request->validate([
+            'voornaam' => 'required|string|max:50',
+            'achternaam' => 'required|string|max:50',
+            'emailadres' => 'required|email|max:100',
+            'telefoonnummer' => 'required|string|max:20',
+            'functie' => 'nullable|string|max:100',
+            'opmerking' => 'nullable|string|max:250',
+            'verkoper_id' => 'nullable',
+            'status' => 'nullable|string|max:50',
+        ], [
+            'voornaam.required' => 'Dit veld is verplicht',
+            'achternaam.required' => 'Dit veld is verplicht',
+            'emailadres.required' => 'Dit veld is verplicht',
+            'emailadres.email' => 'Vul een geldig e-mailadres in.',
+            'telefoonnummer.required' => 'Dit veld is verplicht',
+        ]);
+
+        try {
+            $naam = trim($validated['voornaam'].' '.$validated['achternaam']);
+            $rol = $request->input('functie') ?: ($request->input('opmerking') ?: ($contactpersoon->Opmerking ?: 'Standmanager'));
+            $status = $request->input('status', 'Actief');
+            $isActief = in_array(strtolower($status), ['actief', '1', 'bevestigd', 'true'], true);
+
+            $contactpersoon->update([
+                'Naam' => $naam,
+                'Emailadres' => $validated['emailadres'],
+                'Telefoonnummer' => $validated['telefoonnummer'],
+                'Opmerking' => $rol,
+                'IsActief' => $isActief,
+            ]);
+
+            // Koppeling aan verkoper bijwerken
+            if ($request->filled('verkoper_id')) {
+                $verkoperId = (int) $request->input('verkoper_id');
+                $isPrimair = $request->has('is_primair');
+
+                $contactpersoon->verkopers()->sync([
+                    $verkoperId => [
+                        'IsActief' => 1,
+                        'Opmerking' => $rol.($isPrimair ? ' (Hoofdcontactpersoon)' : ''),
+                    ],
+                ]);
+            } elseif ($request->has('verkoper_id') && empty($request->input('verkoper_id'))) {
+                $contactpersoon->verkopers()->detach();
+            }
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Gegevens succesvol bijgewerkt');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het bijwerken van contactpersoon in ContactpersoonController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Er is een fout opgetreden bij het bijwerken van de contactpersoon in de database.',
+            ]);
+        }
+    }
+
+    /**
+     * Toont het detailscherm van een specifieke contactpersoon.
+     * View conform specificatie: contactpersoon_detail.php
+     */
+    public function show(int|string|Contactpersoon $contactpersoon): View
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        if (! $contactpersoon instanceof Contactpersoon) {
+            $contactpersoon = Contactpersoon::with('verkopers.stands')->findOrFail($contactpersoon);
+        } else {
+            $contactpersoon->loadMissing('verkopers.stands');
+        }
+
+        return view('contactpersonen.detail', compact('contactpersoon'));
+    }
+
+    /**
+     * Ontkoppelt een contactpersoon van een verkoper conform de specificatie.
+     *
+     * Controller: ContactpersoonController
+     * Methode: loskoppelen() of unlink()
+     * Model: ContactpersoonModel
+     * Methode: loskoppelVerkoper() of unlinkVerkoper()
+     */
+    public function loskoppelen(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        // Simulatie van unhappy scenario (server-/netwerkfout)
+        if ($request->has('error') || $request->has('unhappy') || $request->has('server_error') || $request->has('netwerk_fout') || $request->has('db_error')) {
+            Log::warning('Unhappy scenario gesimuleerd voor contactpersoon loskoppelen.', ['ip' => $request->ip()]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Loskoppelen mislukt, probeer het later opnieuw',
+            ])->with('error', 'Loskoppelen mislukt, probeer het later opnieuw');
+        }
+
+        try {
+            $id = $contactpersoon instanceof Contactpersoon
+                ? $contactpersoon->Id
+                : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
+
+            $target = Contactpersoon::findOrFail($id);
+            $verkoperId = $request->input('verkoper_id') ? (int) $request->input('verkoper_id') : null;
+
+            $target->loskoppelVerkoper($verkoperId);
+
+            return redirect()->route('contactpersonen.index')
+                ->with('success', 'Contactpersoon succesvol losgekoppeld');
+        } catch (\Throwable $e) {
+            Log::error('Fout bij het loskoppelen van contactpersoon: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'general' => 'Loskoppelen mislukt, probeer het later opnieuw',
+            ])->with('error', 'Loskoppelen mislukt, probeer het later opnieuw');
+        }
+    }
+
+    /**
+     * Alias methode voor unlink() conform specificatie.
+     */
+    public function unlink(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        return $this->loskoppelen($request, $contactpersoon);
+    }
+
+    /**
+     * Verwijdert een contactpersoon definitief uit het systeem conform de specificatie.
+     *
+     * Controller: ContactpersoonController
+     * Methode: delete()
+     * Model: ContactpersoonModel
+     * Methode: deleteContactpersoon()
+     */
+    public function delete(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'organisator', 403);
+
+        $id = $contactpersoon instanceof Contactpersoon
+            ? $contactpersoon->Id
+            : ($contactpersoon ?? $request->input('contactpersoon_id') ?? $request->route('contactpersoon'));
+
+        $target = Contactpersoon::findOrFail($id);
+
+        $target->deleteContactpersoon();
+
+        return redirect()->route('contactpersonen.index')
+            ->with('success', 'Contactpersoon succesvol verwijderd');
+    }
+
+    /**
+     * Alternatieve methodenaam voor destroy routering.
+     */
+    public function destroy(Request $request, int|string|Contactpersoon|null $contactpersoon = null)
+    {
+        return $this->delete($request, $contactpersoon);
     }
 }

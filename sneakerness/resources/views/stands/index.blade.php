@@ -336,7 +336,7 @@
 
                                 <div class="flex items-center justify-end gap-2">
                                     @php
-                                        $isMyStand = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && ($myReservedStands->contains('Id', $stand->Id) || ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id));
+                                        $isMyStand = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && (($myReservedStands && $myReservedStands->contains('Id', $stand->Id)) || ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id) || ($stand->verkoper && $stand->verkoper->Naam === Auth::user()->name));
                                     @endphp
                                     @if(Auth::check() && Auth::user()->isVerkoper())
                                         @if($isMyStand)

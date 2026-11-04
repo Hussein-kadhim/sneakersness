@@ -13,10 +13,12 @@ class Contactpersoon extends Model
 
     // Database tabel en primaire sleutel instellen
     protected $table = 'Contactpersoon';
+
     protected $primaryKey = 'Id';
 
     // Aangepaste timestamp velden
     const CREATED_AT = 'DatumAangemaakt';
+
     const UPDATED_AT = 'DatumGewijzigd';
 
     // Te bewerken kolommen
@@ -64,6 +66,7 @@ class Contactpersoon extends Model
     public function getVoornaamAttribute(): string
     {
         $delen = explode(' ', trim($this->Naam), 2);
+
         return $delen[0] ?? '';
     }
 
@@ -71,6 +74,7 @@ class Contactpersoon extends Model
     public function getAchternaamAttribute(): string
     {
         $delen = explode(' ', trim($this->Naam), 2);
+
         return $delen[1] ?? '';
     }
 
@@ -101,7 +105,7 @@ class Contactpersoon extends Model
             return 'Bevestigd';
         }
 
-        if ($this->Id === 3 || $this->Id === 6 || !$this->IsActief) {
+        if ($this->Id === 3 || $this->Id === 6 || ! $this->IsActief) {
             return 'In behandeling';
         }
 
@@ -117,5 +121,35 @@ class Contactpersoon extends Model
             'In behandeling' => 'bg-amber-50 text-amber-700 border-amber-200',
             default => 'bg-slate-50 text-slate-700 border-slate-200',
         };
+    }
+
+    /**
+     * Verwijdert een contactpersoon definitief of ontkoppelt van een specifieke verkoper.
+     */
+    public function deleteContactpersoon(?int $verkoperId = null): bool
+    {
+        if ($verkoperId) {
+            $this->verkopers()->detach($verkoperId);
+
+            return true;
+        }
+
+        $this->verkopers()->detach();
+
+        return (bool) $this->delete();
+    }
+
+    /**
+     * Ontkoppelt een contactpersoon van een verkoper conform de specificatie.
+     * Methode: unlinkVerkoper() of loskoppelVerkoper()
+     */
+    public function unlinkVerkoper(?int $verkoperId = null): bool
+    {
+        return $this->deleteContactpersoon($verkoperId);
+    }
+
+    public function loskoppelVerkoper(?int $verkoperId = null): bool
+    {
+        return $this->unlinkVerkoper($verkoperId);
     }
 }
