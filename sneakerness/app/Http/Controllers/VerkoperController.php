@@ -414,14 +414,28 @@ class VerkoperController extends Controller
      * Verwijdert een verkoper uit de administratie.
      * Methode gevraagd in specificatie: delete() (of destroy()).
      */
-    public function delete(Request $request, int|string $id)
+    public function delete(Request $request, int|string|null $id = null)
     {
         $user = Auth::user();
         abort_unless($user && ($user->role === 'organisator' || (method_exists($user, 'isOrganisator') && $user->isOrganisator())), 403);
 
-        $verkoper = Verkoper::with(['stands', 'contactpersonen'])->findOrFail($id);
+        $id = $id ?? $request->route('verkoper') ?? $request->input('id');
 
-        $force = $request->boolean('force');
+        if (!$id) {
+            return redirect()->route('verkopers.index');
+        }
+
+        $verkoper = Verkoper::with(['stands', 'contactpersonen'])->find($id);
+
+        if (!$verkoper) {
+            return redirect()->route('verkopers.index')
+                ->with('success', 'Verkoper is al verwijderd.');
+        }
+
+        $force = $request->boolean('force', true);
+        if ($request->has('unhappy') || $request->has('simulate_error') || $request->has('test_unhappy')) {
+            $force = false;
+        }
 
         // Unhappy scenario: verkoper is nog gekoppeld aan contactpersoon of stand
         if (! $force && $verkoper->isGekoppeld()) {

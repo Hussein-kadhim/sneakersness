@@ -10,6 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Throwable;
@@ -469,12 +470,17 @@ class StandController extends Controller
 
             // Happy scenario:
             // Bij geldige gegevens worden de wijzigingen opgeslagen in de database.
-            $stand->update([
+            $updateData = [
                 'StandType'   => $validated['StandType'],
-                'AantalDagen' => (int) $validated['AantalDagen'],
                 'Prijs'       => $validated['Prijs'],
                 'Opmerking'   => $validated['Opmerking'] ?? null,
-            ]);
+            ];
+
+            if (Schema::hasColumn('Stand', 'AantalDagen')) {
+                $updateData['AantalDagen'] = (int) $validated['AantalDagen'];
+            }
+
+            $stand->update($updateData);
 
             Log::info('Stand succesvol gewijzigd door verkoper/organisator.', [
                 'stand_id' => $stand->Id,

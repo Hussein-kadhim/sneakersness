@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
     Route::get('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenForm'])->name('verkopers.koppelen');
     Route::post('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('verkopers.koppelen.store');
+    Route::delete('/verkopers', fn() => redirect()->route('verkopers.index'));
     Route::resource('verkopers', VerkoperController::class)->except(['index']);
     Route::get('/verkoper/wijzigen/{id}', [VerkoperController::class, 'edit'])->name('verkoper.wijzigen');
     Route::match(['post', 'put', 'patch'], '/verkoper/wijzigen/{id}', [VerkoperController::class, 'update'])->name('verkoper.wijzigen.update');
@@ -58,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}/edit', [EvenementController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EvenementController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EvenementController::class, 'destroy'])->name('events.destroy');
 
     Route::get('/dashboard', function () {

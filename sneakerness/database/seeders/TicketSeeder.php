@@ -26,10 +26,9 @@ class TicketSeeder extends Seeder
             ]
         );
 
-        $evenement = Evenement::find(1) ?? Evenement::firstOrCreate(
-            ['Id' => 1],
-            [
-                'OrganisatorId' => $organisator->Id,
+        $evenement = Evenement::first();
+        if (! $evenement) {
+            $eventData = [
                 'Naam' => 'Sneakerness Rotterdam 2026',
                 'Datum' => '2026-10-24',
                 'Locatie' => 'Van Nelle Fabriek Rotterdam',
@@ -37,18 +36,22 @@ class TicketSeeder extends Seeder
                 'BeschikbareStands' => 55,
                 'IsActief' => 1,
                 'Opmerking' => 'Sneakerness Rotterdam Drop Hub Editie 2026',
-            ]
-        );
+            ];
+            if (\Illuminate\Support\Facades\Schema::hasColumn('Evenement', 'OrganisatorId')) {
+                $eventData['OrganisatorId'] = $organisator->Id;
+            }
+            $evenement = Evenement::create($eventData);
+        }
 
-        $prijs = Prijs::firstOrCreate(
-            ['Id' => 1],
-            [
+        $prijs = Prijs::first();
+        if (! $prijs) {
+            $prijs = Prijs::create([
                 'Datum' => '2024-11-16',
                 'Tijdslot' => '10:00:00',
                 'Tarief' => 25.00,
                 'IsActief' => 1,
-            ]
-        );
+            ]);
+        }
 
         $ticketsData = [
             [
@@ -132,8 +135,8 @@ class TicketSeeder extends Seeder
                 [
                     'Bestelnummer' => $item['order'],
                     'BezoekerId' => $bezoeker->Id,
-                    'EvenementId' => 1,
-                    'PrijsId' => 1,
+                    'EvenementId' => $evenement->Id,
+                    'PrijsId' => $prijs->Id,
                     'AantalTickets' => 1,
                     'TicketType' => $item['ticket_type'],
                     'Tijdslot' => $item['tijdslot'],

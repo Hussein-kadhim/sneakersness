@@ -11,6 +11,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
@@ -66,8 +67,7 @@ class EvenementController extends Controller
         abort_unless($user && $user->isOrganisator(), 403);
 
         try {
-            $validated = $request->validate([
-                'OrganisatorId' => ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)],
+            $rules = [
                 'Naam' => ['required', 'string', 'max:100'],
                 'Datum' => ['required', 'date'],
                 'Locatie' => ['required', 'string', 'max:150'],
@@ -75,7 +75,19 @@ class EvenementController extends Controller
                 'BeschikbareStands' => ['required', 'integer', 'min:0'],
                 'IsActief' => ['required', 'boolean'],
                 'Opmerking' => ['nullable', 'string', 'max:250'],
-            ]);
+            ];
+
+            if (Schema::hasColumn('Evenement', 'OrganisatorId')) {
+                $rules['OrganisatorId'] = ['required', 'integer', Rule::exists('Organisator', 'Id')->where('IsActief', true)];
+            } else {
+                $rules['OrganisatorId'] = ['nullable'];
+            }
+
+            $validated = $request->validate($rules);
+
+            if (! Schema::hasColumn('Evenement', 'OrganisatorId')) {
+                unset($validated['OrganisatorId']);
+            }
 
             Evenement::create($validated);
         } catch (\PDOException $e) {
@@ -111,7 +123,10 @@ class EvenementController extends Controller
                 );
             }
 
-            Evenement::findOrFail($event)->delete();
+            $evenementModel = Evenement::find($event);
+            if ($evenementModel) {
+                $evenementModel->delete();
+            }
         } catch (QueryException|\PDOException $e) {
             Log::error('Fout bij het verwijderen van een evenement in EvenementController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
@@ -127,6 +142,93 @@ class EvenementController extends Controller
         return redirect()
             ->route('events.index')
             ->with('success', 'Het event is verwijderd.');
+    }
+
+    public function edit(int $event): View
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        abort_unless($user && $user->isOrganisator(), 403);
+
+        try {
+            $event = Evenement::findOrFail($event);
+            $organisatoren = Organisator::orderBy('Naam')->get();
+        } catch (QueryException|\PDOException $e) {
+            Log::error('Fout bij het laden van het eventformulier in EvenementController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return view('evenementen.edit', [
+                'event' => null,
+                'organisatoren' => collect(),
+                'dbError' => true,
+            ]);
+        }
+
+        return view('evenementen.edit', [
+            'event' => $event,
+            'organisatoren' => $organisatoren,
+            'dbError' => false,
+        ]);
+    }
+
+    public function update(Request $request, int $event): RedirectResponse
+    {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+        abort_unless($user && $user->isOrganisator(), 403);
+
+        try {
+            if ($request->has('db_error') || $request->has('unhappy')) {
+                throw new QueryException(
+                    'sqlite',
+                    'update "Evenement"',
+                    [],
+                    new \PDOException('Database is momenteel niet beschikbaar')
+                );
+            }
+
+            $rules = [
+                'Naam' => ['required', 'string', 'max:100'],
+                'Datum' => ['required', 'date'],
+                'Locatie' => ['required', 'string', 'max:150'],
+                'AantalTicketsPerTijdslot' => ['required', 'integer', 'min:1'],
+                'BeschikbareStands' => ['required', 'integer', 'min:0'],
+                'IsActief' => ['required', 'boolean'],
+                'Opmerking' => ['nullable', 'string', 'max:250'],
+            ];
+
+            if (Schema::hasColumn('Evenement', 'OrganisatorId')) {
+                $rules['OrganisatorId'] = ['required', 'integer', Rule::exists('Organisator', 'Id')];
+            } else {
+                $rules['OrganisatorId'] = ['nullable'];
+            }
+
+            $validated = $request->validate($rules);
+
+            if (! Schema::hasColumn('Evenement', 'OrganisatorId')) {
+                unset($validated['OrganisatorId']);
+            }
+
+            Evenement::findOrFail($event)->update($validated);
+        } catch (QueryException|\PDOException $e) {
+            Log::error('Fout bij het bijwerken van een evenement in EvenementController: '.$e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('events.edit', $event)
+                ->withInput($request->except(['_token', '_method']))
+                ->with('databaseError', true);
+        }
+
+        return redirect()
+            ->route('events.index')
+            ->with('success', 'Het event is gewijzigd.');
     }
 
     // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken

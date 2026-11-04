@@ -384,6 +384,7 @@
             <form id="deleteVerkoperForm" method="POST" action="">
                 @csrf
                 @method('DELETE')
+                <input type="hidden" name="force" value="1">
 
                 {{-- Knoppen: Desktop side-by-side, Mobiel stacked --}}
                 <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
