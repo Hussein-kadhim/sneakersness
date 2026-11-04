@@ -14,6 +14,14 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets/kopen', [TicketController::class, 'kopen'])->name('tickets.kopen');
+    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{id}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+    Route::put('/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
+    Route::post('/tickets/{id}/annuleren', [TicketController::class, 'annuleren'])->name('tickets.annuleren');
+    Route::get('/ticket/wijzigen/{id}', [TicketController::class, 'edit'])->name('ticket.wijzigen');
+    Route::match(['post', 'put', 'patch'], '/ticket/wijzigen/{id}', [TicketController::class, 'update'])->name('ticket.wijzigen.update');
     Route::get('/verkopers', [VerkoperController::class, 'index'])->name('verkopers.index');
     Route::get('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenForm'])->name('verkopers.koppelen');
     Route::post('/verkopers/koppelen', [ContactpersoonController::class, 'koppelenStore'])->name('verkopers.koppelen.store');
