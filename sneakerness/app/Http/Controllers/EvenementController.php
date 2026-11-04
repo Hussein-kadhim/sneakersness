@@ -16,18 +16,21 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
 
-// Controller voor het beheren en bekijken van Sneakerness edities en evenementen
+// 1. Deze controller verzorgt het complete beheer en overzicht van alle Sneakerness evenementen en beursedities.
 class EvenementController extends Controller
 {
     public function create(Request $request): View
     {
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
+        // 2. Alleen ingelogde gebruikers met de rol van organisator hebben toestemming om evenementen aan te maken, te wijzigen of te verwijderen.
+        // 3. Bij ongeautoriseerde toegang door andere rollen wordt het verzoek direct afgebroken met een HTTP 403 Forbidden foutmelding.
         abort_unless($user && $user->isOrganisator(), 403);
 
         $dbError = false;
 
         try {
+            // 4. De controller ondersteunt zowel het happy scenario als het unhappy scenario met gesimuleerde databasefouten.
             if ($request->has('db_error') || $request->has('unhappy')) {
                 throw new \RuntimeException('Database is momenteel niet beschikbaar');
             }
@@ -67,6 +70,7 @@ class EvenementController extends Controller
         abort_unless($user && $user->isOrganisator(), 403);
 
         try {
+            // 5. Alle invoergegevens van formulieren worden strikt gevalideerd om data-integriteit in de database te garanderen.
             $rules = [
                 'Naam' => ['required', 'string', 'max:100'],
                 'Datum' => ['required', 'date'],
@@ -107,6 +111,7 @@ class EvenementController extends Controller
             ->with('success', 'Het event is toegevoegd.');
     }
 
+    // 6. De methode destroy() verwijdert een geselecteerd evenement definitief uit de database.
     public function destroy(Request $request, int $event): RedirectResponse
     {
         /** @var \App\Models\User|null $user */
@@ -123,11 +128,13 @@ class EvenementController extends Controller
                 );
             }
 
+            // 7. Er wordt eerst een veilige controle uitgevoerd om te verifiëren of het evenement nog bestaat voordat delete wordt aangeroepen.
             $evenementModel = Evenement::find($event);
             if ($evenementModel) {
                 $evenementModel->delete();
             }
         } catch (QueryException|\PDOException $e) {
+            // 8. Eventuele databasestoringen worden geregistreerd in het logbestand voor monitoring en technische analyse.
             Log::error('Fout bij het verwijderen van een evenement in EvenementController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -139,11 +146,13 @@ class EvenementController extends Controller
                 ->with('databaseError', true);
         }
 
+        // 9. Na een succesvolle verwijdering wordt de gebruiker teruggestuurd naar het overzicht met een bevestigingsmelding.
         return redirect()
             ->route('events.index')
             ->with('success', 'Het event is verwijderd.');
     }
 
+    // 10. De methode edit() toont het bewerkingsformulier en haalt het evenement en actieve organisatoren op.
     public function edit(int $event): View
     {
         /** @var \App\Models\User|null $user */
@@ -154,6 +163,7 @@ class EvenementController extends Controller
             $event = Evenement::findOrFail($event);
             $organisatoren = Organisator::orderBy('Naam')->get();
         } catch (QueryException|\PDOException $e) {
+            // 11. Mogelijke databasefouten tijdens het laden van het bewerkingsformulier worden netjes opgevangen zonder dat de applicatie crasht.
             Log::error('Fout bij het laden van het eventformulier in EvenementController: '.$e->getMessage(), [
                 'exception' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -174,6 +184,7 @@ class EvenementController extends Controller
         ]);
     }
 
+    // 12. De methode update() verwerkt de gewijzigde gegevens van een bestaand evenement in de database.
     public function update(Request $request, int $event): RedirectResponse
     {
         /** @var \App\Models\User|null $user */
@@ -190,6 +201,7 @@ class EvenementController extends Controller
                 );
             }
 
+            // 13. Alle invoervelden worden strikt gevalideerd volgens de gestelde bedrijfseisen, maximale lengtes en datatypes.
             $rules = [
                 'Naam' => ['required', 'string', 'max:100'],
                 'Datum' => ['required', 'date'],
@@ -200,6 +212,7 @@ class EvenementController extends Controller
                 'Opmerking' => ['nullable', 'string', 'max:250'],
             ];
 
+            // 14. Er wordt dynamisch gecontroleerd of de kolom OrganisatorId fysiek aanwezig is in de database alvorens deze toe te kennen.
             if (Schema::hasColumn('Evenement', 'OrganisatorId')) {
                 $rules['OrganisatorId'] = ['required', 'integer', Rule::exists('Organisator', 'Id')];
             } else {
@@ -231,7 +244,7 @@ class EvenementController extends Controller
             ->with('success', 'Het event is gewijzigd.');
     }
 
-    // Toont de evenementenpagina met actieve edities, zoekbalk en statistieken
+    // 15. De methode index() toont het overzicht van alle actieve en geplande edities met zoekfunctionaliteit en KPI-statistieken.
     public function index(Request $request): View
     {
         $search = trim($request->input('q', ''));
