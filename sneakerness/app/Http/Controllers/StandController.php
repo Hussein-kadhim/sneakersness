@@ -595,6 +595,75 @@ class StandController extends Controller
     }
 
     /**
+     * Verwijdert een stand van de beursvloer.
+     */
+    public function destroy(Request $request, int|string $id): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // =========================================================================
+        // UNHAPPY SCENARIO:
+        // Gesimuleerde databasefout via query-parameter
+        // =========================================================================
+        if ($request->hasAny(['error', 'unhappy', 'db_error', 'database_error'])) {
+            Log::warning('Gesimuleerde databasefout bij het verwijderen van een stand.', [
+                'stand_id' => $id,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('error', 'Stand verwijderen is niet gelukt');
+        }
+
+        $stand = Stand::find((int) $id);
+
+        if (!$stand) {
+            return redirect()->route('stands.index')
+                ->with('error', 'Deze stand bestaat niet.');
+        }
+
+        // Autorisatiecontrole:
+        // Organisator mag alle stands verwijderen
+        // Verkoper mag alleen zijn eigen stand verwijderen
+        if ($user->isVerkoper()) {
+            $isEigenStand = ($stand->VerkoperId && $stand->verkoper && $stand->verkoper->Naam === $user->name);
+            if (!$isEigenStand) {
+                $userVerkoper = Verkoper::where('Naam', $user->name)->first();
+                if (!$userVerkoper || $stand->VerkoperId !== $userVerkoper->Id) {
+                    abort(403, 'Je bent niet bevoegd om deze stand te verwijderen.');
+                }
+            }
+        } elseif (!$user->isOrganisator()) {
+            abort(403, 'Je hebt geen rechten om een stand te verwijderen.');
+        }
+
+        try {
+            $standId = $stand->Id;
+            $stand->delete();
+
+            Log::info('Stand succesvol verwijderd.', [
+                'stand_id' => $standId,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('success', 'Stand is succesvol verwijderd');
+        } catch (Throwable $e) {
+            Log::error('Fout bij het verwijderen van stand in StandController: ' . $e->getMessage(), [
+                'exception' => $e->getMessage(),
+                'stand_id' => $id,
+            ]);
+
+            return redirect()->route('stands.index')
+                ->with('error', 'Stand verwijderen is niet gelukt');
+        }
+    }
+
+    /**
      * Criterium: Gebruik van Stored Procedures
      * Haalt alle stands op inclusief verkoperdetails via MySQL Stored Procedure.
      *

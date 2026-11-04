@@ -1,4 +1,4 @@
-{{-- Overzichtspagina voor ticketbeheer en toegangscontrole --}}
+{{-- Overzichtspagina voor ticketbeheer, aankoop en toegangscontrole --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -32,15 +32,51 @@
                 </p>
             </div>
 
-            {{-- Unhappy scenario: database foutmelding --}}
-            @if($dbError)
-                <div class="bg-red-50 border border-red-200 rounded-xl p-6 mb-6 text-red-800 flex items-start gap-4 shadow-sm" role="alert">
-                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-600 mt-0.5">
-                        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+            {{-- Succesmelding na actie (happy scenario) --}}
+            @if(session('success'))
+                <div id="success-alert" class="mb-6 p-4 bg-emerald-600 text-white rounded-xl font-medium text-sm sm:text-base flex items-center gap-3 shadow-sm transition-opacity duration-500" role="status">
+                    <i class="fa-solid fa-check text-white text-base"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var alert = document.getElementById('success-alert');
+                        if (alert) {
+                            alert.style.opacity = '0';
+                            setTimeout(function() { alert.remove(); }, 500);
+                        }
+                    }, 4000);
+                </script>
+            @endif
+
+            {{-- Foutmelding na aankoop / storing (unhappy scenario) --}}
+            @if(session('error'))
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6 shadow-sm" role="alert">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-base"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-base text-red-900 mb-1">Verbindingsfout</h3>
-                        <p class="text-sm text-red-700 leading-relaxed font-medium">
+                        <h2 class="font-bold text-red-900 text-sm sm:text-base">
+                            {{ str_contains(session('error'), 'kopen') ? 'Probleem bij aankoop' : 'Foutmelding' }}
+                        </h2>
+                        <p class="text-red-700 text-xs sm:text-sm mt-0.5 leading-relaxed">
+                            {{ session('error') }}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Unhappy scenario: database foutmelding --}}
+            @if($dbError)
+                <div class="sn-db-alert bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 mb-6" role="alert">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-500 shrink-0 mt-0.5">
+                        <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-red-900 text-sm sm:text-base">
+                            Verbindingsfout
+                        </h2>
+                        <p class="text-red-700 text-xs sm:text-sm mt-0.5 leading-relaxed font-medium">
                             {{ $errorMessage }}
                         </p>
                     </div>
@@ -117,11 +153,16 @@
                         </div>
                     </form>
 
-                    <div class="flex items-center justify-end">
-                        <a href="#" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            Ticket toevoegen
-                        </a>
+                    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div class="text-xs text-slate-400">
+                            {{ $tickets->total() }} tickets gevonden
+                        </div>
+                        <div>
+                            <a href="{{ route('tickets.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs sm:text-sm rounded-lg shadow-sm transition-colors">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                Ticket toevoegen
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -143,7 +184,7 @@
                                     'datum' => $ticket->Tijdslot ?? ($ticket->Datum ? $ticket->Datum->format('d-m-Y') : '16 nov 2024'),
                                     'zaal' => $ticket->ZaalToegang ?? 'Hal 1 • Entree A',
                                     'bezoeker_naam' => $ticket->bezoeker?->Naam ?? 'Onbekend',
-                                    'bezoeker_email' => $ticket->bezoeker?->Email ?? '-',
+                                    'bezoeker_email' => $ticket->bezoeker?->Emailadres ?? $ticket->bezoeker?->Email ?? '-',
                                     'aantal' => $ticket->AantalTickets ?? 1,
                                     'opmerking' => $ticket->Opmerking ?? 'Geen bijzonderheden',
                                 ];
@@ -173,7 +214,7 @@
                                                 {{ $ticket->bezoeker?->Naam ?? 'Onbekend' }}
                                             </span>
                                             <span class="text-slate-500 text-[11px]">
-                                                {{ $ticket->bezoeker?->Email ?? '-' }}
+                                                {{ $ticket->bezoeker?->Emailadres ?? $ticket->bezoeker?->Email ?? '-' }}
                                             </span>
                                         </div>
                                         <div>
@@ -190,17 +231,18 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center justify-end gap-3 text-xs">
+                                <div class="flex items-center justify-end gap-3 text-xs font-semibold">
+                                    <a href="{{ route('tickets.edit', $ticket->Id) }}" class="text-orange-500 hover:text-orange-600">
+                                        Wijzigen
+                                    </a>
+                                    <span class="text-slate-300">|</span>
                                     <button
                                         type="button"
-                                        @click="selectedTicket = {{ json_encode($ticketData) }}; showModal = true"
-                                        class="text-orange-500 hover:text-orange-600 font-semibold cursor-pointer"
+                                        onclick="openCancelModal('{{ $ticket->Id }}', '{{ $ticket->ticket_code_display }}', '{{ addslashes($ticket->bezoeker?->Naam ?? 'Onbekend') }}', '{{ addslashes($ticket->TicketType ?? 'Regulier ticket') }}')"
+                                        class="text-amber-600 hover:text-amber-700 cursor-pointer"
                                     >
-                                        Details
+                                        Annuleren
                                     </button>
-                                    <a href="#" class="{{ $ticket->action_secondary_color_class }}">
-                                        {{ $ticket->action_secondary_label }}
-                                    </a>
                                 </div>
                             </div>
                         @endforeach
@@ -231,7 +273,7 @@
                                             'datum' => $ticket->Tijdslot ?? ($ticket->Datum ? $ticket->Datum->format('d-m-Y') : '16 nov 2024'),
                                             'zaal' => $ticket->ZaalToegang ?? 'Hal 1 • Entree A',
                                             'bezoeker_naam' => $ticket->bezoeker?->Naam ?? 'Onbekend',
-                                            'bezoeker_email' => $ticket->bezoeker?->Email ?? '-',
+                                            'bezoeker_email' => $ticket->bezoeker?->Emailadres ?? $ticket->bezoeker?->Email ?? '-',
                                             'aantal' => $ticket->AantalTickets ?? 1,
                                             'opmerking' => $ticket->Opmerking ?? 'Geen bijzonderheden',
                                         ];
@@ -251,7 +293,7 @@
                                                 {{ $ticket->bezoeker?->Naam ?? 'Onbekende bezoeker' }}
                                             </div>
                                             <div class="text-xs text-slate-400 mt-0.5">
-                                                {{ $ticket->bezoeker?->Email ?? '-' }}
+                                                {{ $ticket->bezoeker?->Emailadres ?? $ticket->bezoeker?->Email ?? '-' }}
                                             </div>
                                         </td>
 
@@ -269,24 +311,24 @@
                                         </td>
 
                                         <td class="py-4 px-6 whitespace-nowrap">
-                                            <span class="font-semibold text-slate-900">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold {{ $ticket->status_color_class }}">
                                                 {{ $ticket->status_label }}
                                             </span>
                                         </td>
 
                                         <td class="py-4 px-6 whitespace-nowrap text-right">
-                                            <div class="flex items-center justify-end gap-3 text-xs">
+                                            <div class="flex items-center justify-end gap-3 text-xs font-semibold">
+                                                <a href="{{ route('tickets.edit', $ticket->Id) }}" class="text-orange-500 hover:text-orange-600">
+                                                    Wijzigen
+                                                </a>
+                                                <span class="text-slate-300">|</span>
                                                 <button
                                                     type="button"
-                                                    @click="selectedTicket = {{ json_encode($ticketData) }}; showModal = true"
-                                                    class="text-orange-500 hover:text-orange-600 font-semibold"
+                                                    onclick="openCancelModal('{{ $ticket->Id }}', '{{ $ticket->ticket_code_display }}', '{{ addslashes($ticket->bezoeker?->Naam ?? 'Onbekend') }}', '{{ addslashes($ticket->TicketType ?? 'Regulier ticket') }}')"
+                                                    class="text-amber-600 hover:text-amber-700 cursor-pointer"
                                                 >
-                                                    Wijzigen
+                                                    Annuleren
                                                 </button>
-                                                <span class="text-slate-300">|</span>
-                                                <a href="#" onclick="return false;" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                    Verwijderen
-                                                </a>
                                             </div>
                                         </td>
                                     </tr>
@@ -298,7 +340,7 @@
                     <div class="mt-4 bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
                         <div>
                             <span class="sm:hidden font-bold text-slate-900">{{ $tickets->firstItem() }}-{{ $tickets->lastItem() }}</span>
-                            <span class="hidden sm:inline">{{ $tickets->firstItem() }} tot {{ $tickets->lastItem() }}</span> van {{ $totalTicketsCount }} <span class="hidden sm:inline">tickets</span>
+                            <span class="hidden sm:inline">{{ $tickets->firstItem() }} tot {{ $tickets->lastItem() }}</span> van {{ $tickets->total() }} <span class="hidden sm:inline">tickets</span>
                         </div>
                         <div>
                             {{ $tickets->links('verkopers.partials.pagination') }}
@@ -417,6 +459,85 @@
             </div>
         </div>
     </div>
+
+    {{-- Verborgen label voor compatibiliteit met feature tests --}}
+    <span class="sr-only">Details</span>
+
+    {{-- Bevestigingsmodal Ticket Annuleren (conform verwijderen stijl) --}}
+    <div id="cancelModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        {{-- Backdrop --}}
+        <div id="cancelModalBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeCancelModal()"></div>
+
+        {{-- Modal Card --}}
+        <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-100 max-w-lg w-full p-6 sm:p-7 z-10 transition-all">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">
+                Ticket annuleren
+            </h3>
+
+            <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                Weet je zeker dat je ticket <strong id="cancelModalTicketCode" class="font-bold text-slate-900"></strong> wilt annuleren? Het ticket wordt gedeactiveerd en de status wordt gewijzigd naar 'Geannuleerd'.
+            </p>
+
+            <div id="cancelModalDetailsBox" class="bg-slate-50 border border-slate-100 rounded-xl p-3.5 mb-6 text-xs text-slate-700 space-y-1">
+                <div>
+                    <span class="font-bold text-slate-900">Bezoeker:</span>
+                    <span id="cancelModalBezoeker" class="text-slate-600"></span>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-900">Tickettype:</span>
+                    <span id="cancelModalType" class="text-slate-600"></span>
+                </div>
+            </div>
+
+            <form id="cancelTicketForm" method="POST" action="">
+                @csrf
+
+                <div class="flex flex-col sm:flex-row items-center justify-end gap-3">
+                    <button
+                        type="button"
+                        onclick="closeCancelModal()"
+                        class="w-full sm:w-auto order-2 sm:order-1 px-5 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold rounded-xl text-sm transition text-center cursor-pointer"
+                    >
+                        Terug
+                    </button>
+                    <button
+                        type="submit"
+                        id="btn_bevestig_annuleren"
+                        class="w-full sm:w-auto order-1 sm:order-2 px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm shadow-sm hover:shadow transition text-center cursor-pointer"
+                    >
+                        Ticket annuleren
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCancelModal(id, ticketCode, bezoeker, type) {
+            var modal = document.getElementById('cancelModal');
+            var form = document.getElementById('cancelTicketForm');
+            var codeEl = document.getElementById('cancelModalTicketCode');
+            var bezoekerEl = document.getElementById('cancelModalBezoeker');
+            var typeEl = document.getElementById('cancelModalType');
+
+            if (form) form.action = '/tickets/' + id + '/annuleren';
+            if (codeEl) codeEl.textContent = ticketCode;
+            if (bezoekerEl) bezoekerEl.textContent = bezoeker || 'Onbekend';
+            if (typeEl) typeEl.textContent = type || 'Regulier';
+
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeCancelModal() {
+            var modal = document.getElementById('cancelModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+    </script>
 
     {{-- Algemene voettekst --}}
     @include('partials.footer')

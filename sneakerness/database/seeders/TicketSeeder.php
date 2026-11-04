@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Bezoeker;
+use App\Models\Evenement;
+use App\Models\Organisator;
+use App\Models\Prijs;
 use App\Models\Ticket;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +16,40 @@ class TicketSeeder extends Seeder
      */
     public function run(): void
     {
+        $organisator = Organisator::firstOrCreate(
+            ['Id' => 1],
+            [
+                'Naam' => 'Sneakerness Events B.V.',
+                'Gebruikersnaam' => 'organisator',
+                'Wachtwoord' => bcrypt('password'),
+                'IsActief' => 1,
+            ]
+        );
+
+        $evenement = Evenement::find(1) ?? Evenement::firstOrCreate(
+            ['Id' => 1],
+            [
+                'OrganisatorId' => $organisator->Id,
+                'Naam' => 'Sneakerness Rotterdam 2026',
+                'Datum' => '2026-10-24',
+                'Locatie' => 'Van Nelle Fabriek Rotterdam',
+                'AantalTicketsPerTijdslot' => 750,
+                'BeschikbareStands' => 55,
+                'IsActief' => 1,
+                'Opmerking' => 'Sneakerness Rotterdam Drop Hub Editie 2026',
+            ]
+        );
+
+        $prijs = Prijs::firstOrCreate(
+            ['Id' => 1],
+            [
+                'Datum' => '2024-11-16',
+                'Tijdslot' => '10:00:00',
+                'Tarief' => 25.00,
+                'IsActief' => 1,
+            ]
+        );
+
         $ticketsData = [
             [
                 'ticket_code' => 'TKT-84920',
@@ -77,14 +114,18 @@ class TicketSeeder extends Seeder
         ];
 
         foreach ($ticketsData as $item) {
-            $bezoeker = Bezoeker::firstOrCreate(
-                ['Email' => $item['email']],
-                [
+            $bezoeker = Bezoeker::where('Emailadres', $item['email'])
+                ->orWhere('Naam', $item['naam'])
+                ->first();
+
+            if (! $bezoeker) {
+                $bezoeker = Bezoeker::create([
+                    'Emailadres' => $item['email'],
                     'Naam' => $item['naam'],
                     'IsActief' => 1,
                     'Opmerking' => 'Ticket koper',
-                ]
-            );
+                ]);
+            }
 
             Ticket::updateOrCreate(
                 ['TicketCode' => $item['ticket_code']],
@@ -109,8 +150,8 @@ class TicketSeeder extends Seeder
         $counter = 84926;
         foreach ($remaining as $ticket) {
             $ticket->update([
-                'TicketCode' => 'TKT-' . $counter,
-                'Bestelnummer' => 'SN-2024-' . $counter,
+                'TicketCode' => 'TKT-'.$counter,
+                'Bestelnummer' => 'SN-2024-'.$counter,
                 'TicketType' => 'Regulier Slot 1',
                 'Tijdslot' => 'Zaterdag 16 nov (10:00 - 14:00)',
                 'ZaalToegang' => 'Hal 1 • Entree B',

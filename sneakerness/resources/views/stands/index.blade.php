@@ -274,7 +274,7 @@
                     </div>
                 @else
                     {{-- Mobiele kaartweergave van stands --}}
-                <div class="block md:hidden space-y-3 mb-4">
+                    <div class="block md:hidden space-y-3 mb-4">
                         @foreach($stands as $stand)
                             <div class="bg-white rounded-xl border border-slate-200 p-4">
                                 <div class="flex items-start justify-between">
@@ -340,192 +340,240 @@
                                     @endphp
                                     @if(Auth::check() && Auth::user()->isVerkoper())
                                         @if($isMyStand)
-                                            <a
-                                                href="{{ route('stands.edit', $stand->Id) }}"
-                                                class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
-                                            >
-                                                <i class="fa-solid fa-pen text-[10px]"></i>
-                                                Wijzigen
-                                            </a>
+                                            <div class="flex items-center gap-2 w-full">
+                                                <a
+                                                    href="{{ route('stands.edit', $stand->Id) }}"
+                                                    class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                                    Wijzigen
+                                                </a>
+                                                <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button
+                                                        type="submit"
+                                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                        title="Stand verwijderen"
+                                                    >
+                                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                                        Verwijderen
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @elseif(!$stand->VerhuurdStatus)
+                                            <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="w-full">
+                                                @csrf
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
+                                            </form>
                                         @else
                                             <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="w-full">
                                                 @csrf
-                                                @if(!$stand->VerhuurdStatus)
-                                                    <button
-                                                        type="submit"
-                                                        class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
-                                                    >
-                                                        <i class="fa-solid fa-bookmark text-[10px]"></i>
-                                                        Reserveren
-                                                    </button>
-                                                @else
-                                                    <button
-                                                        type="submit"
-                                                        class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
-                                                    >
-                                                        <i class="fa-solid fa-lock text-[10px]"></i>
-                                                        Reserveren
-                                                    </button>
-                                                @endif
+                                                <button
+                                                    type="submit"
+                                                    class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                >
+                                                    <i class="fa-solid fa-lock text-[10px]"></i>
+                                                    Reserveren
+                                                </button>
                                             </form>
                                         @endif
                                     @else
-                                        <a href="{{ route('stands.edit', $stand->Id) }}" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
-                                            Wijzigen
-                                        </a>
-                                        <a href="#" onclick="return false;" class="px-4 py-1.5 border border-red-200 text-red-500 text-xs font-medium rounded-lg hover:bg-red-50">
-                                            Verwijderen
-                                        </a>
+                                        <div class="flex items-center justify-end gap-2 w-full">
+                                            <a href="{{ route('stands.edit', $stand->Id) }}" class="px-4 py-1.5 border border-slate-200 text-slate-700 text-xs font-medium rounded-lg hover:bg-slate-50">
+                                                Wijzigen
+                                            </a>
+                                            <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-4 py-1.5 border border-red-200 text-red-500 hover:text-red-700 text-xs font-medium rounded-lg hover:bg-red-50 transition-colors">
+                                                    Verwijderen
+                                                </button>
+                                            </form>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
-                {{-- Desktop tabelweergave van stands --}}
-                <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                                <th class="py-3.5 px-6">STAND</th>
-                                <th class="py-3.5 px-6">GEKOPPELDE VERKOPER</th>
-                                <th class="py-3.5 px-6">DAGEN</th>
-                                <th class="py-3.5 px-6">PRIJS</th>
-                                <th class="py-3.5 px-6">STATUS</th>
-                                <th class="py-3.5 px-6 text-right">ACTIES</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-sm">
-                            @foreach($stands as $stand)
-                                <tr class="hover:bg-slate-50">
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="flex items-center gap-2">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-blue-900">
-                                                Stand {{ $stand->StandType }}
-                                            </span>
-                                            <span class="font-bold text-slate-900">
-                                                #{{ str_pad($stand->Id, 3, '0', STR_PAD_LEFT) }}
-                                            </span>
-                                        </div>
-                                        <div class="text-xs text-slate-500 mt-0.5 truncate">
-                                            {{ $stand->location_display }}
-                                        </div>
-                                    </td>
-
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        @if($stand->verkoper)
-                                            <div class="font-bold text-slate-900 truncate">
-                                                {{ $stand->verkoper->Naam }}
+                    {{-- Desktop tabelweergave van stands --}}
+                    <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-6">STAND</th>
+                                    <th class="py-3.5 px-6">GEKOPPELDE VERKOPER</th>
+                                    <th class="py-3.5 px-6">DAGEN</th>
+                                    <th class="py-3.5 px-6">PRIJS</th>
+                                    <th class="py-3.5 px-6">STATUS</th>
+                                    <th class="py-3.5 px-6 text-right">ACTIES</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                @foreach($stands as $stand)
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            <div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-blue-900">
+                                                    Stand {{ $stand->StandType }}
+                                                </span>
+                                                <span class="font-bold text-slate-900">
+                                                    #{{ str_pad($stand->Id, 3, '0', STR_PAD_LEFT) }}
+                                                </span>
                                             </div>
                                             <div class="text-xs text-slate-500 mt-0.5 truncate">
-                                                {{ $stand->verkoper->VerkooptSoort }}
+                                                {{ $stand->location_display }}
                                             </div>
-                                        @else
-                                            <div class="font-medium text-slate-400 italic">
-                                                Geen verkoper gekoppeld
-                                            </div>
-                                            <div class="text-xs text-slate-400 mt-0.5 truncate">
-                                                (Nog beschikbaar)
-                                            </div>
-                                        @endif
-                                    </td>
+                                        </td>
 
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="font-bold text-slate-900">
-                                            {{ $stand->days_text }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 mt-0.5">
-                                            {{ $stand->AantalDagen }} {{ $stand->AantalDagen == 1 ? 'dag' : 'dagen' }}
-                                        </div>
-                                    </td>
-
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        <div class="font-bold text-slate-900">
-                                            {{ $stand->formatted_price }}
-                                        </div>
-                                        <div class="text-xs text-slate-500 mt-0.5">
-                                            excl. BTW
-                                        </div>
-                                    </td>
-
-                                    <td class="py-4 px-6 whitespace-nowrap">
-                                        @if($stand->status_label === 'Verhuurd')
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                Verhuurd
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-                                                Beschikbaar
-                                            </span>
-                                        @endif
-                                    </td>
-
-                                    <td class="py-4 px-6 whitespace-nowrap text-right">
-                                        @php
-                                            $isMyStandDesktop = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && ($myReservedStands->contains('Id', $stand->Id) || ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id));
-                                        @endphp
-                                        @if(Auth::check() && Auth::user()->isVerkoper())
-                                            @if($isMyStandDesktop)
-                                                <a
-                                                    href="{{ route('stands.edit', $stand->Id) }}"
-                                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
-                                                >
-                                                    <i class="fa-solid fa-pen text-[10px]"></i>
-                                                    Wijzigen
-                                                </a>
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            @if($stand->verkoper)
+                                                <div class="font-bold text-slate-900 truncate">
+                                                    {{ $stand->verkoper->Naam }}
+                                                </div>
+                                                <div class="text-xs text-slate-500 mt-0.5 truncate">
+                                                    {{ $stand->verkoper->VerkooptSoort }}
+                                                </div>
                                             @else
-                                                <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
-                                                    @csrf
-                                                    @if(!$stand->VerhuurdStatus)
-                                                        <button
-                                                            type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
-                                                        >
-                                                            <i class="fa-solid fa-bookmark text-[10px]"></i>
-                                                            Reserveren
-                                                        </button>
-                                                    @else
-                                                        <button
-                                                            type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
-                                                            title="Stand is reeds gereserveerd"
-                                                        >
-                                                            <i class="fa-solid fa-lock text-[10px]"></i>
-                                                            Reserveren
-                                                        </button>
-                                                    @endif
-                                                </form>
+                                                <div class="font-medium text-slate-400 italic">
+                                                    Geen verkoper gekoppeld
+                                                </div>
+                                                <div class="text-xs text-slate-400 mt-0.5 truncate">
+                                                    (Nog beschikbaar)
+                                                </div>
                                             @endif
-                                        @else
-                                            <div class="flex items-center justify-end gap-3 text-xs">
-                                                <a href="{{ route('stands.edit', $stand->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
-                                                    Wijzigen
-                                                </a>
-                                                <span class="text-slate-300">|</span>
-                                                <a href="#" onclick="return false;" class="text-slate-600 hover:text-slate-900">
-                                                    Verwijderen
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                        </td>
 
-                {{-- Paginering onderaan de pagina --}}
-                <div class="mt-4 bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
-                    <div>
-                        <span class="sm:hidden font-bold text-slate-900">{{ $stands->firstItem() }}-{{ $stands->lastItem() }}</span>
-                        <span class="hidden sm:inline">{{ $stands->firstItem() }} tot {{ $stands->lastItem() }}</span> van {{ $stands->total() }} <span class="hidden sm:inline">stands</span>
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            <div class="font-bold text-slate-900">
+                                                {{ $stand->days_text }}
+                                            </div>
+                                            <div class="text-xs text-slate-500 mt-0.5">
+                                                {{ $stand->AantalDagen }} {{ $stand->AantalDagen == 1 ? 'dag' : 'dagen' }}
+                                            </div>
+                                        </td>
+
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            <div class="font-bold text-slate-900">
+                                                {{ $stand->formatted_price }}
+                                            </div>
+                                            <div class="text-xs text-slate-500 mt-0.5">
+                                                excl. BTW
+                                            </div>
+                                        </td>
+
+                                        <td class="py-4 px-6 whitespace-nowrap">
+                                            @if($stand->status_label === 'Verhuurd')
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    Verhuurd
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                                    Beschikbaar
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <td class="py-4 px-6 whitespace-nowrap text-right">
+                                            @php
+                                                $isMyStandDesktop = Auth::check() && Auth::user()->isVerkoper() && $stand->VerhuurdStatus && (
+                                                    ($stand->verkoper && $stand->verkoper->Naam === Auth::user()->name) ||
+                                                    ($myReservedStands->contains('Id', $stand->Id)) ||
+                                                    ($currentVerkoper && $stand->VerkoperId == $currentVerkoper->Id)
+                                                );
+                                            @endphp
+                                            @if(Auth::check() && Auth::user()->isVerkoper())
+                                                @if($isMyStandDesktop)
+                                                    <div class="flex items-center justify-end gap-2 text-xs">
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-lg font-medium text-[11px]">
+                                                            <i class="fa-solid fa-check text-[10px]"></i>
+                                                            Jouw stand
+                                                        </span>
+                                                        <a
+                                                            href="{{ route('stands.edit', $stand->Id) }}"
+                                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                            title="Stand wijzigen"
+                                                        >
+                                                            <i class="fa-solid fa-pen text-[10px]"></i>
+                                                            Wijzigen
+                                                        </a>
+                                                        <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button
+                                                                type="submit"
+                                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                                title="Stand verwijderen"
+                                                            >
+                                                                <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                                                Verwijderen
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <form method="POST" action="{{ route('stands.reserveren', $stand->Id) }}" class="inline">
+                                                        @csrf
+                                                        @if(!$stand->VerhuurdStatus)
+                                                            <button
+                                                                type="submit"
+                                                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors"
+                                                            >
+                                                                <i class="fa-solid fa-bookmark text-[10px]"></i>
+                                                                Reserveren
+                                                            </button>
+                                                        @else
+                                                            <button
+                                                                type="submit"
+                                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-700 border border-slate-200 hover:border-red-200 font-medium text-xs rounded-lg transition-colors"
+                                                                title="Stand is reeds gereserveerd"
+                                                            >
+                                                                <i class="fa-solid fa-lock text-[10px]"></i>
+                                                                Reserveren
+                                                            </button>
+                                                        @endif
+                                                    </form>
+                                                @endif
+                                            @else
+                                                <div class="flex items-center justify-end gap-3 text-xs">
+                                                    <a href="{{ route('stands.edit', $stand->Id) }}" class="text-orange-500 hover:text-orange-600 font-semibold">
+                                                        Wijzigen
+                                                    </a>
+                                                    <span class="text-slate-300">|</span>
+                                                    <form method="POST" action="{{ route('stands.destroy', $stand->Id) }}" class="inline" onsubmit="return confirm('Weet je zeker dat je deze stand wilt verwijderen?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-slate-600 hover:text-red-600 transition-colors">
+                                                            Verwijderen
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        {{ $stands->links('stands.partials.pagination') }}
+
+                    {{-- Paginering onderaan de pagina --}}
+                    <div class="mt-4 bg-white border border-slate-200 rounded-lg p-2.5 flex items-center justify-between text-xs text-slate-600">
+                        <div>
+                            <span class="sm:hidden font-bold text-slate-900">{{ $stands->firstItem() }}-{{ $stands->lastItem() }}</span>
+                            <span class="hidden sm:inline">{{ $stands->firstItem() }} tot {{ $stands->lastItem() }}</span> van {{ $stands->total() }} <span class="hidden sm:inline">stands</span>
+                        </div>
+                        <div>
+                            {{ $stands->links('stands.partials.pagination') }}
+                        </div>
                     </div>
-                </div>
                 @endif
             @endif
 
