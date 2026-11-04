@@ -44,4 +44,10 @@ class User extends Authenticatable
     {
         return $this->role === 'bezoeker';
     }
+
+    // Haalt het bijbehorende Verkoper model op basis van gebruikersnaam
+    public function verkoper(): ?Verkoper
+    {
+        return Verkoper::where('Naam', $this->name)->first();
+    }
 }
