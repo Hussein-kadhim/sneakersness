@@ -55,9 +55,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/stands/reserveren', [StandController::class, 'reserverenSelectie'])->name('stands.reserveren.post');
     Route::post('/stands/{id}/reserveren', [StandController::class, 'reserveren'])->name('stands.reserveren');
     Route::delete('/stands/{id}', [StandController::class, 'destroy'])->name('stands.destroy');
+
+    // Evenementroutes zijn alleen beschikbaar voor ingelogde gebruikers; mutaties controleren de organisatorenrol.
+    // GET-routes tonen het overzicht en de formulieren; POST maakt een nieuw evenement aan.
     Route::get('/events', [EvenementController::class, 'index'])->name('events.index');
     Route::get('/events/create', [EvenementController::class, 'create'])->name('events.create');
     Route::post('/events', [EvenementController::class, 'store'])->name('events.store');
+    // PUT bewaart wijzigingen en DELETE verwijdert het volledige evenement.
+    Route::get('/events/{event}/edit', [EvenementController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EvenementController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EvenementController::class, 'destroy'])->name('events.destroy');
 
     Route::get('/dashboard', function () {

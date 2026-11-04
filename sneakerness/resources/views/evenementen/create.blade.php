@@ -28,11 +28,13 @@
                 <p class="text-sm sm:text-base text-slate-500 mt-2">Vul de gegevens in om een nieuw evenement aan te maken.</p>
             </div>
 
+            {{-- Toon de databasefout vanuit de controller of na een mislukte opslag. --}}
             @if($dbError || session('databaseError'))
                 @include('partials.database-error', ['itemType' => 'gegevens voor het aanmaken van het event'])
             @else
             {{-- Formulier voor het aanmaken van een nieuw evenement. --}}
             <form method="POST" action="{{ route('events.store') }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden" novalidate>
+                {{-- Laravel controleert deze token tegen CSRF-aanvallen bij het opslaan. --}}
                 @csrf
 
                 {{-- Toont alle validatiefouten bovenaan het formulier. --}}
@@ -47,6 +49,7 @@
                     </div>
                 @endif
 
+                {{-- Groepeer invoervelden in een responsive raster voor mobiel en desktop. --}}
                 <div class="p-5 sm:p-8">
                     {{-- Velden voor de organisator en evenementgegevens. --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -58,6 +61,7 @@
                         </div>
 
                         <div>
+                            {{-- De server controleert ook dat de gekozen organisator actief is. --}}
                             <label for="OrganisatorId" class="block text-sm font-semibold text-slate-700 mb-1.5">Organisator <span class="text-orange-500">*</span></label>
                             <select id="OrganisatorId" name="OrganisatorId" required
                                 class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('OrganisatorId') border-red-500 @enderror">
@@ -84,6 +88,7 @@
                         </div>
 
                         <div>
+                            {{-- De invoer is numeriek en wordt server-side minimaal op 1 gevalideerd. --}}
                             <label for="AantalTicketsPerTijdslot" class="block text-sm font-semibold text-slate-700 mb-1.5">Tickets per tijdslot <span class="text-orange-500">*</span></label>
                             <input id="AantalTicketsPerTijdslot" name="AantalTicketsPerTijdslot" type="number" min="1" step="1" value="{{ old('AantalTicketsPerTijdslot') }}" required
                                 class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('AantalTicketsPerTijdslot') border-red-500 @enderror">
@@ -91,6 +96,7 @@
                         </div>
 
                         <div>
+                            {{-- Een evenement kan geen negatief aantal beschikbare stands hebben. --}}
                             <label for="BeschikbareStands" class="block text-sm font-semibold text-slate-700 mb-1.5">Beschikbare stands <span class="text-orange-500">*</span></label>
                             <input id="BeschikbareStands" name="BeschikbareStands" type="number" min="0" step="1" value="{{ old('BeschikbareStands') }}" required
                                 class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('BeschikbareStands') border-red-500 @enderror">
@@ -98,6 +104,7 @@
                         </div>
 
                         <div>
+                            {{-- De standaardstatus voor een nieuw evenement is actief. --}}
                             <label for="IsActief" class="block text-sm font-semibold text-slate-700 mb-1.5">Status <span class="text-orange-500">*</span></label>
                             <select id="IsActief" name="IsActief" required
                                 class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('IsActief') border-red-500 @enderror">
@@ -108,6 +115,7 @@
                         </div>
 
                         <div class="sm:col-span-2">
+                            {{-- De omschrijving is optioneel en mag maximaal 250 tekens bevatten. --}}
                             <label for="Opmerking" class="block text-sm font-semibold text-slate-700 mb-1.5">Omschrijving <span class="text-slate-400 font-normal">(optioneel)</span></label>
                             <textarea id="Opmerking" name="Opmerking" rows="4" maxlength="250"
                                 class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('Opmerking') border-red-500 @enderror">{{ old('Opmerking') }}</textarea>

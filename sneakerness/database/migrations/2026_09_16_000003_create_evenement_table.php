@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Evenement', function (Blueprint $table) {
-            // Primaire sleutel
+            // Gebruik de Id-naam die ook in het model en de relaties wordt verwacht.
             $table->increments('Id');
 
             // Evenement details
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('IsActief')->default(true);
             $table->string('Opmerking', 250)->nullable();
 
-            // Tijdstempels
+            // Laravel gebruikt deze aangepaste namen voor aanmaak- en wijzigmomenten.
             $table->dateTime('DatumAangemaakt', 6)->useCurrent();
             $table->dateTime('DatumGewijzigd', 6)->useCurrent()->useCurrentOnUpdate();
         });

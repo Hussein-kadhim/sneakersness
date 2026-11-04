@@ -11,12 +11,15 @@ class Evenement extends Model
 {
     use HasFactory;
 
+    // De tabel en sleutel gebruiken hoofdletters en wijken daarmee af van Laravel-conventies.
     protected $table = 'Evenement';
     protected $primaryKey = 'Id';
 
+    // Koppel Laravel-timestamps aan de kolomnamen van de evenemententabel.
     const CREATED_AT = 'DatumAangemaakt';
     const UPDATED_AT = 'DatumGewijzigd';
 
+    // Velden die met create() en update() vanuit de evenementformulieren mogen worden opgeslagen.
     protected $fillable = [
         'OrganisatorId',
         'Naam',
@@ -28,6 +31,7 @@ class Evenement extends Model
         'Opmerking',
     ];
 
+    // Zet datum-, status- en tijdstempelwaarden automatisch om naar bruikbare PHP-types.
     protected $casts = [
         'Datum'           => 'date',
         'IsActief'        => 'boolean',
@@ -35,7 +39,7 @@ class Evenement extends Model
         'DatumGewijzigd'  => 'datetime',
     ];
 
-    // Relatie met alle tickets voor dit evenement
+    // Een evenement kan meerdere tickets hebben; EvenementId verwijst naar de Id van dit model.
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'EvenementId', 'Id');

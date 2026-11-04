@@ -28,6 +28,7 @@
                 <p class="text-sm sm:text-base text-slate-500 mt-2">Pas de gegevens van de Sneakerness editie aan.</p>
             </div>
 
+            {{-- Toon databaseproblemen ook na een redirect terug vanaf de updateactie. --}}
             @if($dbError || session('databaseError'))
                 <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
                     <div class="flex items-center gap-2 font-semibold">
@@ -38,10 +39,13 @@
             @endif
 
             @if($event && !$dbError)
+                {{-- De event-ID in de route bepaalt welk record wordt bijgewerkt. --}}
                 <form method="POST" action="{{ route('events.update', $event->Id) }}" class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     @csrf
+                    {{-- HTML-formulieren ondersteunen PUT niet rechtstreeks; Laravel leest deze method override. --}}
                     @method('PUT')
 
+                    {{-- Validatiefouten blijven zichtbaar bovenaan het formulier. --}}
                     @if($errors->any())
                         <div class="m-5 sm:m-8 mb-0 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
                             <p class="font-semibold mb-1">Controleer de ingevulde gegevens.</p>
@@ -53,6 +57,7 @@
                         </div>
                     @endif
 
+                    {{-- Vul het formulier met oude invoer of anders met de opgeslagen evenementwaarden. --}}
                     <div class="p-5 sm:p-8">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
@@ -81,6 +86,7 @@
                             </div>
 
                             <div>
+                                {{-- De opgeslagen datum wordt naar het formaat van een HTML-datumveld gezet. --}}
                                 <label for="Datum" class="block text-sm font-semibold text-slate-700 mb-1.5">Datum <span class="text-orange-500">*</span></label>
                                 <input id="Datum" name="Datum" type="date" value="{{ old('Datum', $event->Datum?->format('Y-m-d')) }}" required
                                     class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('Datum') border-red-500 @enderror">
@@ -112,6 +118,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
+                                {{-- Maak de omschrijving leeg en sla op om de bestaande opmerking te verwijderen. --}}
                                 <label for="Opmerking" class="block text-sm font-semibold text-slate-700 mb-1.5">Korte omschrijving / opmerkingen</label>
                                 <textarea id="Opmerking" name="Opmerking" rows="4" maxlength="250"
                                     class="w-full rounded-lg border-slate-200 text-sm focus:border-orange-500 focus:ring-orange-500 @error('Opmerking') border-red-500 @enderror">{{ old('Opmerking', $event->Opmerking) }}</textarea>
@@ -120,6 +127,7 @@
                         </div>
                     </div>
 
+                    {{-- Annuleren verlaat het formulier zonder de opgeslagen gegevens te wijzigen. --}}
                     <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 px-5 sm:px-8 py-5 bg-slate-50 border-t border-slate-200">
                         <a href="{{ route('events.index') }}" class="inline-flex justify-center items-center px-5 py-2.5 border border-slate-300 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white">
                             Annuleren

@@ -49,6 +49,7 @@
                 </script>
             @endif
 
+            {{-- Mutatieacties geven een databasefout via de sessie door aan dit overzicht. --}}
             @if(session('databaseError'))
                 <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800" role="alert">
                     <div class="flex items-center gap-2 font-semibold">
@@ -74,6 +75,7 @@
                     </div>
                 </div>
             @else
+                {{-- Mobiele statistieken gebruiken twee compacte kaarten. --}}
                 {{-- Statistiekenkaarten mobiel --}}
                 <div class="grid grid-cols-2 gap-3 mb-4 lg:hidden">
                     <div class="bg-white rounded-xl p-4 border border-slate-200">
@@ -93,6 +95,7 @@
                     </div>
                 </div>
 
+                {{-- Op grote schermen staan dezelfde totalen naast elkaar in vier kaarten. --}}
                 {{-- Statistiekenkaarten desktop --}}
                 <div class="hidden lg:grid grid-cols-4 gap-4 mb-8">
                     <div class="bg-white rounded-xl p-5 border border-slate-200">
@@ -124,6 +127,7 @@
 
                 {{-- Zoekbalk en actieknop --}}
                 <div class="mb-5">
+                    {{-- GET houdt de zoekterm in de URL zodat het resultaat deelbaar blijft. --}}
                     <form method="GET" action="{{ route('events.index') }}">
                         <div class="relative mb-3">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -157,11 +161,13 @@
                     </div>
                 </div>
 
+                {{-- Toon een lege status in plaats van een lege tabel zonder uitleg. --}}
                 @if($events->isEmpty())
                     <div class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
                         Geen events gevonden.
                     </div>
                 @else
+                    {{-- Op mobiel worden de resultaten als kaarten getoond. --}}
                     {{-- Mobiele kaartweergave van events --}}
                     <div class="block md:hidden space-y-3 mb-4">
                         @foreach($events as $event)
@@ -209,7 +215,6 @@
                                     <a href="{{ route('events.edit', $event->Id) }}" class="w-full text-center py-2 px-3 border border-orange-200 text-orange-600 text-xs font-semibold rounded-lg hover:bg-orange-50">
                                         Wijzigen
                                     </a>
-                                    @if(auth()->user()?->isOrganisator())
                                         <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
                                             class="w-full text-center py-2 px-3 border border-slate-200 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-50">
                                             Verwijderen
@@ -220,6 +225,7 @@
                         @endforeach
                     </div>
 
+                    {{-- Op desktop worden dezelfde resultaten in tabelvorm getoond. --}}
                     {{-- Desktop tabelweergave van evenementen --}}
                     <div class="hidden md:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <table class="w-full text-left border-collapse">
@@ -274,7 +280,6 @@
                                                     Wijzigen
                                                 </a>
                                                 <span class="text-slate-300">|</span>
-                                                @if(auth()->user()?->isOrganisator())
                                                     <button type="button" data-delete-url="{{ route('events.destroy', $event->Id) }}" data-event-name="{{ $event->Naam }}"
                                                         class="text-slate-600 hover:text-slate-900">
                                                         Verwijderen
@@ -310,6 +315,7 @@
         </div>
     </main>
 
+    {{-- Bevestiging voor het verwijderen van het volledige evenement voordat het formulier wordt verstuurd. --}}
     <dialog id="delete-event-dialog" class="w-[calc(100%-2rem)] max-w-md rounded-xl p-0 shadow-2xl backdrop:bg-slate-900/40">
         <form id="delete-event-form" method="POST" class="p-6">
             @csrf
@@ -338,6 +344,7 @@
         </form>
     </dialog>
 
+    {{-- Vul de bevestigingsdialoog met de gegevens van de aangeklikte verwijderknop. --}}
     <script>
         const deleteEventDialog = document.getElementById('delete-event-dialog');
         const deleteEventForm = document.getElementById('delete-event-form');
